@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
@@ -453,6 +454,21 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.Contains(0, heuristicCalls);
             Assert.Contains(4, heuristicCalls);
             Assert.Less(heuristicCalls.IndexOf(0), heuristicCalls.IndexOf(4));
+        }
+
+        public static AStarShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            double Heuristic(int v) => 1.0;
+            double Weights(Edge<int> e) => 1.0;
+            var algorithm = new AStarShortestPathAlgorithm<int, Edge<int>>(graph, Weights, Heuristic);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
         }
     }
 }

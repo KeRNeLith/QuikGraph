@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
@@ -512,6 +513,24 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             var algorithm = new EdmondsKarpMaximumFlowAlgorithm<int, TaggedEdge<int, double>>(graph, edge => edge.Tag, edgeFactory, reverseEdgesAlgorithm);
 
             Assert.Throws<InvalidOperationException>(() => algorithm.Compute(source, sink));
+        }
+
+        public static EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            double Capacities(Edge<int> edge) => 1.0;
+            Edge<int> EdgeFactory(int source, int target) => new Edge<int>(source, target);
+            var reverseEdgesAlgorithm = new ReversedEdgeAugmentorAlgorithm<int, Edge<int>>(graph, EdgeFactory);
+            reverseEdgesAlgorithm.AddReversedEdges();
+
+            var algorithm = new EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>>(graph, Capacities, EdgeFactory, reverseEdgesAlgorithm);
+            algorithm.Compute(scenario.Root, scenario.AccessibleVerticesFromRoot.First());
+
+            return algorithm;
         }
     }
 }
