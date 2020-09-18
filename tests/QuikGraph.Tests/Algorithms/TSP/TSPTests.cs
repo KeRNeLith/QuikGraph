@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
@@ -330,6 +331,20 @@ namespace QuikGraph.Tests.Algorithms.TSP
             Assert.AreEqual(tsp.BestCost, 45);
             Assert.IsNotNull(tsp.ResultPath);
             Assert.IsFalse(tsp.ResultPath.IsDirectedAcyclicGraph());
+        }
+
+        public static TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new EquatableEdge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            double Weights(Edge<int> e) => 1.0;
+            var algorithm = new TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph, Weights);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
         }
     }
 }

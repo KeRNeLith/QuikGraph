@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.Observers;
@@ -356,6 +357,19 @@ namespace QuikGraph.Tests.Algorithms.Search
                 foreach (string vertex in graph.Vertices)
                     RunBFSAndCheck(graph, vertex);
             }
+        }
+
+        public static UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new UndirectedGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
         }
     }
 }

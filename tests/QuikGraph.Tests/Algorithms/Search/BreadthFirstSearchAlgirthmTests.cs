@@ -383,5 +383,18 @@ namespace QuikGraph.Tests.Algorithms.Search
                     RunBFSAndCheck(graph, vertex);
             }
         }
+
+        public static BreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            var algorithm = new BreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
+        }
     }
 }

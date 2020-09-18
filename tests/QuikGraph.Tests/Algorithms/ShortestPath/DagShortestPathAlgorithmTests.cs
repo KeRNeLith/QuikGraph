@@ -331,5 +331,19 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
                 DagCriticalPath_Test(graph);
             }
         }
+
+        public static DagShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            double Weights(Edge<int> e) => 1.0;
+            var algorithm = new DagShortestPathAlgorithm<int, Edge<int>>(graph, Weights);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
+        }
     }
 }

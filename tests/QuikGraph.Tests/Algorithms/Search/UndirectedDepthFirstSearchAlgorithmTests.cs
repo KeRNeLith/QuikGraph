@@ -334,5 +334,18 @@ namespace QuikGraph.Tests.Algorithms.Search
                     vertex => algorithm.VerticesColors[vertex] == GraphColor.White);
             }
         }
+
+        public static UndirectedDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new UndirectedGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            var algorithm = new UndirectedDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
+        }
     }
 }

@@ -413,5 +413,18 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
             algorithm.RandomTreeWithRoot(0);
             AssertIsTree(0, algorithm.Successors);
         }
+
+        public static CyclePoppingRandomTreeAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+            ContractScenario scenario)
+        {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
+            graph.AddVertexRange(scenario.SingleVerticesInGraph);
+
+            var algorithm = new CyclePoppingRandomTreeAlgorithm<int, Edge<int>>(graph);
+
+            algorithm.Compute(scenario.Root);
+            return algorithm;
+        }
     }
 }

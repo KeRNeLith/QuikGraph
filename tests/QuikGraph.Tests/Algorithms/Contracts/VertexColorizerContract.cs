@@ -4,9 +4,15 @@ using System.Linq;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.MaximumFlow;
+using QuikGraph.Algorithms.RandomWalks;
+using QuikGraph.Algorithms.Search;
 using QuikGraph.Algorithms.ShortestPath;
+using QuikGraph.Algorithms.TSP;
 using QuikGraph.Tests.Algorithms.MaximumFlow;
+using QuikGraph.Tests.Algorithms.RandomWalks;
+using QuikGraph.Tests.Algorithms.Search;
 using QuikGraph.Tests.Algorithms.ShortestPath;
+using QuikGraph.Tests.Algorithms.TSP;
 
 // ReSharper disable ReturnValueOfPureMethodIsNotUsed
 
@@ -107,8 +113,41 @@ namespace QuikGraph.Tests.Algorithms.Contracts
                 _ when _classUnderTest == typeof(AStarShortestPathAlgorithm<,>) =>
                     AStartShortestPathAlgorithmTests.CreateAlgorithmAndDoComputation,
 
+                _ when _classUnderTest == typeof(BellmanFordShortestPathAlgorithm<,>) =>
+                    BellmanFordShortestPathAlgorithmTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(BidirectionalDepthFirstSearchAlgorithm<,>) =>
+                    BidirectionalDepthFirstSearchAlgorithmTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(BreadthFirstSearchAlgorithm<,>) =>
+                    BreadthFirstAlgorithmSearchTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(CyclePoppingRandomTreeAlgorithm<,>) =>
+                    CyclePoppingRandomTreeAlgorithmTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(DagShortestPathAlgorithm<,>) =>
+                    DagShortestPathAlgorithmTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(DepthFirstSearchAlgorithm<,>) =>
+                    DepthFirstAlgorithmSearchTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(DijkstraShortestPathAlgorithm<,>) =>
+                    DijkstraShortestPathAlgorithmTests.CreateAlgorithmAndDoComputation,
+
                 _ when _classUnderTest == typeof(EdmondsKarpMaximumFlowAlgorithm<,>) =>
                     EdmondsKarpMaximumFlowAlgorithmTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(TSP<,,>) =>
+                    TSPTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(UndirectedBreadthFirstSearchAlgorithm<,>) =>
+                    UndirectedBreadthFirstAlgorithmSearchTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(UndirectedDepthFirstSearchAlgorithm<,>) =>
+                    UndirectedDepthFirstAlgorithmSearchTests.CreateAlgorithmAndDoComputation,
+
+                _ when _classUnderTest == typeof(UndirectedDijkstraShortestPathAlgorithm<,>) =>
+                    UndirectedDijkstraShortestPathAlgorithmTests.CreateAlgorithmAndDoComputation,
 
                 _ => throw new AssertionException($"No test constructor known for {_classUnderTest}")
             };
