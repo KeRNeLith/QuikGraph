@@ -53,6 +53,13 @@ namespace QuikGraph.Tests.Algorithms.Contracts
             _classUnderTest = testClassType;
         }
 
+        [SetUp]
+        public void IgnoreIfInterfaceIsNotImplemented()
+        {
+            if (_classUnderTest == typeof(TSP<,,>))
+                Assert.Ignore("The TSP algorithm does not implement colorize functionality");
+        }
+
         [Test]
         public void ExceptionThrown_WhenVertexDoesNotExistInGraph()
         {
