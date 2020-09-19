@@ -112,11 +112,11 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         private IVertexColorizerAlgorithm<int> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
-            var constructor = GetConstructor();
-            return constructor(scenario);
+            var instantiateAlgorithm = GetAlgorithmInstantiator();
+            return instantiateAlgorithm(scenario);
         }
 
-        private Func<ContractScenario, IVertexColorizerAlgorithm<int>> GetConstructor()
+        private Func<ContractScenario, IVertexColorizerAlgorithm<int>> GetAlgorithmInstantiator()
         {
             return _classUnderTest switch
             {
