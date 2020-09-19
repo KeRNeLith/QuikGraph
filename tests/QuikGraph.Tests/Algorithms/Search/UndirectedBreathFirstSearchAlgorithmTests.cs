@@ -340,15 +340,6 @@ namespace QuikGraph.Tests.Algorithms.Search
         }
 
         [Test]
-        public void GetVertexColor_Throws()
-        {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph).GetVertexColor(1));
-        }
-
-        [Test]
         [Category(TestCategories.LongRunning)]
         public void UndirectedBreadthFirstSearch()
         {

@@ -371,24 +371,6 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
         }
 
         [Test]
-        public void GetVertexColor_Throws()
-        {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVertexRange(new[] { 0, 1 });
-
-            Func<Edge<int>, double> capacities = edge => 1.0;
-            EdgeFactory<int, Edge<int>> edgeFactory = (source, target) => new Edge<int>(source, target);
-            var reverseEdgesAlgorithm = new ReversedEdgeAugmentorAlgorithm<int, Edge<int>>(graph, edgeFactory);
-            reverseEdgesAlgorithm.AddReversedEdges();
-
-            var algorithm = new EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>>(graph, capacities, edgeFactory, reverseEdgesAlgorithm);
-            algorithm.Compute(0, 1);
-
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(2));
-        }
-
-        [Test]
         [Category(TestCategories.LongRunning)]
         public void EdmondsKarpMaxFlow()
         {

@@ -245,19 +245,6 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
         }
 
         [Test]
-        public void GetVertexColor_Throws()
-        {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVertex(0);
-            var chain = new NormalizedMarkovEdgeChain<int, Edge<int>>();
-            var algorithm = new CyclePoppingRandomTreeAlgorithm<int, Edge<int>>(graph, chain);
-            algorithm.Compute(0);
-
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(1));
-        }
-
-        [Test]
         public void Repro13160()
         {
             // Create a new graph

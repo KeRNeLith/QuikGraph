@@ -258,18 +258,6 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         }
 
         [Test]
-        public void GetVertexColor_Throws()
-        {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVertex(0);
-            var algorithm = new UndirectedDijkstraShortestPathAlgorithm<int, Edge<int>>(graph, edge => 1.0);
-            algorithm.Compute(0);
-
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(1));
-        }
-
-        [Test]
         [Category(TestCategories.LongRunning)]
         public void UndirectedDijkstra()
         {

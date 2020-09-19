@@ -284,15 +284,6 @@ namespace QuikGraph.Tests.Algorithms.Search
         }
 
         [Test]
-        public void GetVertexColor_Throws()
-        {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(
-                () => new DepthFirstSearchAlgorithm<int, Edge<int>>(graph).GetVertexColor(1));
-        }
-
-        [Test]
         public void DepthFirstSearch()
         {
             foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_SlowTests())
