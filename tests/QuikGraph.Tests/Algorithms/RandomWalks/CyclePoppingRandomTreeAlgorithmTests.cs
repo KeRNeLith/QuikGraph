@@ -420,8 +420,9 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));
             graph.AddVertexRange(scenario.SingleVerticesInGraph);
+            var chain = new NormalizedMarkovEdgeChain<int, Edge<int>>();
 
-            var algorithm = new CyclePoppingRandomTreeAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new CyclePoppingRandomTreeAlgorithm<int, Edge<int>>(graph, chain);
 
             algorithm.Compute(scenario.Root);
             return algorithm;
