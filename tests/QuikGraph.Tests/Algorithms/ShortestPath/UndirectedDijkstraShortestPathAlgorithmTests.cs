@@ -300,7 +300,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.IsTrue(observer.TryGetPath(v3, out _));
         }
 
-        public static UndirectedDijkstraShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static UndirectedDijkstraShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
@@ -310,7 +310,8 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             double Weights(Edge<int> e) => 1.0;
             var algorithm = new UndirectedDijkstraShortestPathAlgorithm<int, Edge<int>>(graph, Weights);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

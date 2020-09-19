@@ -333,7 +333,7 @@ namespace QuikGraph.Tests.Algorithms.TSP
             Assert.IsFalse(tsp.ResultPath.IsDirectedAcyclicGraph());
         }
 
-        public static TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>> CreateAlgorithmAndDoComputation(
+        public static TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
@@ -343,7 +343,8 @@ namespace QuikGraph.Tests.Algorithms.TSP
             double Weights(Edge<int> e) => 1.0;
             var algorithm = new TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph, Weights);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

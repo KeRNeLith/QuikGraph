@@ -320,7 +320,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             }
         }
 
-        public static DagShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static DagShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -330,7 +330,8 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             double Weights(Edge<int> e) => 1.0;
             var algorithm = new DagShortestPathAlgorithm<int, Edge<int>>(graph, Weights);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

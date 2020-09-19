@@ -375,7 +375,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
-        public static BreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static BreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -384,7 +384,8 @@ namespace QuikGraph.Tests.Algorithms.Search
 
             var algorithm = new BreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

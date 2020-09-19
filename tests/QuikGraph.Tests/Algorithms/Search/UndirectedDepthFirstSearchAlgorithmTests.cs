@@ -326,7 +326,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
-        public static UndirectedDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static UndirectedDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
@@ -335,7 +335,8 @@ namespace QuikGraph.Tests.Algorithms.Search
 
             var algorithm = new UndirectedDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

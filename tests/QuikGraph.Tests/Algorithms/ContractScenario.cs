@@ -27,5 +27,10 @@ namespace QuikGraph.Tests.Algorithms
         ///     Vertices accessible from the root, not including the root itself.
         /// </summary>
         public IEnumerable<int> AccessibleVerticesFromRoot { get; set; } = new int[0];
+
+        /// <summary>
+        ///     Flag indicating whether the algorithm should be computed after it has been instantiated.
+        /// </summary>
+        public bool DoComputation { get; set; } = true;
     }
 }

@@ -332,7 +332,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
-        public static DepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static DepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -341,7 +341,8 @@ namespace QuikGraph.Tests.Algorithms.Search
 
             var algorithm = new DepthFirstSearchAlgorithm<int, Edge<int>>(graph);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

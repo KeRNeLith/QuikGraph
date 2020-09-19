@@ -320,7 +320,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
-        public static BidirectionalDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static BidirectionalDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new BidirectionalGraph<int, Edge<int>>();
@@ -329,7 +329,8 @@ namespace QuikGraph.Tests.Algorithms.Search
 
             var algorithm = new BidirectionalDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

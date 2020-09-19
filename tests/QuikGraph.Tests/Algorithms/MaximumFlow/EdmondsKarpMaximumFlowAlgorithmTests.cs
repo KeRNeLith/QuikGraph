@@ -497,7 +497,7 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.Throws<InvalidOperationException>(() => algorithm.Compute(source, sink));
         }
 
-        public static EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -510,8 +510,9 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             reverseEdgesAlgorithm.AddReversedEdges();
 
             var algorithm = new EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>>(graph, Capacities, EdgeFactory, reverseEdgesAlgorithm);
-            algorithm.Compute(scenario.Root, scenario.AccessibleVerticesFromRoot.First());
 
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root, scenario.AccessibleVerticesFromRoot.First());
             return algorithm;
         }
     }

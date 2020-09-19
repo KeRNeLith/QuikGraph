@@ -444,7 +444,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.Less(heuristicCalls.IndexOf(0), heuristicCalls.IndexOf(4));
         }
 
-        public static AStarShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static AStarShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -455,7 +455,8 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             double Weights(Edge<int> e) => 1.0;
             var algorithm = new AStarShortestPathAlgorithm<int, Edge<int>>(graph, Weights, Heuristic);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }

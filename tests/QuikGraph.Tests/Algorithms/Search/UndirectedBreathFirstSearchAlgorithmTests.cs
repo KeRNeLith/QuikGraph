@@ -350,7 +350,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
-        public static UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndDoComputation(
+        public static UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
             ContractScenario scenario)
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
@@ -359,7 +359,8 @@ namespace QuikGraph.Tests.Algorithms.Search
 
             var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
 
-            algorithm.Compute(scenario.Root);
+            if (scenario.DoComputation)
+                algorithm.Compute(scenario.Root);
             return algorithm;
         }
     }
