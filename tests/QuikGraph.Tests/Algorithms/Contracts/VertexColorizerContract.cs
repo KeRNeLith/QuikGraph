@@ -77,6 +77,50 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         }
 
         [Test]
+        public void ExceptionThrown_WhenAlgorithmHasNotYetBeenComputed()
+        {
+            var scenario = new ContractScenario
+            {
+                EdgesInGraph = new[] {new Edge<int>(1, 2)},
+                SingleVerticesInGraph = new int[0],
+                AccessibleVerticesFromRoot = new[] {2},
+                Root = 1,
+                DoComputation = false
+            };
+
+            var algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
+
+            var expectedExceptionType = GetExpectedExceptionType();
+            Assert.Throws(expectedExceptionType, () => algorithm.GetVertexColor(2));
+
+            Type GetExpectedExceptionType()
+            {
+                switch (_classUnderTest)
+                {
+                    case var _ when _classUnderTest == typeof(AStarShortestPathAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(BellmanFordShortestPathAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(DagShortestPathAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(DijkstraShortestPathAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(UndirectedDijkstraShortestPathAlgorithm<,>):
+                        return typeof(NullReferenceException);
+
+                    case var _ when _classUnderTest == typeof(BidirectionalDepthFirstSearchAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(BreadthFirstSearchAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(CyclePoppingRandomTreeAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(DepthFirstSearchAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(EdmondsKarpMaximumFlowAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(TSP<,,>):
+                    case var _ when _classUnderTest == typeof(UndirectedBreadthFirstSearchAlgorithm<,>):
+                    case var _ when _classUnderTest == typeof(UndirectedDepthFirstSearchAlgorithm<,>):
+                        return typeof(VertexNotFoundException);
+
+                    default:
+                        throw new AssertionException($"No test constructor known for {_classUnderTest}");
+                }
+            }
+        }
+
+        [Test]
         public void ColorReturned_WhenVertexIsAccessibleFromRoot()
         {
             var scenario = new ContractScenario
