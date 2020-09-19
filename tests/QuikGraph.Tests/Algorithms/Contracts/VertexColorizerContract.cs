@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.MaximumFlow;
@@ -18,31 +16,6 @@ using QuikGraph.Tests.Algorithms.TSP;
 
 namespace QuikGraph.Tests.Algorithms.Contracts
 {
-    public static class Feeder
-    {
-        public static IEnumerable<Type> VertexColorizers
-        {
-            get
-            {
-                var targetType = typeof(IVertexColorizerAlgorithm<>);
-                var vertexColorizers = (
-                    from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                    from type in assembly.GetTypes()
-                    from interface_ in type.GetInterfaces()
-                    let baseType = interface_.BaseType
-                    where baseType != null && baseType.IsGenericType &&
-                          targetType.IsAssignableFrom(baseType.GetGenericTypeDefinition()) ||
-                          interface_.IsGenericType &&
-                          targetType.IsAssignableFrom(interface_.GetGenericTypeDefinition()) &&
-                          !type.IsInterface && !type.IsAbstract
-                    select type
-                ).ToList();
-
-                return vertexColorizers;
-            }
-        }
-    }
-
     [TestFixtureSource(typeof(Feeder), nameof(Feeder.VertexColorizers))]
     public class VertexColorizerContract
     {
