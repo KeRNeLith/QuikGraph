@@ -23,6 +23,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
 
             return implementors;
         }
+
         public static IEnumerable<Type> VertexColorizers
         {
             get => GetConcreteClassesImplementing(typeof(IVertexColorizerAlgorithm<>));

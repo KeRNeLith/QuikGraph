@@ -30,7 +30,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         public void IgnoreIfInterfaceIsNotImplemented()
         {
             if (_classUnderTest == typeof(TSP<,,>))
-                Assert.Ignore("The TSP algorithm does not implement colorize functionality");
+                Assert.Ignore("The TSP algorithm does not implement colorizer functionality");
         }
 
         [Test]

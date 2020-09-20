@@ -24,7 +24,7 @@ namespace QuikGraph.Tests.Algorithms
         public int Root { get; set; } = -1;
 
         /// <summary>
-        ///     Vertices accessible from the root, not including the root itself.
+        ///     Vertices expected to be accessible from the root, not including the root itself.
         /// </summary>
         public IEnumerable<int> AccessibleVerticesFromRoot { get; set; } = new int[0];
 
