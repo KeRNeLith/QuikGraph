@@ -326,8 +326,10 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.IsTrue(algorithm.FoundNegativeCycle);
         }
 
+        [Pure]
+        [NotNull]
         public static BellmanFordShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

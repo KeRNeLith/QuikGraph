@@ -320,8 +320,10 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
+        [Pure]
+        [NotNull]
         public static BidirectionalDepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new BidirectionalGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

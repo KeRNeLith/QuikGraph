@@ -332,8 +332,10 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
+        [Pure]
+        [NotNull]
         public static DepthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

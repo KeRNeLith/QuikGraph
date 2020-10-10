@@ -320,8 +320,10 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             }
         }
 
+        [Pure]
+        [NotNull]
         public static DagShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

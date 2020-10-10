@@ -497,8 +497,10 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.Throws<InvalidOperationException>(() => algorithm.Compute(source, sink));
         }
 
+        [Pure]
+        [NotNull]
         public static EdmondsKarpMaximumFlowAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

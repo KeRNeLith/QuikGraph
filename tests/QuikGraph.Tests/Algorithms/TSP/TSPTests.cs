@@ -333,8 +333,10 @@ namespace QuikGraph.Tests.Algorithms.TSP
             Assert.IsFalse(tsp.ResultPath.IsDirectedAcyclicGraph());
         }
 
+        [Pure]
+        [NotNull]
         public static TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new EquatableEdge<int>(e.Source, e.Target)));

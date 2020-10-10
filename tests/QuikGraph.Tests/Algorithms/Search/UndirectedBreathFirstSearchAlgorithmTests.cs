@@ -350,8 +350,10 @@ namespace QuikGraph.Tests.Algorithms.Search
             }
         }
 
+        [Pure]
+        [NotNull]
         public static UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

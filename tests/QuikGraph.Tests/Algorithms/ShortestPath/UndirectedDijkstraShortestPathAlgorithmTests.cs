@@ -300,8 +300,10 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.IsTrue(observer.TryGetPath(v3, out _));
         }
 
+        [Pure]
+        [NotNull]
         public static UndirectedDijkstraShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

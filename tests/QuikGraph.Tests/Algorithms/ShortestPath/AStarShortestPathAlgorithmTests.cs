@@ -444,8 +444,10 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.Less(heuristicCalls.IndexOf(0), heuristicCalls.IndexOf(4));
         }
 
+        [Pure]
+        [NotNull]
         public static AStarShortestPathAlgorithm<int, Edge<int>> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
             var graph = new AdjacencyGraph<int, Edge<int>>();
             graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<int>(e.Source, e.Target)));

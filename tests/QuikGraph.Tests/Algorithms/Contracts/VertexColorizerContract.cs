@@ -1,4 +1,5 @@
 ﻿using System;
+using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.MaximumFlow;
@@ -16,21 +17,28 @@ using QuikGraph.Tests.Algorithms.TSP;
 
 namespace QuikGraph.Tests.Algorithms.Contracts
 {
-    [TestFixtureSource(typeof(Feeder), nameof(Feeder.VertexColorizers))]
-    public class VertexColorizerContract
+    /// <summary>
+    /// Contract tests for <see cref="IVertexColorizerAlgorithm{TVertex}"/>.
+    /// </summary>
+    [TestFixtureSource(typeof(AlgorithmsProvider), nameof(AlgorithmsProvider.VertexColorizers))]
+    internal class VertexColorizerContract
     {
-        private readonly Type _classUnderTest;
+        [NotNull]
+        private readonly Type _testedAlgorithm;
 
-        public VertexColorizerContract(Type testClassType)
+        /// <summary/>
+        public VertexColorizerContract([NotNull] Type algorithmToTest)
         {
-            _classUnderTest = testClassType;
+            _testedAlgorithm = algorithmToTest;
         }
 
         [SetUp]
         public void IgnoreIfInterfaceIsNotImplemented()
         {
-            if (_classUnderTest == typeof(TSP<,,>))
-                Assert.Ignore("The TSP algorithm does not implement colorizer functionality");
+            if (_testedAlgorithm == typeof(TSP<,,>))
+            {
+                Assert.Ignore("The TSP algorithm does not implement colorizer functionality.");
+            }
         }
 
         [Test]
@@ -38,13 +46,13 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario
             {
-                EdgesInGraph = new[] {new Edge<int>(1, 2)},
-                AccessibleVerticesFromRoot = new[] {2},
+                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = true
             };
 
-            var algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
+            IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
             Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(3));
         }
@@ -54,43 +62,36 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario
             {
-                EdgesInGraph = new[] {new Edge<int>(1, 2)},
+                EdgesInGraph = new[] { new Edge<int>(1, 2) },
                 SingleVerticesInGraph = new int[0],
-                AccessibleVerticesFromRoot = new[] {2},
+                AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = false
             };
 
-            var algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
+            IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
-            var expectedExceptionType = GetExpectedExceptionType();
+            Type expectedExceptionType = GetExpectedExceptionType();
             Assert.Throws(expectedExceptionType, () => algorithm.GetVertexColor(2));
+
+            #region Local function
 
             Type GetExpectedExceptionType()
             {
-                switch (_classUnderTest)
+                switch (_testedAlgorithm)
                 {
-                    case var _ when _classUnderTest == typeof(AStarShortestPathAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(BellmanFordShortestPathAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(DagShortestPathAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(DijkstraShortestPathAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(UndirectedDijkstraShortestPathAlgorithm<,>):
+                    case var _ when _testedAlgorithm == typeof(AStarShortestPathAlgorithm<,>):
+                    case var _ when _testedAlgorithm == typeof(BellmanFordShortestPathAlgorithm<,>):
+                    case var _ when _testedAlgorithm == typeof(DagShortestPathAlgorithm<,>):
+                    case var _ when _testedAlgorithm == typeof(DijkstraShortestPathAlgorithm<,>):
+                    case var _ when _testedAlgorithm == typeof(UndirectedDijkstraShortestPathAlgorithm<,>):
                         return typeof(NullReferenceException);
-
-                    case var _ when _classUnderTest == typeof(BidirectionalDepthFirstSearchAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(BreadthFirstSearchAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(CyclePoppingRandomTreeAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(DepthFirstSearchAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(EdmondsKarpMaximumFlowAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(TSP<,,>):
-                    case var _ when _classUnderTest == typeof(UndirectedBreadthFirstSearchAlgorithm<,>):
-                    case var _ when _classUnderTest == typeof(UndirectedDepthFirstSearchAlgorithm<,>):
-                        return typeof(VertexNotFoundException);
-
-                    default:
-                        throw new AssertionException($"No test constructor known for {_classUnderTest}");
                 }
+
+                return typeof(VertexNotFoundException);
             }
+
+            #endregion
         }
 
         [Test]
@@ -98,15 +99,15 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario
             {
-                EdgesInGraph = new[] {new Edge<int>(1, 2)},
-                AccessibleVerticesFromRoot = new[] {2},
+                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = true
             };
 
-            var algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
+            IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
-            Assert.NotNull(algorithm.GetVertexColor(2));
+            Assert.IsNotNull(algorithm.GetVertexColor(2));
         }
 
         [Test]
@@ -114,69 +115,73 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario
             {
-                EdgesInGraph = new[] {new Edge<int>(1, 2)},
-                SingleVerticesInGraph = new[] {3},
-                AccessibleVerticesFromRoot = new[] {2},
+                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                SingleVerticesInGraph = new[] { 3 },
+                AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = true
             };
 
-            var algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
+            IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
-            Assert.NotNull(algorithm.GetVertexColor(3));
+            Assert.IsNotNull(algorithm.GetVertexColor(3));
         }
 
+        [Pure]
+        [NotNull]
         private IVertexColorizerAlgorithm<int> CreateAlgorithmAndMaybeDoComputation(
-            ContractScenario scenario)
+            [NotNull] ContractScenario scenario)
         {
-            var instantiateAlgorithm = GetAlgorithmInstantiator();
+            var instantiateAlgorithm = GetAlgorithmFactory();
             return instantiateAlgorithm(scenario);
         }
 
-        private Func<ContractScenario, IVertexColorizerAlgorithm<int>> GetAlgorithmInstantiator()
+        [Pure]
+        [NotNull]
+        private Func<ContractScenario, IVertexColorizerAlgorithm<int>> GetAlgorithmFactory()
         {
-            return _classUnderTest switch
+            return _testedAlgorithm switch
             {
-                _ when _classUnderTest == typeof(AStarShortestPathAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(AStarShortestPathAlgorithm<,>) =>
                     AStartShortestPathAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(BellmanFordShortestPathAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(BellmanFordShortestPathAlgorithm<,>) =>
                     BellmanFordShortestPathAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(BidirectionalDepthFirstSearchAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(BidirectionalDepthFirstSearchAlgorithm<,>) =>
                     BidirectionalDepthFirstSearchAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(BreadthFirstSearchAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(BreadthFirstSearchAlgorithm<,>) =>
                     BreadthFirstAlgorithmSearchTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(CyclePoppingRandomTreeAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(CyclePoppingRandomTreeAlgorithm<,>) =>
                     CyclePoppingRandomTreeAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(DagShortestPathAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(DagShortestPathAlgorithm<,>) =>
                     DagShortestPathAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(DepthFirstSearchAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(DepthFirstSearchAlgorithm<,>) =>
                     DepthFirstAlgorithmSearchTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(DijkstraShortestPathAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(DijkstraShortestPathAlgorithm<,>) =>
                     DijkstraShortestPathAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(EdmondsKarpMaximumFlowAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(EdmondsKarpMaximumFlowAlgorithm<,>) =>
                     EdmondsKarpMaximumFlowAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(TSP<,,>) =>
+                _ when _testedAlgorithm == typeof(TSP<,,>) =>
                     TSPTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(UndirectedBreadthFirstSearchAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(UndirectedBreadthFirstSearchAlgorithm<,>) =>
                     UndirectedBreadthFirstAlgorithmSearchTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(UndirectedDepthFirstSearchAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(UndirectedDepthFirstSearchAlgorithm<,>) =>
                     UndirectedDepthFirstAlgorithmSearchTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ when _classUnderTest == typeof(UndirectedDijkstraShortestPathAlgorithm<,>) =>
+                _ when _testedAlgorithm == typeof(UndirectedDijkstraShortestPathAlgorithm<,>) =>
                     UndirectedDijkstraShortestPathAlgorithmTests.CreateAlgorithmAndMaybeDoComputation,
 
-                _ => throw new AssertionException($"No test constructor known for {_classUnderTest}")
+                _ => throw new AssertionException($"No test constructor known for {_testedAlgorithm}.")
             };
         }
     }
