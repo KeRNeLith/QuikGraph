@@ -28,9 +28,13 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Serialization</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
+    <PackageReleaseNotes>➟ Release 2.4.0
 Updates:
-- Update package dependencies.</PackageReleaseNotes>
+- GraphML deserialization extensions now work on IMutableVertexAndEdgeSet rather than IMutableVertexAndEdgeListGraph (allow deserialization on undirected graph).
+- Update package dependencies.
+
+Misc:
+- Add target to reduce dependencies in some cases.</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization</PackageTags>
   </PropertyGroup>
 

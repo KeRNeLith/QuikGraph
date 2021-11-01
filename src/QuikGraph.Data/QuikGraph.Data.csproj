@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net35;netstandard2.0</TargetFrameworks>
@@ -28,7 +28,7 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Data</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
+    <PackageReleaseNotes>➟ Release 2.4.0
 Updates:
 - Update package dependencies.</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization Data</PackageTags>

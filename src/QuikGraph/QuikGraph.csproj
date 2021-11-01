@@ -34,23 +34,19 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
-Fixes:
-- Fix the serialization implementation of UndirectedGraph, ArrayUndirectedGraph and UndirectedBidirectionalGraph.
-- Fix A* implementation to also compute cost on tree edge.
-
+    <PackageReleaseNotes>➟ Release 2.4.0
 Updates:
-- Remove some serializable attributes from algorithms and predicates classes (homognization).
-- Remove serializable attributes from delegate graphs implementations.
-- All QuikGraph exceptions can be constructed with a custom message and an eventual inner exception.
-- CompressedSparseRowGraph also implements IEdgeListGraph interface.
-- EquateGraphs.Equate helpers now supports a wider range of graph comparisons.
+- Vertices and edges removal notifications from AdjacencyGraph, EdgeListGraph, BidirectionalGraph and UndirectedGraph are more consistent.
+
+Optims:
+- Optimize vertices and/or edges removal operations on AdjacencyGraph, BidirectionalGraph, BidirectionalMatrixGraph, ClusteredAdjacencyGraph and UndirectedGraph.
 
 New:
-- Add the IDistancesCollection to interface the distance information retrieval from shortest path algorithms. Legacy accesses to distances are marked as obsolete.
+- Expose a Prim relaxer.
 
 Misc:
-- Remove the dependency to System.Collections.NonGeneric for .NET Standard 1.3 target.</PackageReleaseNotes>
+- Improve library documentation related to raisable exceptions.
+- Remove the dependency to System.Reflection.TypeExtensions for .NET Standard 1.3 target.</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET</PackageTags>
   </PropertyGroup>
 

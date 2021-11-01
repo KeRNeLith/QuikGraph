@@ -28,15 +28,15 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Graphviz</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.1
+    <PackageReleaseNotes>➟ Release 2.4.0
 Fixes:
-- Properly treat common vertex format when converting a graph to Graphviz.
+- Fix the conversion to Graphviz from delegate graph implementations.
+
+Optims:
+- Slight optimizations.
 
 Updates:
-- Label has priority if set over Record on GraphvizVertex.
-
-New:
-- Add support of HTML labels.</PackageReleaseNotes>
+- Update package dependencies.</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization Graphviz</PackageTags>
   </PropertyGroup>
 
