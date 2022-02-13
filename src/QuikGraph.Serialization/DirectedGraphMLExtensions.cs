@@ -12,6 +12,7 @@ namespace QuikGraph.Serialization
     /// <summary>
     /// Directed graph Markup Language extensions.
     /// </summary>
+    [CLSCompliant(false)]
     public static class DirectedGraphMLExtensions
     {
         [CanBeNull]
