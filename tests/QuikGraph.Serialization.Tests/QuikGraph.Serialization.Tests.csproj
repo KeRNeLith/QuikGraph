@@ -60,6 +60,7 @@
 
   <!-- Dependencies -->
   <!-- Shared Projects -->
+  <Import Project="..\..\src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
   <Import Project="..\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems" Label="Shared" />
 
   <!-- QuikGraph.Serialization reference -->

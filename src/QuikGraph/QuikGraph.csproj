@@ -67,4 +67,8 @@ Misc:
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+
+  <!-- Dependencies -->
+  <!-- Shared Projects -->
+  <Import Project="..\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
 </Project>
