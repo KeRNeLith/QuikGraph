@@ -24,9 +24,6 @@
   </ItemGroup>
 
   <!-- Dependencies -->
-  <!-- Shared Projects -->
-  <Import Project="QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
-
   <!-- Source Link -->
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />

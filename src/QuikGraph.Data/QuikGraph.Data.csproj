@@ -45,6 +45,9 @@ Updates:
   </PropertyGroup>
 
   <!-- Dependencies -->
+  <!-- Shared Projects -->
+  <Import Project="..\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
+
   <!-- QuikGraph.Graphviz reference -->
   <ItemGroup Condition="$(UseQuikGraphGraphvizNuget)">
     <PackageReference Include="QuikGraph.Graphviz" Version="2.3.0" />

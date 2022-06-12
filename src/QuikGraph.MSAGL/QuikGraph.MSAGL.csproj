@@ -50,6 +50,9 @@ Updates:
     <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.11" />
   </ItemGroup>
 
+  <!-- Shared Projects -->
+  <Import Project="..\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
+
   <!-- QuikGraph reference -->
   <ItemGroup Condition="$(UseQuikGraphCoreNuget)">
     <PackageReference Include="QuikGraph" Version="2.3.0" />

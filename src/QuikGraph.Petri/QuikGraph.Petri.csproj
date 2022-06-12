@@ -53,6 +53,9 @@ Updates:
   </PropertyGroup>
 
   <!-- Dependencies -->
+  <!-- Shared Projects -->
+  <Import Project="..\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
+
   <!-- QuikGraph reference -->
   <ItemGroup Condition="$(UseQuikGraphCoreNuget)">
     <PackageReference Include="QuikGraph" Version="2.3.0" />

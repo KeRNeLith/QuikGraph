@@ -76,4 +76,8 @@ Misc:
     <AssemblyTitle>QuikGraph .NET Standard 2.0</AssemblyTitle>
     <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+
+  <!-- Dependencies -->
+  <!-- Shared Projects -->
+  <Import Project="..\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems" Label="Shared" />
 </Project>
