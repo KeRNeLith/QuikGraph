@@ -1,10 +1,7 @@
-﻿#if SUPPORTS_SERIALIZATION || SUPPORTS_CLONEABLE
+﻿#if SUPPORTS_CLONEABLE
 using System;
 #endif
 using System.Collections.Generic;
-#if SUPPORTS_SERIALIZATION
-using System.Runtime.Serialization;
-#endif
 using JetBrains.Annotations;
 
 namespace QuikGraph.Collections
@@ -14,9 +11,6 @@ namespace QuikGraph.Collections
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class VertexEdgeDictionary<TVertex, TEdge>
         : Dictionary<TVertex, IEdgeList<TVertex, TEdge>>
         , IVertexEdgeDictionary<TVertex, TEdge>
@@ -38,13 +32,6 @@ namespace QuikGraph.Collections
             : base(capacity)
         {
         }
-
-#if SUPPORTS_SERIALIZATION
-        private VertexEdgeDictionary(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-#endif
 
         #region ICloneable
 

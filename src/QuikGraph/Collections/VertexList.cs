@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_SERIALIZATION || SUPPORTS_CLONEABLE
+﻿#if SUPPORTS_CLONEABLE
 using System;
 #endif
 using System.Collections.Generic;
@@ -10,9 +10,6 @@ namespace QuikGraph.Collections
     /// Stores a list of vertices.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class VertexList<TVertex> : List<TVertex>
 #if SUPPORTS_CLONEABLE
         , ICloneable
