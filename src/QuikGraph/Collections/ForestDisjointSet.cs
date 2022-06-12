@@ -9,9 +9,6 @@ namespace QuikGraph.Collections
     /// Disjoint-set implementation with path compression and union-by-rank optimizations.
     /// </summary>
     /// <typeparam name="T">Element type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class ForestDisjointSet<T> : IDisjointSet<T>
     {
 #if DEBUG

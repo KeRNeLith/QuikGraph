@@ -12,9 +12,6 @@ namespace QuikGraph.Collections
     /// </summary>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <typeparam name="TPriority">Priority metric type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed class FibonacciHeap<TPriority, TValue> : IEnumerable<KeyValuePair<TPriority, TValue>>
     {
