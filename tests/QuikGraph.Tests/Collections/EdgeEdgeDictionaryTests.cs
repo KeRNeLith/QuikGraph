@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
 using static QuikGraph.Tests.SerializationTestHelpers;
@@ -18,22 +18,6 @@ namespace QuikGraph.Tests.Collections
             Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>());
             Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
-        }
-
-        [Test]
-        public void Serialization()
-        {
-            var dictionary = new EdgeEdgeDictionary<int, EquatableEdge<int>>();
-
-            EdgeEdgeDictionary<int, EquatableEdge<int>> deserializedDictionary = SerializeAndDeserialize(dictionary);
-            Assert.AreNotSame(dictionary, deserializedDictionary);
-            CollectionAssert.IsEmpty(deserializedDictionary);
-
-            dictionary.Add(new EquatableEdge<int>(1, 2), new EquatableEdge<int>(2, 3));
-            dictionary.Add(new EquatableEdge<int>(2, 3), new EquatableEdge<int>(3, 4));
-            deserializedDictionary = SerializeAndDeserialize(dictionary);
-            Assert.AreNotSame(dictionary, deserializedDictionary);
-            CollectionAssert.AreEqual(dictionary, deserializedDictionary);
         }
 
         [Test]
