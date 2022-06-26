@@ -23,9 +23,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -72,7 +69,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string zoomLevelField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Node", IsNullable = false)]
+        [XmlArrayItem("Node", IsNullable = false)]
         public DirectedGraphNode[] Nodes
         {
             get
@@ -86,7 +83,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Link", IsNullable = false)]
+        [XmlArrayItem("Link", IsNullable = false)]
         public DirectedGraphLink[] Links
         {
             get
@@ -100,7 +97,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Category", IsNullable = false)]
+        [XmlArrayItem("Category", IsNullable = false)]
         public DirectedGraphCategory[] Categories
         {
             get
@@ -114,7 +111,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Property", IsNullable = false)]
+        [XmlArrayItem("Property", IsNullable = false)]
         public DirectedGraphProperty[] Properties
         {
             get
@@ -128,7 +125,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Name", IsNullable = false)]
+        [XmlArrayItem("Name", IsNullable = false)]
         public DirectedGraphName[] QualifiedNames
         {
             get
@@ -142,7 +139,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Alias", IsNullable = false)]
+        [XmlArrayItem("Alias", IsNullable = false)]
         public DirectedGraphAlias[] IdentifierAliases
         {
             get
@@ -156,7 +153,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Style", IsNullable = false)]
+        [XmlArrayItem("Style", IsNullable = false)]
         public DirectedGraphStyle[] Styles
         {
             get
@@ -170,7 +167,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Path", IsNullable = false)]
+        [XmlArrayItem("Path", IsNullable = false)]
         public DirectedGraphPath[] Paths
         {
             get
@@ -184,7 +181,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Title
         {
             get
@@ -198,7 +195,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Background
         {
             get
@@ -212,7 +209,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string BackgroundImage
         {
             get
@@ -226,7 +223,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public GraphDirectionEnum GraphDirection
         {
             get
@@ -240,7 +237,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool GraphDirectionSpecified
         {
             get
@@ -254,7 +251,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public LayoutEnum Layout
         {
             get
@@ -268,7 +265,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool LayoutSpecified
         {
             get
@@ -282,7 +279,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean ButterflyMode
         {
             get
@@ -296,7 +293,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool ButterflyModeSpecified
         {
             get
@@ -310,7 +307,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "integer")]
+        [XmlAttribute(DataType = "integer")]
         public string NeighborhoodDistance
         {
             get
@@ -324,7 +321,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string ZoomLevel
         {
             get
@@ -341,9 +338,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -637,7 +631,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string codeSchemaProperty_StatementTypeField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Category")]
+        [XmlElement("Category")]
         public DirectedGraphNodeCategory[] Category
         {
             get
@@ -651,7 +645,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -665,7 +659,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute("Category")]
+        [XmlAttribute("Category")]
         public string Category1
         {
             get
@@ -679,7 +673,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Icon
         {
             get
@@ -693,7 +687,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Shape
         {
             get
@@ -707,7 +701,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Style
         {
             get
@@ -721,7 +715,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public HorizontalAlignmentEnum HorizontalAlignment
         {
             get
@@ -735,7 +729,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool HorizontalAlignmentSpecified
         {
             get
@@ -749,7 +743,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public VerticalAlignmentEnum VerticalAlignment
         {
             get
@@ -763,7 +757,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool VerticalAlignmentSpecified
         {
             get
@@ -777,7 +771,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Description
         {
             get
@@ -791,7 +785,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public GroupEnum Group
         {
             get
@@ -805,7 +799,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool GroupSpecified
         {
             get
@@ -819,7 +813,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsVertical
         {
             get
@@ -833,7 +827,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsVerticalSpecified
         {
             get
@@ -847,7 +841,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Reference
         {
             get
@@ -861,7 +855,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Label
         {
             get
@@ -875,7 +869,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public VisibilityEnum Visibility
         {
             get
@@ -889,7 +883,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool VisibilitySpecified
         {
             get
@@ -903,7 +897,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Background
         {
             get
@@ -917,7 +911,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public double FontSize
         {
             get
@@ -931,7 +925,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontSizeSpecified
         {
             get
@@ -945,7 +939,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string FontFamily
         {
             get
@@ -959,7 +953,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontStyleEnum FontStyle
         {
             get
@@ -973,7 +967,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontStyleSpecified
         {
             get
@@ -987,7 +981,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontWeightEnum FontWeight
         {
             get
@@ -1001,7 +995,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontWeightSpecified
         {
             get
@@ -1015,7 +1009,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Access
         {
             get
@@ -1029,7 +1023,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Assembly
         {
             get
@@ -1043,7 +1037,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string FilePath
         {
             get
@@ -1057,7 +1051,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string FunctionTypeFlags
         {
             get
@@ -1071,7 +1065,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsAbstract
         {
             get
@@ -1085,7 +1079,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsAbstractSpecified
         {
             get
@@ -1099,7 +1093,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsCodeType
         {
             get
@@ -1113,7 +1107,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsCodeTypeSpecified
         {
             get
@@ -1127,7 +1121,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsHub
         {
             get
@@ -1141,7 +1135,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsHubSpecified
         {
             get
@@ -1155,7 +1149,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsOverloaded
         {
             get
@@ -1169,7 +1163,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsOverloadedSpecified
         {
             get
@@ -1183,7 +1177,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsOverridable
         {
             get
@@ -1197,7 +1191,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsOverridableSpecified
         {
             get
@@ -1211,7 +1205,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Language
         {
             get
@@ -1225,7 +1219,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Location
         {
             get
@@ -1239,7 +1233,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int LinesOfCode
         {
             get
@@ -1253,7 +1247,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool LinesOfCodeSpecified
         {
             get
@@ -1267,7 +1261,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Namespace
         {
             get
@@ -1281,7 +1275,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string MustImplement
         {
             get
@@ -1295,7 +1289,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string TypeName
         {
             get
@@ -1309,7 +1303,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsDocumentation
         {
             get
@@ -1323,7 +1317,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsDocumentationSpecified
         {
             get
@@ -1337,7 +1331,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeGenSourceName
         {
             get
@@ -1351,7 +1345,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeGenTargetName
         {
             get
@@ -1365,7 +1359,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeGenIncoming
         {
             get
@@ -1379,7 +1373,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeGenIncomingSpecified
         {
             get
@@ -1393,7 +1387,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_CallSequenceNumber
         {
             get
@@ -1407,7 +1401,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_CallSequenceNumberSpecified
         {
             get
@@ -1421,7 +1415,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_DisableEnabledErrorHandler
         {
             get
@@ -1435,7 +1429,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_DisableEnabledErrorHandlerSpecified
         {
             get
@@ -1449,7 +1443,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_DisableEnabledException
         {
             get
@@ -1463,7 +1457,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_DisableEnabledExceptionSpecified
         {
             get
@@ -1477,7 +1471,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_EndColumn
         {
             get
@@ -1491,7 +1485,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_EndColumnSpecified
         {
             get
@@ -1505,7 +1499,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_EndLine
         {
             get
@@ -1519,7 +1513,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_EndLineSpecified
         {
             get
@@ -1533,7 +1527,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_FrameDepth
         {
             get
@@ -1547,7 +1541,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_FrameDepthSpecified
         {
             get
@@ -1561,7 +1555,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FrameKindEnum CodeSchemaProperty_FrameKind
         {
             get
@@ -1575,7 +1569,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_FrameKindSpecified
         {
             get
@@ -1589,7 +1583,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeSchemaProperty_Icon
         {
             get
@@ -1603,7 +1597,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeSchemaProperty_InstanceTrackingInformation
         {
             get
@@ -1617,7 +1611,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsAbstract
         {
             get
@@ -1631,7 +1625,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsAbstractSpecified
         {
             get
@@ -1645,7 +1639,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsAnonymous
         {
             get
@@ -1659,7 +1653,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsAnonymousSpecified
         {
             get
@@ -1673,7 +1667,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsArray
         {
             get
@@ -1687,7 +1681,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsArraySpecified
         {
             get
@@ -1701,7 +1695,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsByReference
         {
             get
@@ -1715,7 +1709,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsByReferenceSpecified
         {
             get
@@ -1729,7 +1723,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsCallToThis
         {
             get
@@ -1743,7 +1737,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsCallToThisSpecified
         {
             get
@@ -1757,7 +1751,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsConstructor
         {
             get
@@ -1771,7 +1765,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsConstructorSpecified
         {
             get
@@ -1785,7 +1779,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsDo
         {
             get
@@ -1799,7 +1793,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsDoSpecified
         {
             get
@@ -1813,7 +1807,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsFinal
         {
             get
@@ -1827,7 +1821,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsFinalSpecified
         {
             get
@@ -1841,7 +1835,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsFor
         {
             get
@@ -1855,7 +1849,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsForSpecified
         {
             get
@@ -1869,7 +1863,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsForEach
         {
             get
@@ -1883,7 +1877,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsForEachSpecified
         {
             get
@@ -1897,7 +1891,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsGeneric
         {
             get
@@ -1911,7 +1905,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsGenericSpecified
         {
             get
@@ -1925,7 +1919,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsGenericInstance
         {
             get
@@ -1939,7 +1933,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsGenericInstanceSpecified
         {
             get
@@ -1953,7 +1947,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsInternal
         {
             get
@@ -1967,7 +1961,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsInternalSpecified
         {
             get
@@ -1981,7 +1975,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsHideBySignature
         {
             get
@@ -1995,7 +1989,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsHideBySignatureSpecified
         {
             get
@@ -2009,7 +2003,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsOperator
         {
             get
@@ -2023,7 +2017,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsOperatorSpecified
         {
             get
@@ -2037,7 +2031,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsOut
         {
             get
@@ -2051,7 +2045,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsOutSpecified
         {
             get
@@ -2065,7 +2059,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsParameterArray
         {
             get
@@ -2079,7 +2073,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsParameterArraySpecified
         {
             get
@@ -2093,7 +2087,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsPrivate
         {
             get
@@ -2107,7 +2101,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsPrivateSpecified
         {
             get
@@ -2121,7 +2115,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsProtected
         {
             get
@@ -2135,7 +2129,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsProtectedSpecified
         {
             get
@@ -2149,7 +2143,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsProtectedOrInternal
         {
             get
@@ -2163,7 +2157,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsProtectedOrInternalSpecified
         {
             get
@@ -2177,7 +2171,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsPropertyGet
         {
             get
@@ -2191,7 +2185,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsPropertyGetSpecified
         {
             get
@@ -2205,7 +2199,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsPropertySet
         {
             get
@@ -2219,7 +2213,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsPropertySetSpecified
         {
             get
@@ -2233,7 +2227,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsPrototype
         {
             get
@@ -2247,7 +2241,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsPrototypeSpecified
         {
             get
@@ -2261,7 +2255,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsPublic
         {
             get
@@ -2275,7 +2269,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsPublicSpecified
         {
             get
@@ -2289,7 +2283,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsSpecialName
         {
             get
@@ -2303,7 +2297,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsSpecialNameSpecified
         {
             get
@@ -2317,7 +2311,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsStatic
         {
             get
@@ -2331,7 +2325,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsStaticSpecified
         {
             get
@@ -2345,7 +2339,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsUntilLoop
         {
             get
@@ -2359,7 +2353,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsUntilLoopSpecified
         {
             get
@@ -2373,7 +2367,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsVirtual
         {
             get
@@ -2387,7 +2381,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsVirtualSpecified
         {
             get
@@ -2401,7 +2395,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_IsWhile
         {
             get
@@ -2415,7 +2409,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_IsWhileSpecified
         {
             get
@@ -2429,7 +2423,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_PreserveData
         {
             get
@@ -2443,7 +2437,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_PreserveDataSpecified
         {
             get
@@ -2457,7 +2451,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_SingleInstanceSourceLink
         {
             get
@@ -2471,7 +2465,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_SingleInstanceSourceLinkSpecified
         {
             get
@@ -2485,7 +2479,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean CodeSchemaProperty_SingleInstanceTargetLink
         {
             get
@@ -2499,7 +2493,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_SingleInstanceTargetLinkSpecified
         {
             get
@@ -2513,7 +2507,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeSchemaProperty_SourceText
         {
             get
@@ -2527,7 +2521,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_StartColumn
         {
             get
@@ -2541,7 +2535,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_StartColumnSpecified
         {
             get
@@ -2555,7 +2549,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_StartLine
         {
             get
@@ -2569,7 +2563,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_StartLineSpecified
         {
             get
@@ -2583,7 +2577,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeSchemaProperty_StatementKind
         {
             get
@@ -2597,7 +2591,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public int CodeSchemaProperty_StatementNumber
         {
             get
@@ -2611,7 +2605,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool CodeSchemaProperty_StatementNumberSpecified
         {
             get
@@ -2625,7 +2619,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CodeSchemaProperty_StatementType
         {
             get
@@ -2642,9 +2636,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -2654,7 +2645,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string refField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Ref
         {
             get
@@ -2670,9 +2661,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum HorizontalAlignmentEnum
     {
@@ -2689,9 +2677,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum VerticalAlignmentEnum
     {
@@ -2708,9 +2693,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum GroupEnum
     {
@@ -2725,9 +2707,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum ClrBoolean
     {
@@ -2747,9 +2726,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum VisibilityEnum
     {
@@ -2766,9 +2742,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum FontStyleEnum
     {
@@ -2785,9 +2758,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum FontWeightEnum
     {
@@ -2843,9 +2813,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum FrameKindEnum
     {
@@ -2866,9 +2833,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -2918,7 +2882,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private bool attractConsumersFieldSpecified;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Category")]
+        [XmlElement("Category")]
         public DirectedGraphLinkCategory[] Category
         {
             get
@@ -2932,7 +2896,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Label
         {
             get
@@ -2946,7 +2910,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public VisibilityEnum Visibility
         {
             get
@@ -2960,7 +2924,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool VisibilitySpecified
         {
             get
@@ -2974,7 +2938,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Background
         {
             get
@@ -2988,7 +2952,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public double FontSize
         {
             get
@@ -3002,7 +2966,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontSizeSpecified
         {
             get
@@ -3016,7 +2980,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string FontFamily
         {
             get
@@ -3030,7 +2994,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontStyleEnum FontStyle
         {
             get
@@ -3044,7 +3008,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontStyleSpecified
         {
             get
@@ -3058,7 +3022,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontWeightEnum FontWeight
         {
             get
@@ -3072,7 +3036,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontWeightSpecified
         {
             get
@@ -3086,7 +3050,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Source
         {
             get
@@ -3100,7 +3064,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Target
         {
             get
@@ -3114,7 +3078,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute("Category")]
+        [XmlAttribute("Category")]
         public string Category1
         {
             get
@@ -3128,7 +3092,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Stroke
         {
             get
@@ -3142,7 +3106,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string StrokeDashArray
         {
             get
@@ -3156,7 +3120,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean Seeder
         {
             get
@@ -3170,7 +3134,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool SeederSpecified
         {
             get
@@ -3184,7 +3148,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean AttractConsumers
         {
             get
@@ -3198,7 +3162,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool AttractConsumersSpecified
         {
             get
@@ -3215,9 +3179,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -3227,7 +3188,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string refField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Ref
         {
             get
@@ -3244,9 +3205,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -3332,7 +3290,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string outboundNameField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -3346,7 +3304,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string BasedOn
         {
             get
@@ -3360,7 +3318,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Label
         {
             get
@@ -3374,7 +3332,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public VisibilityEnum Visibility
         {
             get
@@ -3388,7 +3346,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool VisibilitySpecified
         {
             get
@@ -3402,7 +3360,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Background
         {
             get
@@ -3416,7 +3374,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public double FontSize
         {
             get
@@ -3430,7 +3388,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontSizeSpecified
         {
             get
@@ -3444,7 +3402,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string FontFamily
         {
             get
@@ -3458,7 +3416,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontStyleEnum FontStyle
         {
             get
@@ -3472,7 +3430,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontStyleSpecified
         {
             get
@@ -3486,7 +3444,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public FontWeightEnum FontWeight
         {
             get
@@ -3500,7 +3458,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool FontWeightSpecified
         {
             get
@@ -3514,7 +3472,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Icon
         {
             get
@@ -3528,7 +3486,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Shape
         {
             get
@@ -3542,7 +3500,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Style
         {
             get
@@ -3556,7 +3514,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public HorizontalAlignmentEnum HorizontalAlignment
         {
             get
@@ -3570,7 +3528,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool HorizontalAlignmentSpecified
         {
             get
@@ -3584,7 +3542,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public VerticalAlignmentEnum VerticalAlignment
         {
             get
@@ -3598,7 +3556,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool VerticalAlignmentSpecified
         {
             get
@@ -3612,7 +3570,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Stroke
         {
             get
@@ -3626,7 +3584,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string StrokeDashArray
         {
             get
@@ -3640,7 +3598,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CanLinkedNodesBeDataDriven
         {
             get
@@ -3654,7 +3612,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string CanBeDataDriven
         {
             get
@@ -3668,7 +3626,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string DefaultAction
         {
             get
@@ -3682,7 +3640,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string IncomingActionLabel
         {
             get
@@ -3696,7 +3654,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsProviderRoot
         {
             get
@@ -3710,7 +3668,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsProviderRootSpecified
         {
             get
@@ -3724,7 +3682,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsContainment
         {
             get
@@ -3738,7 +3696,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsContainmentSpecified
         {
             get
@@ -3752,7 +3710,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsTag
         {
             get
@@ -3766,7 +3724,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsTagSpecified
         {
             get
@@ -3780,7 +3738,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string NavigationActionLabel
         {
             get
@@ -3794,7 +3752,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string OutgoingActionLabel
         {
             get
@@ -3808,7 +3766,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string SourceCategory
         {
             get
@@ -3822,7 +3780,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string TargetCategory
         {
             get
@@ -3836,7 +3794,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Details
         {
             get
@@ -3850,7 +3808,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string InboundName
         {
             get
@@ -3864,7 +3822,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string OutboundName
         {
             get
@@ -3881,9 +3839,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -3907,7 +3862,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string referenceTemplateField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -3921,7 +3876,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsReference
         {
             get
@@ -3935,7 +3890,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsReferenceSpecified
         {
             get
@@ -3949,7 +3904,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Label
         {
             get
@@ -3963,7 +3918,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string DataType
         {
             get
@@ -3977,7 +3932,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Description
         {
             get
@@ -3991,7 +3946,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Group
         {
             get
@@ -4005,7 +3960,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string ReferenceTemplate
         {
             get
@@ -4022,9 +3977,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -4040,7 +3992,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string formatterField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -4054,7 +4006,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Label
         {
             get
@@ -4068,7 +4020,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string ValueType
         {
             get
@@ -4082,7 +4034,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Formatter
         {
             get
@@ -4099,9 +4051,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -4115,7 +4064,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string idField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public byte n
         {
             get
@@ -4129,7 +4078,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Uri
         {
             get
@@ -4143,7 +4092,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -4160,9 +4109,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -4199,7 +4145,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Setter")]
+        [XmlElement("Setter")]
         public DirectedGraphStyleSetter[] Setter
         {
             get
@@ -4213,7 +4159,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public TargetTypeEnum TargetType
         {
             get
@@ -4227,7 +4173,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public ClrBoolean IsEnabled
         {
             get
@@ -4241,7 +4187,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        [XmlIgnore]
         public bool IsEnabledSpecified
         {
             get
@@ -4255,7 +4201,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string GroupLabel
         {
             get
@@ -4269,7 +4215,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string ValueLabel
         {
             get
@@ -4283,7 +4229,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string ToolTip
         {
             get
@@ -4300,19 +4246,15 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public partial class DirectedGraphStyleCondition
     {
-
         private string expressionField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Expression
         {
             get
@@ -4329,9 +4271,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -4345,7 +4284,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string expressionField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public PropertyType Property
         {
             get
@@ -4359,7 +4298,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Value
         {
             get
@@ -4373,7 +4312,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Expression
         {
             get
@@ -4389,9 +4328,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum PropertyType
     {
@@ -4453,9 +4389,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum TargetTypeEnum
     {
@@ -4470,9 +4403,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
     /// <remarks/>
     [CLSCompliant(false)]
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerStepThrough]
     [DesignerCategoryAttribute("code")]
     [XmlType(AnonymousType = true, Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
@@ -4484,7 +4414,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         private string valueField;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Id
         {
             get
@@ -4498,7 +4428,7 @@ namespace QuikGraph.Serialization.DirectedGraphML
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [XmlAttribute]
         public string Value
         {
             get
@@ -4514,9 +4444,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum GraphDirectionEnum
     {
@@ -4536,9 +4463,6 @@ namespace QuikGraph.Serialization.DirectedGraphML
 
     /// <remarks/>
     [GeneratedCode("xsd", "4.0.21006.1")]
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlType(Namespace = "http://schemas.microsoft.com/vs/2009/dgml")]
     public enum LayoutEnum
     {
