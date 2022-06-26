@@ -1,7 +1,4 @@
-﻿#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using JetBrains.Annotations;
 using QuikGraph.Graphviz.Dot;
 
@@ -10,9 +7,6 @@ namespace QuikGraph.Graphviz
     /// <summary>
     /// Arguments of an event related to the formatting of an edge.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class FormatEdgeEventArgs<TVertex, TEdge> : EdgeEventArgs<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {

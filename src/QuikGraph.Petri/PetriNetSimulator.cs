@@ -9,13 +9,11 @@ namespace QuikGraph.Petri
     /// Petri Net simulator.
     /// </summary>
     /// <typeparam name="TToken">Token type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class PetriNetSimulator<TToken>
     {
         [NotNull]
-        private Dictionary<ITransition<TToken>, TransitionBuffer> _transitionBuffers = new Dictionary<ITransition<TToken>, TransitionBuffer>();
+        private readonly Dictionary<ITransition<TToken>, TransitionBuffer> _transitionBuffers =
+            new Dictionary<ITransition<TToken>, TransitionBuffer>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PetriNetSimulator{TToken}"/> class.

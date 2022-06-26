@@ -11,9 +11,6 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz edge.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class GraphvizEdge
     {
         /// <summary>

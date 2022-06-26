@@ -12,9 +12,6 @@ namespace QuikGraph.Serialization
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
     /// <typeparam name="TGraph">Graph type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [XmlRoot("graph")]
     public class XmlSerializableGraph<TVertex, TEdge, TGraph>
         where TEdge : IEdge<TVertex>
@@ -78,9 +75,6 @@ namespace QuikGraph.Serialization
         /// <summary>
         /// Represents an XML serializable list of vertices.
         /// </summary>
-#if SUPPORTS_SERIALIZATION
-        [Serializable]
-#endif
         public class XmlVertexList : IEnumerable<TVertex>
         {
             [NotNull]
@@ -127,9 +121,6 @@ namespace QuikGraph.Serialization
         /// <summary>
         /// Represents an XML serializable list of edge.
         /// </summary>
-#if SUPPORTS_SERIALIZATION
-        [Serializable]
-#endif
         public class XmlEdgeList : IEnumerable<TEdge>
         {
             [NotNull]

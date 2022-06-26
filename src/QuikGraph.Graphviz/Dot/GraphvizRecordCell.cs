@@ -8,9 +8,6 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz record cell.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class GraphvizRecordCell
     {
         [NotNull, ItemNotNull]

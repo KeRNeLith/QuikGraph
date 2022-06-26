@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
@@ -65,10 +65,7 @@ namespace QuikGraph.Serialization.Tests
     /// <see cref="INotifyPropertyChanged"/> allows properties of the <see cref="Person"/> class to
     /// participate as source in data bindings.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
-    public sealed class Person : INotifyPropertyChanged, IEquatable<Person>, IDataErrorInfo
+    public class Person : INotifyPropertyChanged, IEquatable<Person>, IDataErrorInfo
     {
         #region Fields and Constants
 

@@ -12,9 +12,6 @@ namespace QuikGraph.Algorithms
     /// <remarks>Requires a starting vertex (root) and an ending vertex (target).</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TGraph">Graph type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public abstract class RootedSearchAlgorithmBase<TVertex, TGraph> : RootedAlgorithmBase<TVertex, TGraph>
         where TGraph : IImplicitVertexSet<TVertex>
     {

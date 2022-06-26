@@ -6,9 +6,6 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz layer.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class GraphvizLayer
     {
         /// <summary>

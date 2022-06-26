@@ -10,9 +10,6 @@ namespace QuikGraph.Algorithms.Observers
     /// Recorder of vertices discover timestamps.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class VertexTimeStamperObserver<TVertex> : IObserver<IVertexTimeStamperAlgorithm<TVertex>>
     {
         private int _currentTime;

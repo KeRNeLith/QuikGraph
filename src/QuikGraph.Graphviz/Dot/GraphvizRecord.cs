@@ -7,9 +7,6 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz record.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class GraphvizRecord
     {
         [NotNull, ItemNotNull]

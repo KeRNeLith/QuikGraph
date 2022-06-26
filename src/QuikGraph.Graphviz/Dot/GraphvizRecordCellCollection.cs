@@ -1,7 +1,4 @@
-﻿#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using JetBrains.Annotations;
 
@@ -10,9 +7,6 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz record cell collection.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class GraphvizRecordCellCollection : Collection<GraphvizRecordCell>
     {
         /// <summary>

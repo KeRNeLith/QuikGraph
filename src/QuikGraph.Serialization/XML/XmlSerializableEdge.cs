@@ -1,7 +1,4 @@
-#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace QuikGraph.Serialization
 {
@@ -9,9 +6,6 @@ namespace QuikGraph.Serialization
     /// XML serializable edge class.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class XmlSerializableEdge<TVertex> : IEdge<TVertex>
     {
         /// <inheritdoc />

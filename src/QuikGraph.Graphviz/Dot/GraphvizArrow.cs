@@ -1,7 +1,4 @@
-#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-using System.Text;
+﻿using System.Text;
 using JetBrains.Annotations;
 
 namespace QuikGraph.Graphviz.Dot
@@ -10,9 +7,6 @@ namespace QuikGraph.Graphviz.Dot
     /// Graphviz arrow.
     /// <see href="https://www.graphviz.org/doc/info/arrows.html">See more</see>
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class GraphvizArrow
     {
         /// <summary>
