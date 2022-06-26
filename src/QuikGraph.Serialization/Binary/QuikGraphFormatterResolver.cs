@@ -46,7 +46,7 @@ namespace QuikGraph.Serialization
         // GetFormatter<T>'s get cost should be minimized so use type cache.
         private static class FormatterCache<T>
         {
-            [NotNull]
+            [CanBeNull]
             public static readonly IMessagePackFormatter<T> Formatter;
 
             static FormatterCache()

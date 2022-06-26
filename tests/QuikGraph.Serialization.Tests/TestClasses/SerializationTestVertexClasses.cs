@@ -9,9 +9,6 @@ namespace QuikGraph.Serialization.Tests
 {
     #region Test classes
 
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class TestVertex
     {
         public TestVertex([NotNull] string id)
@@ -54,9 +51,6 @@ namespace QuikGraph.Serialization.Tests
         public IList<int> IntIList { get; set; }
     }
 
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class EquatableTestVertex : TestVertex, IEquatable<EquatableTestVertex>
     {
         public EquatableTestVertex([NotNull] string id)
@@ -109,9 +103,6 @@ namespace QuikGraph.Serialization.Tests
         }
     }
 
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class EquatableAdditionalDataTestVertex : EquatableTestVertex, IEquatable<EquatableAdditionalDataTestVertex>
     {
         public EquatableAdditionalDataTestVertex([NotNull] string id, double data)
