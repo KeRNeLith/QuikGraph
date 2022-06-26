@@ -1,4 +1,5 @@
-﻿using System;
+#if SUPPORTS_GRAPHS_SERIALIZATION
+using System;
 using System.IO;
 using JetBrains.Annotations;
 using NUnit.Framework;
@@ -296,3 +297,4 @@ namespace QuikGraph.Serialization.Tests
         }
     }
 }
+#endif

@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_GRAPHS_SERIALIZATION
+﻿#if SUPPORTS_GRAPHML_GRAPH_SERIALIZATION
 using System;
 using System.Collections.Generic;
 using System.Linq;

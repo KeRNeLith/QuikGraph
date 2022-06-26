@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_GRAPHS_SERIALIZATION
+﻿#if SUPPORTS_GRAPHML_GRAPH_SERIALIZATION && SUPPORTS_XML_DTD_PROCESSING
 using System;
 using System.Net;
 using System.Xml;
@@ -33,13 +33,6 @@ namespace QuikGraph.Serialization
         {
             _baseResolver = baseResolver ?? throw new ArgumentNullException(nameof(baseResolver));
         }
-
-        /// <summary>
-        /// Graph ML XML namespace.
-        /// </summary>
-        [NotNull]
-        // ReSharper disable once InconsistentNaming
-        public const string GraphMLNamespace = "http://graphml.graphdrawing.org/xmlns";
 
         /// <inheritdoc />
         public override ICredentials Credentials

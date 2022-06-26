@@ -34,7 +34,28 @@ Updates:
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard1.3'">
+  <!-- Supported serialization -->
+  <PropertyGroup>
+    <SUPPORTS_SERIALIZATION></SUPPORTS_SERIALIZATION>
+    <SUPPORTS_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_SERIALIZATION</SUPPORTS_SERIALIZATION>
+
+    <SUPPORTS_BINARY_GRAPH_SERIALIZATION></SUPPORTS_BINARY_GRAPH_SERIALIZATION>
+    <SUPPORTS_BINARY_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_BINARY_GRAPH_SERIALIZATION</SUPPORTS_BINARY_GRAPH_SERIALIZATION>
+
+    <SUPPORTS_XML_DTD_PROCESSING></SUPPORTS_XML_DTD_PROCESSING>
+    <SUPPORTS_XML_DTD_PROCESSING Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_XML_DTD_PROCESSING</SUPPORTS_XML_DTD_PROCESSING>
+
+    <SUPPORTS_XML_GRAPH_SERIALIZATION></SUPPORTS_XML_GRAPH_SERIALIZATION>
+    <SUPPORTS_XML_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='netstandard1.3'">SUPPORTS_XML_GRAPH_SERIALIZATION</SUPPORTS_XML_GRAPH_SERIALIZATION>
+
+    <SUPPORTS_GRAPHML_GRAPH_SERIALIZATION></SUPPORTS_GRAPHML_GRAPH_SERIALIZATION>
+    <SUPPORTS_GRAPHML_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='netstandard1.3'">SUPPORTS_GRAPHML_GRAPH_SERIALIZATION</SUPPORTS_GRAPHML_GRAPH_SERIALIZATION>
+
+    <SUPPORTED_SERIALIZATION>$(SUPPORTS_SERIALIZATION);$(SUPPORTS_BINARY_GRAPH_SERIALIZATION);$(SUPPORTS_GRAPHML_GRAPH_SERIALIZATION);$(SUPPORTS_XML_DTD_PROCESSING);$(SUPPORTS_XML_GRAPH_SERIALIZATION)</SUPPORTED_SERIALIZATION>
+  </PropertyGroup>
+
+  <!-- Project content -->
+  <ItemGroup Condition="'$(SUPPORTS_GRAPHML_GRAPH_SERIALIZATION)'!=''">
     <EmbeddedResource Include="**\*.dtd" />
     <EmbeddedResource Include="**\*.xsd" />
   </ItemGroup>
@@ -42,28 +63,28 @@ Updates:
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
     <AssemblyTitle>QuikGraph.Serialization .NET 3.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET35;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET35;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <AssemblyTitle>QuikGraph.Serialization .NET 4.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET40;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET40;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
     <AssemblyTitle>QuikGraph.Serialization .NET 4.6.1</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET461;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NET461;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <AssemblyTitle>QuikGraph.Serialization .NET Standard 1.3</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD1_3;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETSTANDARD1_3;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <AssemblyTitle>QuikGraph.Serialization .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
     <AssemblyTitle>QuikGraph.Serialization .NET Standard 2.1</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_1;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);NETSTANDARD2_1;$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->
@@ -76,6 +97,10 @@ Updates:
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3' OR '$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SUPPORTS_BINARY_GRAPH_SERIALIZATION)'!=''">
+    <PackageReference Include="MessagePack" Version="2.3.85" />
   </ItemGroup>
 
   <!-- Projects -->

@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_GRAPHS_SERIALIZATION
+﻿#if SUPPORTS_GRAPHML_GRAPH_SERIALIZATION
 using System;
 #if SUPPORTS_XML_DTD_PROCESSING
 using System.Xml.Schema;
@@ -329,7 +329,7 @@ namespace QuikGraph.Serialization
                 // ReSharper disable once AssignNullToNotNullAttribute, Justification: assert above
                 using (XmlReader xsdReader = XmlReader.Create(xsdStream, settings))
                 {
-                    settings.Schemas.Add(GraphMLXmlResolver.GraphMLNamespace, xsdReader);
+                    settings.Schemas.Add(GraphMLConstants.GraphMLNamespace, xsdReader);
                 }
             }
         }
