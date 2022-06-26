@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_GRAPHS_SERIALIZATION
+﻿#if SUPPORTS_GRAPHML_GRAPH_SERIALIZATION
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -119,7 +119,7 @@ namespace QuikGraph.Serialization
                 // writer.WriteStartElement("data")
                 generator.Emit(OpCodes.Ldarg_0);
                 generator.Emit(OpCodes.Ldstr, "data");
-                generator.Emit(OpCodes.Ldstr, GraphMLXmlResolver.GraphMLNamespace);
+                generator.Emit(OpCodes.Ldstr, GraphMLConstants.GraphMLNamespace);
                 EmitCall(generator, Metadata.WriteStartElementMethod);
 
                 // writer.WriteStartAttribute("key");
@@ -278,7 +278,7 @@ namespace QuikGraph.Serialization
                 {
                     _writer.WriteStartDocument();
                 }
-                _writer.WriteStartElement(string.Empty, GraphMLTag, GraphMLXmlResolver.GraphMLNamespace);
+                _writer.WriteStartElement(string.Empty, GraphMLTag, GraphMLConstants.GraphMLNamespace);
             }
 
             private void WriteFooter()
@@ -289,7 +289,7 @@ namespace QuikGraph.Serialization
 
             private void WriteGraphHeader()
             {
-                _writer.WriteStartElement(GraphTag, GraphMLXmlResolver.GraphMLNamespace);
+                _writer.WriteStartElement(GraphTag, GraphMLConstants.GraphMLNamespace);
                 _writer.WriteAttributeString(IdAttribute, "G");
                 _writer.WriteAttributeString("edgedefault", _graph.IsDirected ? "directed" : "undirected");
                 _writer.WriteAttributeString("parse.nodes", _graph.VertexCount.ToString());
@@ -381,7 +381,7 @@ namespace QuikGraph.Serialization
                     Type propertyType = property.PropertyType;
 
                     // <key id="d1" for="edge" attr.name="weight" attr.type="double"/>
-                    _writer.WriteStartElement("key", GraphMLXmlResolver.GraphMLNamespace);
+                    _writer.WriteStartElement("key", GraphMLConstants.GraphMLNamespace);
                     _writer.WriteAttributeString(IdAttribute, name);
                     _writer.WriteAttributeString("for", elementName);
                     _writer.WriteAttributeString("attr.name", name);
@@ -445,7 +445,7 @@ namespace QuikGraph.Serialization
             {
                 foreach (TVertex vertex in _graph.Vertices)
                 {
-                    _writer.WriteStartElement(NodeTag, GraphMLXmlResolver.GraphMLNamespace);
+                    _writer.WriteStartElement(NodeTag, GraphMLConstants.GraphMLNamespace);
                     _writer.WriteAttributeString(IdAttribute, _vertexIdentity(vertex));
                     WriteDelegateCompiler.VertexAttributesWriter(_writer, vertex);
                     _writer.WriteEndElement();
@@ -456,7 +456,7 @@ namespace QuikGraph.Serialization
             {
                 foreach (TEdge edge in _graph.Edges)
                 {
-                    _writer.WriteStartElement(EdgeTag, GraphMLXmlResolver.GraphMLNamespace);
+                    _writer.WriteStartElement(EdgeTag, GraphMLConstants.GraphMLNamespace);
                     _writer.WriteAttributeString(IdAttribute, _edgeIdentity(edge));
                     _writer.WriteAttributeString(SourceAttribute, _vertexIdentity(edge.Source));
                     _writer.WriteAttributeString(TargetAttribute, _vertexIdentity(edge.Target));

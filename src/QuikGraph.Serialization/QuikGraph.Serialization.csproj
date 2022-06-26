@@ -48,25 +48,45 @@ Misc:
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization</PackageTags>
   </PropertyGroup>
 
+  <!-- Supported serialization -->
+  <PropertyGroup>
+    <SUPPORTS_SERIALIZATION></SUPPORTS_SERIALIZATION>
+    <SUPPORTS_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_SERIALIZATION</SUPPORTS_SERIALIZATION>
+
+    <SUPPORTS_BINARY_GRAPH_SERIALIZATION></SUPPORTS_BINARY_GRAPH_SERIALIZATION>
+    <SUPPORTS_BINARY_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_BINARY_GRAPH_SERIALIZATION</SUPPORTS_BINARY_GRAPH_SERIALIZATION>
+
+    <SUPPORTS_XML_DTD_PROCESSING></SUPPORTS_XML_DTD_PROCESSING>
+    <SUPPORTS_XML_DTD_PROCESSING Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_XML_DTD_PROCESSING</SUPPORTS_XML_DTD_PROCESSING>
+
+    <SUPPORTS_XML_GRAPH_SERIALIZATION></SUPPORTS_XML_GRAPH_SERIALIZATION>
+    <SUPPORTS_XML_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='netstandard1.3'">SUPPORTS_XML_GRAPH_SERIALIZATION</SUPPORTS_XML_GRAPH_SERIALIZATION>
+
+    <SUPPORTS_GRAPHML_GRAPH_SERIALIZATION></SUPPORTS_GRAPHML_GRAPH_SERIALIZATION>
+    <SUPPORTS_GRAPHML_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='netstandard1.3'">SUPPORTS_GRAPHML_GRAPH_SERIALIZATION</SUPPORTS_GRAPHML_GRAPH_SERIALIZATION>
+
+    <SUPPORTED_SERIALIZATION>$(SUPPORTS_SERIALIZATION);$(SUPPORTS_BINARY_GRAPH_SERIALIZATION);$(SUPPORTS_GRAPHML_GRAPH_SERIALIZATION);$(SUPPORTS_XML_DTD_PROCESSING);$(SUPPORTS_XML_GRAPH_SERIALIZATION)</SUPPORTED_SERIALIZATION>
+  </PropertyGroup>
+
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Resources -->
@@ -85,6 +105,10 @@ Misc:
 
   <ItemGroup Condition="'$(TargetFramework)'=='netstandard1.3' OR '$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Reflection.Emit.Lightweight" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(SUPPORTS_BINARY_GRAPH_SERIALIZATION)'!=''">
+    <PackageReference Include="MessagePack" Version="2.3.85" />
   </ItemGroup>
 
   <!-- Projects -->

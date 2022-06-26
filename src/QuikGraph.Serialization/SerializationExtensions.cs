@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Xml;
-#if SUPPORTS_GRAPHS_SERIALIZATION
+#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using MessagePack;
+#endif
+#if SUPPORTS_XML_GRAPH_SERIALIZATION
 using System.Xml.XPath;
 #endif
 using JetBrains.Annotations;
@@ -15,7 +18,7 @@ namespace QuikGraph.Serialization
     /// </summary>
     public static class SerializationExtensions
     {
-#if SUPPORTS_GRAPHS_SERIALIZATION
+#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
         /// <summary>
         /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the .NET serialization binary formatter.
         /// </summary>
@@ -136,7 +139,7 @@ namespace QuikGraph.Serialization
             return graph;
         }
 
-#if SUPPORTS_GRAPHS_SERIALIZATION
+#if SUPPORTS_XML_GRAPH_SERIALIZATION
         private static TGraph DeserializeFromXmlInternal<TVertex, TEdge, TGraph>(
             [NotNull] this IXPathNavigable document,
             [NotNull] string graphXPath,
