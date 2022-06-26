@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
+using QuikGraph.Collections;
 
 namespace QuikGraph
 {
@@ -15,9 +16,6 @@ namespace QuikGraph
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class ArrayBidirectionalGraph<TVertex, TEdge> : IBidirectionalGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
@@ -25,9 +23,6 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
-#if SUPPORTS_SERIALIZATION
-        [Serializable]
-#endif
         private sealed class InOutEdges
         {
             [NotNull, ItemNotNull]
@@ -66,6 +61,52 @@ namespace QuikGraph
             }
         }
 
+        // Serialization constructor
+        internal ArrayBidirectionalGraph(
+            bool allowParallelEdges,
+            int edgeCount,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> vertexOutEdges)
+        {
+            Debug.Assert(edgeCount >= 0);
+            Debug.Assert(vertexOutEdges != null);
+
+            AllowParallelEdges = allowParallelEdges;
+            EdgeCount = edgeCount;
+            _vertexEdges = ComputeVertexEdges();
+
+            #region Local function
+
+            Dictionary<TVertex, InOutEdges> ComputeVertexEdges()
+            {
+                var vertexEdges = new Dictionary<TVertex, InOutEdges>(vertexOutEdges.Count);
+                var vertexInEdges = new VertexEdgeDictionary<TVertex, TEdge>(vertexOutEdges.Count);
+                foreach (TVertex vertex in vertexOutEdges.Keys)
+                {
+                    vertexInEdges.Add(
+                        vertex,
+                        new EdgeList<TVertex, TEdge>());
+                }
+
+                foreach (TEdge edge in vertexOutEdges.Values.SelectMany(edges => edges))
+                {
+                    vertexInEdges[edge.Target].Add(edge);
+                }
+
+                foreach (TVertex vertex in vertexOutEdges.Keys)
+                {
+                    vertexEdges.Add(
+                        vertex,
+                        new InOutEdges(
+                            vertexOutEdges[vertex].ToArray(),
+                            vertexInEdges[vertex].ToArray()));
+                }
+
+                return vertexEdges;
+            }
+
+            #endregion
+        }
+
         #region IGraph<TVertex,TEdge>
 
         /// <inheritdoc />
@@ -85,7 +126,7 @@ namespace QuikGraph
         public int VertexCount => _vertexEdges.Count;
 
         [NotNull]
-        private readonly IDictionary<TVertex, InOutEdges> _vertexEdges;
+        private readonly Dictionary<TVertex, InOutEdges> _vertexEdges;
 
         /// <inheritdoc />
         public IEnumerable<TVertex> Vertices => _vertexEdges.Keys.AsEnumerable();

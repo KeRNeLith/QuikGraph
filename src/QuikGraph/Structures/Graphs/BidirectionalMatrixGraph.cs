@@ -13,9 +13,6 @@ namespace QuikGraph
     /// Mutable bidirectional graph data structure based on a matrix.
     /// </summary>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class BidirectionalMatrixGraph<TEdge> : IBidirectionalGraph<int, TEdge>, IMutableEdgeListGraph<int, TEdge>
 #if SUPPORTS_CLONEABLE
@@ -36,6 +33,22 @@ namespace QuikGraph
             VertexCount = vertexCount;
             EdgeCount = 0;
             _edges = new TEdge[vertexCount, vertexCount];
+        }
+
+        internal BidirectionalMatrixGraph(
+            int vertexCount,
+            int edgeCount,
+            [NotNull, ItemCanBeNull] TEdge[,] edges)
+        {
+            Debug.Assert(vertexCount > 0);
+            Debug.Assert(edgeCount >= 0);
+            Debug.Assert(edges != null);
+            Debug.Assert(vertexCount == edges.GetLength(0));
+            Debug.Assert(vertexCount == edges.GetLength(1));
+
+            VertexCount = vertexCount;
+            EdgeCount = edgeCount;
+            _edges = edges ?? throw new ArgumentNullException(nameof(edges));
         }
 
         #region Helpers
@@ -105,8 +118,10 @@ namespace QuikGraph
         /// <inheritdoc />
         public int EdgeCount { get; private set; }
 
-        [NotNull]
+        [NotNull, ItemCanBeNull]
         private readonly TEdge[,] _edges;
+        [NotNull, ItemCanBeNull]
+        internal TEdge[,] EdgesMatrix => _edges; // For serialization
 
         /// <inheritdoc />
         public IEnumerable<TEdge> Edges
@@ -606,22 +621,6 @@ namespace QuikGraph
         #endregion
 
         #region ICloneable
-
-        private BidirectionalMatrixGraph(
-            int vertexCount,
-            int edgeCount,
-            [NotNull] TEdge[,] edges)
-        {
-            Debug.Assert(vertexCount > 0);
-            Debug.Assert(edgeCount >= 0);
-            Debug.Assert(edges != null);
-            Debug.Assert(vertexCount == edges.GetLength(0));
-            Debug.Assert(vertexCount == edges.GetLength(1));
-
-            VertexCount = vertexCount;
-            EdgeCount = edgeCount;
-            _edges = edges;
-        }
 
         /// <summary>
         /// Clones this graph.

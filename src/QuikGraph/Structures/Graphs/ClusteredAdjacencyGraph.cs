@@ -16,9 +16,6 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class ClusteredAdjacencyGraph<TVertex, TEdge>
         : IVertexAndEdgeListGraph<TVertex, TEdge>
@@ -49,17 +46,39 @@ namespace QuikGraph
             Wrapped = new AdjacencyGraph<TVertex, TEdge>(parentGraph.AllowParallelEdges);
         }
 
+        // Serialization constructor
+        internal ClusteredAdjacencyGraph(
+            [NotNull] AdjacencyGraph<TVertex, TEdge> wrappedGraph,
+            [NotNull, ItemNotNull] IEnumerable<IClusteredGraph> clusters)
+        {
+            Debug.Assert(wrappedGraph != null);
+            Debug.Assert(clusters != null);
+
+            Wrapped = wrappedGraph;
+            foreach (IClusteredGraph graph in clusters)
+            {
+                if (graph is ClusteredAdjacencyGraph<TVertex, TEdge> clusteredGraph)
+                {
+                    clusteredGraph.Parent = this;
+                }
+
+                _clusters.Add(graph);
+            }
+        }
+
         /// <summary>
         /// Parent graph.
         /// </summary>
         [CanBeNull]
-        public ClusteredAdjacencyGraph<TVertex, TEdge> Parent { get; }
+        public ClusteredAdjacencyGraph<TVertex, TEdge> Parent { get; private set; }
 
         /// <summary>
         /// Wrapped graph.
         /// </summary>
         [NotNull]
         protected AdjacencyGraph<TVertex, TEdge> Wrapped { get; }
+        [NotNull]
+        internal AdjacencyGraph<TVertex, TEdge> WrappedGraph => Wrapped; // For serialization
 
         /// <summary>
         /// Gets or sets the edge capacity.

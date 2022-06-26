@@ -16,6 +16,7 @@ namespace QuikGraph.Serialization
         {
             DefaultResolver = CompositeResolver.Create(
                 QuikGraphFormatterResolver.Instance,
+                TypelessContractlessStandardResolver.Instance,
                 // Finally use standard resolver
                 StandardResolver.Instance);
             DefaultOptions = MessagePackSerializerOptions.Standard.WithResolver(DefaultResolver);

@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-using System.Runtime.Serialization;
-using System.Security.Permissions;
-#endif
 using JetBrains.Annotations;
+using QuikGraph.Collections;
 
 namespace QuikGraph
 {
@@ -15,16 +12,10 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class ArrayUndirectedGraph<TVertex, TEdge> : IUndirectedGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
         , ICloneable
-#endif
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-        , ISerializable
 #endif
         where TEdge : IEdge<TVertex>
     {
@@ -41,15 +32,64 @@ namespace QuikGraph
             AllowParallelEdges = baseGraph.AllowParallelEdges;
             EdgeEqualityComparer = baseGraph.EdgeEqualityComparer;
             EdgeCount = baseGraph.EdgeCount;
-            _vertexEdges = new Dictionary<TVertex, TEdge[]>(baseGraph.VertexCount);
+            _adjacentEdges = new Dictionary<TVertex, TEdge[]>(baseGraph.VertexCount);
             foreach (TVertex vertex in baseGraph.Vertices)
             {
-                _vertexEdges.Add(
+                _adjacentEdges.Add(
                     vertex,
                     baseGraph.AdjacentEdges(vertex).ToArray());
             }
 
-            _edges = new List<TEdge>(baseGraph.Edges);
+            _edges = baseGraph.Edges.ToList();
+        }
+
+        // Serialization constructor
+        internal ArrayUndirectedGraph(
+            bool allowParallelEdges,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> vertices,
+            [NotNull, ItemNotNull] IEnumerable<TEdge> edges)
+        {
+            Debug.Assert(vertices != null);
+            Debug.Assert(edges != null);
+
+            AllowParallelEdges = allowParallelEdges;
+            EdgeEqualityComparer = EdgeExtensions.GetUndirectedVertexEquality<TVertex, TEdge>();
+            _edges = edges.ToList();
+            EdgeCount = _edges.Count;
+            _adjacentEdges = ComputeAdjacentEdges();
+
+            #region Local function
+
+            Dictionary<TVertex, TEdge[]> ComputeAdjacentEdges()
+            {
+                var adjacentEdges = new VertexEdgeDictionary<TVertex, TEdge>();
+                foreach (TVertex vertex in vertices)
+                {
+                    adjacentEdges.Add(
+                        vertex,
+                        new EdgeList<TVertex, TEdge>());
+                }
+
+                foreach (TEdge edge in _edges)
+                {
+                    adjacentEdges[edge.Source].Add(edge);
+                    if (!edge.IsSelfEdge())
+                    {
+                        adjacentEdges[edge.Target].Add(edge);
+                    }
+                }
+
+                var computedAdjacentEdges = new Dictionary<TVertex, TEdge[]>(adjacentEdges.Count);
+                foreach (KeyValuePair<TVertex, IEdgeList<TVertex, TEdge>> pair in adjacentEdges)
+                {
+                    computedAdjacentEdges.Add(
+                        pair.Key,
+                        pair.Value.ToArray());
+                }
+                return computedAdjacentEdges;
+            }
+
+            #endregion
         }
 
         /// <inheritdoc />
@@ -68,16 +108,16 @@ namespace QuikGraph
         #region IVertexSet<TVertex>
 
         /// <inheritdoc />
-        public bool IsVerticesEmpty => _vertexEdges.Count == 0;
+        public bool IsVerticesEmpty => _adjacentEdges.Count == 0;
 
         /// <inheritdoc />
-        public int VertexCount => _vertexEdges.Count;
+        public int VertexCount => _adjacentEdges.Count;
 
         [NotNull]
-        private readonly IDictionary<TVertex, TEdge[]> _vertexEdges;
+        private readonly Dictionary<TVertex, TEdge[]> _adjacentEdges;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _vertexEdges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _adjacentEdges.Keys.AsEnumerable();
 
         #endregion
 
@@ -89,7 +129,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _vertexEdges.ContainsKey(vertex);
+            return _adjacentEdges.ContainsKey(vertex);
         }
 
         #endregion
@@ -103,7 +143,7 @@ namespace QuikGraph
         public int EdgeCount { get; }
 
         [NotNull, ItemNotNull]
-        private readonly IList<TEdge> _edges;
+        private readonly List<TEdge> _edges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> Edges => _edges.AsEnumerable();
@@ -114,7 +154,7 @@ namespace QuikGraph
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
 
-            if (_vertexEdges.TryGetValue(edge.Source, out TEdge[] edges))
+            if (_adjacentEdges.TryGetValue(edge.Source, out TEdge[] edges))
                 return edges.Any(e => EqualityComparer<TEdge>.Default.Equals(e, edge));
             return false;
         }
@@ -135,7 +175,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_vertexEdges.TryGetValue(vertex, out TEdge[] edges))
+            if (_adjacentEdges.TryGetValue(vertex, out TEdge[] edges))
                 return edges.AsEnumerable();
             throw new VertexNotFoundException();
         }
@@ -146,7 +186,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_vertexEdges.TryGetValue(vertex, out TEdge[] edges))
+            if (_adjacentEdges.TryGetValue(vertex, out TEdge[] edges))
                 return edges.Sum(edge => edge.IsSelfEdge() ? 2 : 1);    // Self edge count twice
             throw new VertexNotFoundException();
         }
@@ -163,7 +203,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_vertexEdges.TryGetValue(vertex, out TEdge[] adjacentEdges))
+            if (_adjacentEdges.TryGetValue(vertex, out TEdge[] adjacentEdges))
                 return adjacentEdges[index];
             throw new VertexNotFoundException();
         }
@@ -183,7 +223,7 @@ namespace QuikGraph
                 target = temp;
             }
 
-            if (_vertexEdges.TryGetValue(source, out TEdge[] adjacentEdges))
+            if (_adjacentEdges.TryGetValue(source, out TEdge[] adjacentEdges))
             {
                 foreach (TEdge adjacentEdge in adjacentEdges.Where(adjacentEdge => EdgeEqualityComparer(adjacentEdge, source, target)))
                 {
@@ -197,32 +237,6 @@ namespace QuikGraph
         }
 
         #endregion
-
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-        #region ISerializable
-
-        private ArrayUndirectedGraph(SerializationInfo info, StreamingContext context)
-        {
-            AllowParallelEdges = (bool)info.GetValue("AllowParallelEdges", typeof(bool));
-            _vertexEdges = (IDictionary<TVertex, TEdge[]>)info.GetValue(
-                "VertexEdges",
-                typeof(IDictionary<TVertex, TEdge[]>));
-            _edges = (IList<TEdge>)info.GetValue("Edges", typeof(IList<TEdge>));
-            EdgeEqualityComparer = EdgeExtensions.GetUndirectedVertexEquality<TVertex, TEdge>();
-            EdgeCount = _edges.Count;
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("AllowParallelEdges", AllowParallelEdges);
-            info.AddValue("VertexEdges", _vertexEdges);
-            info.AddValue("Edges", _edges);
-        }
-
-        #endregion
-#endif
 
         #region ICloneable
 

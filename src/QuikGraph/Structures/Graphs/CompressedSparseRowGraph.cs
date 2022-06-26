@@ -14,18 +14,12 @@ namespace QuikGraph
     /// (http://www.cs.utk.edu/~dongarra/etemplates/node373.html)
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class CompressedSparseRowGraph<TVertex> : IVertexListGraph<TVertex, SEquatableEdge<TVertex>>, IEdgeListGraph<TVertex, SEquatableEdge<TVertex>>
 #if SUPPORTS_CLONEABLE
         , ICloneable
 #endif
     {
-#if SUPPORTS_SERIALIZATION
-        [Serializable]
-#endif
         private struct Range
         {
             public readonly int Start;
@@ -44,14 +38,30 @@ namespace QuikGraph
         }
 
         private CompressedSparseRowGraph(
-            [NotNull] Dictionary<TVertex, Range> outEdgeStartRanges,
-            [NotNull, ItemNotNull] TVertex[] outEdges)
+            [NotNull, ItemNotNull] TVertex[] outEdgesTargets,
+            [NotNull] Dictionary<TVertex, Range> outEdgesStartRanges)
         {
-            Debug.Assert(outEdgeStartRanges != null);
-            Debug.Assert(outEdges != null);
+            Debug.Assert(outEdgesTargets != null);
+            Debug.Assert(outEdgesStartRanges != null);
 
-            _outEdgeStartRanges = outEdgeStartRanges;
-            _outEdges = outEdges;
+            _outEdgesTargets = outEdgesTargets;
+            _outEdgesStartRanges = outEdgesStartRanges;
+        }
+
+        // Serialization constructor
+        internal CompressedSparseRowGraph(
+            [NotNull, ItemNotNull] TVertex[] outEdgesTargets,
+            [NotNull] IDictionary<TVertex, KeyValuePair<int, int>> outEdgesStartRanges)
+        {
+            Debug.Assert(outEdgesTargets != null);
+            Debug.Assert(outEdgesStartRanges != null);
+
+            _outEdgesTargets = outEdgesTargets;
+            _outEdgesStartRanges = new Dictionary<TVertex, Range>(outEdgesStartRanges.Count);
+            foreach (KeyValuePair<TVertex, KeyValuePair<int, int>> pair in outEdgesStartRanges)
+            {
+                _outEdgesStartRanges.Add(pair.Key, new Range(pair.Value.Key, pair.Value.Value));
+            }
         }
 
         /// <summary>
@@ -70,7 +80,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(graph));
 
             var outEdgeStartRanges = new Dictionary<TVertex, Range>(graph.VertexCount);
-            var outEdges = new TVertex[graph.EdgeCount];
+            var outEdgesTargets = new TVertex[graph.EdgeCount];
 
             int start = 0;
             int index = 0;
@@ -82,16 +92,16 @@ namespace QuikGraph
 
                 foreach (TEdge edge in graph.OutEdges(vertex))
                 {
-                    outEdges[index++] = edge.Target;
+                    outEdgesTargets[index++] = edge.Target;
                 }
 
                 start = end;
                 Debug.Assert(index == end);
             }
 
-            Debug.Assert(index == outEdges.Length);
+            Debug.Assert(index == outEdgesTargets.Length);
 
-            return new CompressedSparseRowGraph<TVertex>(outEdgeStartRanges, outEdges);
+            return new CompressedSparseRowGraph<TVertex>(outEdgesTargets, outEdgeStartRanges);
         }
 
         #region IGraph<TVertex,TEdge>
@@ -110,10 +120,10 @@ namespace QuikGraph
         public bool IsVerticesEmpty => VertexCount == 0;
 
         /// <inheritdoc />
-        public int VertexCount => _outEdgeStartRanges.Count;
+        public int VertexCount => _outEdgesStartRanges.Count;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _outEdgeStartRanges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _outEdgesStartRanges.Keys.AsEnumerable();
 
         /// <inheritdoc />
         public bool ContainsVertex(TVertex vertex)
@@ -121,7 +131,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _outEdgeStartRanges.ContainsKey(vertex);
+            return _outEdgesStartRanges.ContainsKey(vertex);
         }
 
         #endregion
@@ -132,26 +142,36 @@ namespace QuikGraph
         public bool IsEdgesEmpty => EdgeCount == 0;
 
         /// <inheritdoc />
-        public int EdgeCount => _outEdges.Length;
+        public int EdgeCount => _outEdgesTargets.Length;
 
         [NotNull, ItemNotNull]
-        private readonly TVertex[] _outEdges;
+        private readonly TVertex[] _outEdgesTargets;
+        [NotNull, ItemNotNull]
+        internal TVertex[] OutEdgesTargets => _outEdgesTargets;
 
         [NotNull]
-        private readonly Dictionary<TVertex, Range> _outEdgeStartRanges;
+        private readonly Dictionary<TVertex, Range> _outEdgesStartRanges;
+
+        // For Serialization
+        [Pure]
+        internal KeyValuePair<int, int> GetRangeFor([NotNull] TVertex vertex)
+        {
+            Range range = _outEdgesStartRanges[vertex];
+            return new KeyValuePair<int, int>(range.Start, range.End);
+        }
 
         /// <inheritdoc />
         public IEnumerable<SEquatableEdge<TVertex>> Edges
         {
             get
             {
-                foreach (KeyValuePair<TVertex, Range> pair in _outEdgeStartRanges)
+                foreach (KeyValuePair<TVertex, Range> pair in _outEdgesStartRanges)
                 {
                     TVertex source = pair.Key;
                     Range range = pair.Value;
                     for (int i = range.Start; i < range.End; ++i)
                     {
-                        TVertex target = _outEdges[i];
+                        TVertex target = _outEdgesTargets[i];
                         yield return new SEquatableEdge<TVertex>(source, target);
                     }
                 }
@@ -176,11 +196,11 @@ namespace QuikGraph
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            if (_outEdgeStartRanges.TryGetValue(source, out Range range))
+            if (_outEdgesStartRanges.TryGetValue(source, out Range range))
             {
                 for (int i = range.Start; i < range.End; ++i)
                 {
-                    if (EqualityComparer<TVertex>.Default.Equals(_outEdges[i], target))
+                    if (EqualityComparer<TVertex>.Default.Equals(_outEdgesTargets[i], target))
                         return true;
                 }
             }
@@ -209,7 +229,7 @@ namespace QuikGraph
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            if (_outEdgeStartRanges.TryGetValue(source, out Range range))
+            if (_outEdgesStartRanges.TryGetValue(source, out Range range))
             {
                 edges = GetEdges();
                 return true;
@@ -224,7 +244,7 @@ namespace QuikGraph
             {
                 for (int i = range.Start; i < range.End; ++i)
                 {
-                    if (EqualityComparer<TVertex>.Default.Equals(_outEdges[i], target))
+                    if (EqualityComparer<TVertex>.Default.Equals(_outEdgesTargets[i], target))
                         yield return new SEquatableEdge<TVertex>(source, target);
                 }
             }
@@ -248,7 +268,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_outEdgeStartRanges.TryGetValue(vertex, out Range range))
+            if (_outEdgesStartRanges.TryGetValue(vertex, out Range range))
                 return range.Length;
             throw new VertexNotFoundException();
         }
@@ -270,10 +290,10 @@ namespace QuikGraph
         {
             Debug.Assert(vertex != null);
 
-            if (_outEdgeStartRanges.TryGetValue(vertex, out Range range))
+            if (_outEdgesStartRanges.TryGetValue(vertex, out Range range))
             {
                 for (int i = range.Start; i < range.End; ++i)
-                    yield return new SEquatableEdge<TVertex>(vertex, _outEdges[i]);
+                    yield return new SEquatableEdge<TVertex>(vertex, _outEdgesTargets[i]);
             }
             else
                 throw new VertexNotFoundException();
@@ -285,7 +305,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_outEdgeStartRanges.ContainsKey(vertex))
+            if (_outEdgesStartRanges.ContainsKey(vertex))
             {
                 edges = OutEdgesIterator(vertex);
                 return true;
@@ -301,10 +321,10 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_outEdgeStartRanges.TryGetValue(vertex, out Range range))
+            if (_outEdgesStartRanges.TryGetValue(vertex, out Range range))
             {
                 int targetIndex = range.Start + index;
-                return new SEquatableEdge<TVertex>(vertex, _outEdges[targetIndex]);
+                return new SEquatableEdge<TVertex>(vertex, _outEdgesTargets[targetIndex]);
             }
 
             throw new VertexNotFoundException();
@@ -322,9 +342,9 @@ namespace QuikGraph
         [NotNull]
         public CompressedSparseRowGraph<TVertex> Clone()
         {
-            var ranges = new Dictionary<TVertex, Range>(_outEdgeStartRanges);
-            var edges = (TVertex[])_outEdges.Clone();
-            return new CompressedSparseRowGraph<TVertex>(ranges, edges);
+            var outEdgesTargets = (TVertex[])_outEdgesTargets.Clone();
+            var ranges = new Dictionary<TVertex, Range>(_outEdgesStartRanges);
+            return new CompressedSparseRowGraph<TVertex>(outEdgesTargets, ranges);
         }
 
 #if SUPPORTS_CLONEABLE

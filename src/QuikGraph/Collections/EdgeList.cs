@@ -33,7 +33,7 @@ namespace QuikGraph.Collections
 
         /// <inheritdoc />
         /// <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is <see langword="null"/>.</exception>
-        public EdgeList([NotNull] EdgeList<TVertex, TEdge> other)
+        public EdgeList([NotNull, ItemNotNull] IEnumerable<TEdge> other)
             : base(other)
         {
         }

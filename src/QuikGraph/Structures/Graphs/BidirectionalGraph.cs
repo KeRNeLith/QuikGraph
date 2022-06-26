@@ -20,9 +20,6 @@ namespace QuikGraph
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class BidirectionalGraph<TVertex, TEdge>
         : IEdgeListAndIncidenceGraph<TVertex, TEdge>
@@ -79,6 +76,64 @@ namespace QuikGraph
                 _vertexOutEdges = new VertexEdgeDictionary<TVertex, TEdge>();
             }
             EdgeCapacity = edgeCapacity;
+        }
+
+        /// <summary>
+        /// Copy constructor that creates sufficiently deep copy of the graph.
+        /// </summary>
+        /// <param name="other">Graph to copy.</param>
+        public BidirectionalGraph([NotNull] BidirectionalGraph<TVertex, TEdge> other)
+        {
+            if (other is null)
+                throw new ArgumentNullException(nameof(other));
+
+            AllowParallelEdges = other.AllowParallelEdges;
+            EdgeCount = other.EdgeCount;
+            EdgeCapacity = other.EdgeCapacity;
+            _vertexInEdges = other._vertexInEdges.Clone();
+            _vertexOutEdges = other._vertexOutEdges.Clone();
+        }
+
+        // Serialization constructor
+        internal BidirectionalGraph(
+            bool allowParallelEdges,
+            int edgeCount,
+            int edgeCapacity,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> vertexOutEdges)
+        {
+            Debug.Assert(edgeCount >= 0);
+            Debug.Assert(vertexOutEdges != null);
+
+            AllowParallelEdges = allowParallelEdges;
+            EdgeCount = edgeCount;
+            EdgeCapacity = edgeCapacity;
+            _vertexOutEdges = vertexOutEdges;
+            _vertexInEdges = ComputeInEdges();
+
+            #region Local function
+
+            VertexEdgeDictionary<TVertex, TEdge> ComputeInEdges()
+            {
+                var vertexInEdges = new VertexEdgeDictionary<TVertex, TEdge>(vertexOutEdges.Count);
+
+                foreach (TVertex vertex in vertexOutEdges.Keys)
+                {
+                    vertexInEdges.Add(
+                        vertex,
+                        EdgeCapacity > 0
+                            ? new EdgeList<TVertex, TEdge>(EdgeCapacity)
+                            : new EdgeList<TVertex, TEdge>());
+                }
+
+                foreach (TEdge edge in vertexOutEdges.Values.SelectMany(edges => edges))
+                {
+                    vertexInEdges[edge.Target].Add(edge);
+                }
+
+                return vertexInEdges;
+            }
+
+            #endregion
         }
 
         /// <summary>
@@ -183,7 +238,9 @@ namespace QuikGraph
         }
 
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _vertexOutEdges;
+        private VertexEdgeDictionary<TVertex, TEdge> _vertexOutEdges;
+        [NotNull]
+        internal VertexEdgeDictionary<TVertex, TEdge> VertexOutEdges => _vertexOutEdges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> OutEdges(TVertex vertex)
@@ -286,7 +343,7 @@ namespace QuikGraph
         }
 
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _vertexInEdges;
+        private VertexEdgeDictionary<TVertex, TEdge> _vertexInEdges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> InEdges(TVertex vertex)
@@ -336,9 +393,9 @@ namespace QuikGraph
         /// <inheritdoc />
         public void Clear()
         {
-            IVertexEdgeDictionary<TVertex, TEdge> vertexOutEdges = _vertexOutEdges;
+            VertexEdgeDictionary<TVertex, TEdge> vertexOutEdges = _vertexOutEdges;
             _vertexOutEdges = new VertexEdgeDictionary<TVertex, TEdge>();
-            IVertexEdgeDictionary<TVertex, TEdge> vertexInEdges = _vertexInEdges;
+            VertexEdgeDictionary<TVertex, TEdge> vertexInEdges = _vertexInEdges;
             _vertexInEdges = new VertexEdgeDictionary<TVertex, TEdge>();
             EdgeCount = 0;
 
@@ -830,22 +887,6 @@ namespace QuikGraph
         }
 
         #region ICloneable
-
-        /// <summary>
-        /// Copy constructor that creates sufficiently deep copy of the graph.
-        /// </summary>
-        /// <param name="other">Graph to copy.</param>
-        public BidirectionalGraph([NotNull] BidirectionalGraph<TVertex, TEdge> other)
-        {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-
-            _vertexInEdges = other._vertexInEdges.Clone();
-            _vertexOutEdges = other._vertexOutEdges.Clone();
-            EdgeCount = other.EdgeCount;
-            EdgeCapacity = other.EdgeCapacity;
-            AllowParallelEdges = other.AllowParallelEdges;
-        }
 
         /// <summary>
         /// Clones this graph.

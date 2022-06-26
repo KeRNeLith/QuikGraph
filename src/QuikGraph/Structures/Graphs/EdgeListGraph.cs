@@ -16,9 +16,6 @@ namespace QuikGraph
     /// <remarks>Only mutable by its edges, vertices are not stored but computed on demand.</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class EdgeListGraph<TVertex, TEdge> : IMutableEdgeListGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
@@ -44,6 +41,18 @@ namespace QuikGraph
             AllowParallelEdges = allowParallelEdges;
         }
 
+        internal EdgeListGraph(
+            bool isDirected,
+            bool allowParallelEdges,
+            [NotNull] EdgeEdgeDictionary<TVertex, TEdge> vertexEdges)
+        {
+            Debug.Assert(vertexEdges != null);
+
+            IsDirected = isDirected;
+            AllowParallelEdges = allowParallelEdges;
+            _vertexEdges = vertexEdges;
+        }
+
         #region IGraph<TVertex,TEdge>
 
         /// <inheritdoc />
@@ -57,7 +66,7 @@ namespace QuikGraph
         #region IVertexSet<TVertex>
 
         /// <inheritdoc />
-        public bool IsVerticesEmpty => _edges.Count == 0;
+        public bool IsVerticesEmpty => _vertexEdges.Count == 0;
 
         /// <inheritdoc />
         public int VertexCount => GetVertices().Count;
@@ -94,16 +103,18 @@ namespace QuikGraph
         #region IEdgeSet<TVertex,TEdge>
 
         [NotNull]
-        private EdgeEdgeDictionary<TVertex, TEdge> _edges = new EdgeEdgeDictionary<TVertex, TEdge>();
+        private EdgeEdgeDictionary<TVertex, TEdge> _vertexEdges = new EdgeEdgeDictionary<TVertex, TEdge>();
+        [NotNull]
+        internal EdgeEdgeDictionary<TVertex, TEdge> VertexEdges => _vertexEdges; // For serialization
 
         /// <inheritdoc />
-        public bool IsEdgesEmpty => _edges.Count == 0;
+        public bool IsEdgesEmpty => _vertexEdges.Count == 0;
 
         /// <inheritdoc />
-        public int EdgeCount => _edges.Count;
+        public int EdgeCount => _vertexEdges.Count;
 
         /// <inheritdoc />
-        public IEnumerable<TEdge> Edges => _edges.Keys.AsEnumerable();
+        public IEnumerable<TEdge> Edges => _vertexEdges.Keys.AsEnumerable();
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)
@@ -111,7 +122,7 @@ namespace QuikGraph
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
 
-            return _edges.ContainsKey(edge);
+            return _vertexEdges.ContainsKey(edge);
         }
 
         [Pure]
@@ -120,7 +131,7 @@ namespace QuikGraph
             Debug.Assert(source != null);
             Debug.Assert(target != null);
 
-            return _edges.Keys
+            return _vertexEdges.Keys
                 .Any(e => IsDirected
                     ? e.SortedVertexEqualityInternal(source, target)
                     : e.UndirectedVertexEqualityInternal(source, target));
@@ -165,7 +176,7 @@ namespace QuikGraph
         {
             if (AllowParallelEdges)
             {
-                if (_edges.ContainsKey(edge))
+                if (_vertexEdges.ContainsKey(edge))
                     return false;
             }
             else
@@ -174,7 +185,7 @@ namespace QuikGraph
                     return false;
             }
 
-            _edges.Add(edge, edge);
+            _vertexEdges.Add(edge, edge);
             OnEdgeAdded(edge);
 
             return true;
@@ -228,7 +239,7 @@ namespace QuikGraph
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
 
-            if (_edges.Remove(edge))
+            if (_vertexEdges.Remove(edge))
             {
                 OnEdgeRemoved(edge);
                 return true;
@@ -262,7 +273,7 @@ namespace QuikGraph
 
             foreach (TEdge edge in edgesToRemove)
             {
-                _edges.Remove(edge);
+                _vertexEdges.Remove(edge);
             }
 
             NotifyEdgesRemoved(edgesToRemove);
@@ -275,26 +286,14 @@ namespace QuikGraph
         /// <inheritdoc />
         public void Clear()
         {
-            EdgeEdgeDictionary<TVertex, TEdge> edges = _edges;
-            _edges = new EdgeEdgeDictionary<TVertex, TEdge>();
-            
+            EdgeEdgeDictionary<TVertex, TEdge> edges = _vertexEdges;
+            _vertexEdges = new EdgeEdgeDictionary<TVertex, TEdge>();
+
             NotifyEdgesRemoved(edges.Keys);
             edges.Clear();
         }
 
         #region ICloneable
-
-        private EdgeListGraph(
-            bool isDirected,
-            bool allowParallelEdges,
-            [NotNull] EdgeEdgeDictionary<TVertex, TEdge> edges)
-        {
-            Debug.Assert(edges != null);
-
-            IsDirected = isDirected;
-            AllowParallelEdges = allowParallelEdges;
-            _edges = edges;
-        }
 
         /// <summary>
         /// Clones this graph.
@@ -307,7 +306,7 @@ namespace QuikGraph
             return new EdgeListGraph<TVertex, TEdge>(
                 IsDirected,
                 AllowParallelEdges,
-                _edges.Clone());
+                _vertexEdges.Clone());
         }
 
 #if SUPPORTS_CLONEABLE
