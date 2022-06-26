@@ -9,9 +9,6 @@ namespace QuikGraph
     /// The default <see cref="IEdge{TVertex}"/> implementation (directed edge).
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}")]
     public class Edge<TVertex> : IEdge<TVertex>
     {

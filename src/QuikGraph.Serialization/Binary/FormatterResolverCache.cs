@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
+#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -33,6 +33,24 @@ namespace QuikGraph.Serialization
         [NotNull]
         private static readonly Mapping[] FormatterMappings =
         {
+            // Edges
+            new Mapping(typeof(EquatableTaggedEdge<,>), typeof(EquatableTaggedEdgeFormatter<,>)),
+            new Mapping(typeof(EquatableEdge<>), typeof(EquatableEdgeFormatter<>)),
+            new Mapping(typeof(TaggedEdge<,>), typeof(TaggedEdgeFormatter<,>)),
+            new Mapping(typeof(EquatableTermEdge<>), typeof(EquatableTermEdgeFormatter<>)),
+            new Mapping(typeof(TermEdge<>), typeof(TermEdgeFormatter<>)),
+            new Mapping(typeof(Edge<>), typeof(EdgeFormatter<>)),
+            new Mapping(typeof(SEquatableTaggedEdge<,>), typeof(SEquatableTaggedEdgeFormatter<,>)),
+            new Mapping(typeof(SEquatableEdge<>), typeof(SEquatableEdgeFormatter<>)),
+            new Mapping(typeof(STaggedEdge<,>), typeof(STaggedEdgeFormatter<,>)),
+            new Mapping(typeof(SEdge<>), typeof(SEdgeFormatter<>)),
+            new Mapping(typeof(SReversedEdge<,>), typeof(SReversedEdgeFormatter<,>)),
+            new Mapping(typeof(TaggedUndirectedEdge<,>), typeof(TaggedUndirectedEdgeFormatter<,>)),
+            new Mapping(typeof(EquatableUndirectedEdge<>), typeof(EquatableUndirectedEdgeFormatter<>)),
+            new Mapping(typeof(UndirectedEdge<>), typeof(UndirectedEdgeFormatter<>)),
+            new Mapping(typeof(STaggedUndirectedEdge<,>), typeof(STaggedUndirectedEdgeFormatter<,>)),
+            new Mapping(typeof(SUndirectedEdge<>), typeof(SUndirectedEdgeFormatter<>)),
+
             // Collections
             new Mapping(typeof(SerializableArray<>), typeof(SerializableArrayFormatter<>)),
             new Mapping(typeof(VertexList<>), typeof(VertexListFormatter<>)),

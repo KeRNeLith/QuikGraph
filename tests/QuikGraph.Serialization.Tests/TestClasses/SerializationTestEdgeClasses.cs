@@ -64,9 +64,6 @@ namespace QuikGraph.Serialization.Tests
         public float Float { get; set; }
     }
 
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class EquatableTestEdge : EquatableEdge<EquatableTestVertex>, IEquatable<EquatableTestEdge>
     {
         public EquatableTestEdge(
@@ -145,9 +142,6 @@ namespace QuikGraph.Serialization.Tests
         }
     }
 
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class EquatableAdditionalDataTestEdge : EquatableTestEdge, IEquatable<EquatableAdditionalDataTestEdge>
     {
         public EquatableAdditionalDataTestEdge(
