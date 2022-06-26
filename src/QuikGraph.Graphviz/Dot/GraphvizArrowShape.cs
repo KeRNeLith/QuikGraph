@@ -1,16 +1,9 @@
-#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-
-namespace QuikGraph.Graphviz.Dot
+﻿namespace QuikGraph.Graphviz.Dot
 {
     /// <summary>
     /// Enumeration of possible arrow shapes.
     /// <see href="https://www.graphviz.org/doc/info/arrows.html">See more</see>
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public enum GraphvizArrowShape
     {
         /// <summary>

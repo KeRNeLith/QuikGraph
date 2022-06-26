@@ -1,16 +1,9 @@
-#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-
-namespace QuikGraph.Graphviz.Dot
+﻿namespace QuikGraph.Graphviz.Dot
 {
     // ReSharper disable InconsistentNaming
     /// <summary>
     /// Enumeration of possible page directions.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public enum GraphvizPageDirection
     {
         /// <summary>

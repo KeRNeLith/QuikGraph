@@ -9,7 +9,6 @@ namespace QuikGraph.MSAGL
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-    [Serializable]
     public class MsaglEdgeEventArgs<TVertex, TEdge> : EdgeEventArgs<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {

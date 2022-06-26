@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-#if SUPPORTS_SERIALIZATION
-using System.Runtime.Serialization;
-using System.Security.Permissions;
-#endif
 using static QuikGraph.Utils.MathUtils;
 
 namespace QuikGraph.Graphviz.Dot
@@ -12,14 +8,8 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz size (float).
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("{" + nameof(Width) + "}x{" + nameof(Height) + "}")]
     public struct GraphvizSizeF
-#if SUPPORTS_SERIALIZATION
-        : ISerializable
-#endif
     {
         /// <summary>
         /// Width.
@@ -58,40 +48,13 @@ namespace QuikGraph.Graphviz.Dot
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}x{1}", Width, Height);
         }
-
-#if SUPPORTS_SERIALIZATION
-        #region ISerializable
-
-        private GraphvizSizeF(SerializationInfo info, StreamingContext context)
-            : this(
-                (float)info.GetValue("w", typeof(float)),
-                (float)info.GetValue("h", typeof(float)))
-        {
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("w", Width);
-            info.AddValue("h", Height);
-        }
-
-        #endregion
-#endif
     }
 
     /// <summary>
     /// Graphviz size.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("{" + nameof(Width) + "}x{" + nameof(Height) + "}")]
     public struct GraphvizSize
-#if SUPPORTS_SERIALIZATION
-        : ISerializable
-#endif
     {
         /// <summary>
         /// Width.
@@ -130,26 +93,5 @@ namespace QuikGraph.Graphviz.Dot
         {
             return string.Format(CultureInfo.InvariantCulture, "{0}x{1}", Width, Height);
         }
-
-#if SUPPORTS_SERIALIZATION
-        #region ISerializable
-
-        private GraphvizSize(SerializationInfo info, StreamingContext context)
-            : this(
-                (int)info.GetValue("w", typeof(int)),
-                (int)info.GetValue("h", typeof(int)))
-        {
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("w", Width);
-            info.AddValue("h", Height);
-        }
-
-        #endregion
-#endif
     }
 }

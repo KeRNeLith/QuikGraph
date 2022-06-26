@@ -8,7 +8,6 @@ namespace QuikGraph.MSAGL
     /// Arguments of an event related to an MSAGL vertex.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-    [Serializable]
     public class MsaglVertexEventArgs<TVertex> : VertexEventArgs<TVertex>
     {
         /// <summary>

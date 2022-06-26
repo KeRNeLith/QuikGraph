@@ -41,19 +41,19 @@ Misc:
 
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;REQUIRE_STRING_COMPATIBILITY;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;REQUIRE_STRING_COMPATIBILITY;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
     <DefineConstants>$(DefineConstants);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->

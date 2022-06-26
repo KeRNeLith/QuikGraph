@@ -11,9 +11,6 @@ namespace QuikGraph.Algorithms.Observers
     /// Recorder of encountered vertices.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class VertexRecorderObserver<TVertex> : IObserver<IVertexTimeStamperAlgorithm<TVertex>>
     {
         /// <summary>

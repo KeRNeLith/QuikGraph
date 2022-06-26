@@ -7,9 +7,6 @@ namespace QuikGraph.Graphviz
     /// <summary>
     /// Arguments of an event related to the formatting of a clustered graph.
     /// </summary>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public class FormatClusterEventArgs<TVertex, TEdge> : EventArgs
         where TEdge : IEdge<TVertex>
     {

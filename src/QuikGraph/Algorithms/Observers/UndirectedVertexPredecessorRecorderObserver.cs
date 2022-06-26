@@ -11,9 +11,6 @@ namespace QuikGraph.Algorithms.Observers
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     public sealed class UndirectedVertexPredecessorRecorderObserver<TVertex, TEdge> :
         IObserver<IUndirectedTreeBuilderAlgorithm<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>

@@ -9,10 +9,10 @@ using static QuikGraph.Serialization.Tests.SerializationTestCaseSources;
 namespace QuikGraph.Serialization.Tests
 {
     /// <summary>
-    /// Tests relative to serialization via standard API.
+    /// Tests relative to binary serialization.
     /// </summary>
     [TestFixture]
-    internal sealed class SystemSerializationTests
+    internal sealed class BinarySerializationTests
     {
         #region Helpers
 
