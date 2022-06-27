@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Xml;
 #if SUPPORTS_BINARY_GRAPH_SERIALIZATION
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using MessagePack;
+using MessagePack.Formatters;
+using MessagePack.Resolvers;
 #endif
 #if SUPPORTS_XML_GRAPH_SERIALIZATION
 using System.Xml.XPath;
@@ -20,23 +20,23 @@ namespace QuikGraph.Serialization
     {
 #if SUPPORTS_BINARY_GRAPH_SERIALIZATION
         /// <summary>
-        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the .NET serialization binary formatter.
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">The graph to serialize.</param>
         /// <param name="stream">Stream in which serializing the graph.</param>
+        /// <param name="options">Serialization options.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not writable.</exception>
-#if DEPRECATE_BINARY_SERIALIZATION
-        [Obsolete(
-            "Binary serialization on old .NET targets is deprecated.\n" +
-            "Consider using another kind of serialization or updating to at least .NET Framework 4.6.1+, .NET Standard 2.0+ or .NET 5.0+.")]
-#endif
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.StackOverflowException"><paramref name="graph"/> to serialize contains a re-entrant member to serialize.</exception>
+        [CLSCompliant(false)]
         public static void SerializeToBinary<TVertex, TEdge>(
             [NotNull] this IGraph<TVertex, TEdge> graph,
-            [NotNull] Stream stream)
+            [NotNull] Stream stream,
+            [NotNull] MessagePackSerializerOptions options)
             where TEdge : IEdge<TVertex>
         {
             if (graph == null)
@@ -45,38 +45,88 @@ namespace QuikGraph.Serialization
                 throw new ArgumentNullException(nameof(stream));
             if (!stream.CanWrite)
                 throw new ArgumentException("Must be a writable stream", nameof(stream));
+            if (options is null)
+                throw new ArgumentNullException(nameof(options));
 
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, graph);
+            MessagePackSerializer.Serialize(
+                graph.GetType(),
+                stream,
+                graph,
+                options);
         }
 
         /// <summary>
-        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the .NET serialization binary formatter.
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
+        /// </summary>
+        /// <typeparam name="TVertex">Vertex type.</typeparam>
+        /// <typeparam name="TEdge">Edge type.</typeparam>
+        /// <param name="graph">The graph to serialize.</param>
+        /// <param name="stream">Stream in which serializing the graph.</param>
+        /// <param name="formatters">
+        /// A list of instances of <see cref="IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
+        /// The formatters are searched in the order given, so if two formatters support serializing the same type, the first one is used.
+        /// </param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not writable.</exception>
+        /// <exception cref="T:System.StackOverflowException"><paramref name="graph"/> to serialize contains a re-entrant member to serialize.</exception>
+        [CLSCompliant(false)]
+        public static void SerializeToBinary<TVertex, TEdge>(
+            [NotNull] this IGraph<TVertex, TEdge> graph,
+            [NotNull] Stream stream,
+            [CanBeNull, ItemNotNull] params IMessagePackFormatter[] formatters)
+            where TEdge : IEdge<TVertex>
+        {
+            if (formatters is null)
+            {
+                graph.SerializeToBinary(stream);
+            }
+            else
+            {
+                IFormatterResolver resolver = CompositeResolver.Create(
+                    formatters,
+                    new[] { BinaryConstants.DefaultResolver });
+                MessagePackSerializerOptions options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+                graph.SerializeToBinary(stream, options);
+            }
+        }
+
+        /// <summary>
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
+        /// </summary>
+        /// <typeparam name="TVertex">Vertex type.</typeparam>
+        /// <typeparam name="TEdge">Edge type.</typeparam>
+        /// <param name="graph">The graph to serialize.</param>
+        /// <param name="stream">Stream in which serializing the graph.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not writable.</exception>
+        /// <exception cref="T:System.StackOverflowException"><paramref name="graph"/> to serialize contains a re-entrant member to serialize.</exception>
+        public static void SerializeToBinary<TVertex, TEdge>(
+            [NotNull] this IGraph<TVertex, TEdge> graph,
+            [NotNull] Stream stream)
+            where TEdge : IEdge<TVertex>
+        {
+            graph.SerializeToBinary(stream, BinaryConstants.DefaultOptions);
+        }
+
+        /// <summary>
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <typeparam name="TGraph">Graph type.</typeparam>
         /// <param name="stream">Stream from which deserializing the graph.</param>
-        /// <param name="binder">
-        /// <para>
-        /// <see cref="T:System.Runtime.Serialization.SerializationBinder"/> used during deserialization.
-        /// It can be used to check/filter/replace/upgrade types that are loaded.
-        /// </para>
-        /// <para>It is also useful in security scenarios.</para>
-        /// <para>By default no binder is used.</para>
-        /// </param>
+        /// <param name="options">Deserialization options.</param>
         /// <returns>Deserialized graph.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not readable.</exception>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
         [Pure]
-#if DEPRECATE_BINARY_SERIALIZATION
-        [Obsolete(
-            "Binary deserialization on old .NET targets is deprecated.\n" +
-            "Consider using another kind of serialization or updating to at least .NET Framework 4.6.1+, .NET Standard 2.0+ or .NET 5.0+.")]
-#endif
+        [CLSCompliant(false)]
         public static TGraph DeserializeFromBinary<TVertex, TEdge, TGraph>(
             [NotNull] this Stream stream,
-            [CanBeNull] SerializationBinder binder = null)
+            [NotNull] MessagePackSerializerOptions options)
             where TGraph : IGraph<TVertex, TEdge>
             where TEdge : IEdge<TVertex>
         {
@@ -84,10 +134,61 @@ namespace QuikGraph.Serialization
                 throw new ArgumentNullException(nameof(stream));
             if (!stream.CanRead)
                 throw new ArgumentException("Must be a readable stream", nameof(stream));
+            if (options is null)
+                throw new ArgumentNullException(nameof(options));
 
-            var formatter = new BinaryFormatter { Binder = binder };
-            object result = formatter.Deserialize(stream);
-            return (TGraph)result;
+            return MessagePackSerializer.Deserialize<TGraph>(stream, options);
+        }
+
+        /// <summary>
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
+        /// </summary>
+        /// <typeparam name="TVertex">Vertex type.</typeparam>
+        /// <typeparam name="TEdge">Edge type.</typeparam>
+        /// <typeparam name="TGraph">Graph type.</typeparam>
+        /// <param name="stream">Stream from which deserializing the graph.</param>
+        /// <param name="formatters">
+        /// A list of instances of <see cref="IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
+        /// The formatters are searched in the order given, so if two formatters support serializing the same type, the first one is used.
+        /// </param>
+        /// <returns>Deserialized graph.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not readable.</exception>
+        [Pure]
+        [CLSCompliant(false)]
+        public static TGraph DeserializeFromBinary<TVertex, TEdge, TGraph>(
+            [NotNull] this Stream stream,
+            [CanBeNull, ItemNotNull] params IMessagePackFormatter[] formatters)
+            where TGraph : IGraph<TVertex, TEdge>
+            where TEdge : IEdge<TVertex>
+        {
+            if (formatters is null)
+                return stream.DeserializeFromBinary<TVertex, TEdge, TGraph>();
+
+            IFormatterResolver resolver = CompositeResolver.Create(
+                formatters,
+                new[] { BinaryConstants.DefaultResolver });
+            MessagePackSerializerOptions options = MessagePackSerializerOptions.Standard.WithResolver(resolver);
+            return stream.DeserializeFromBinary<TVertex, TEdge, TGraph>(options);
+        }
+
+        /// <summary>
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
+        /// </summary>
+        /// <typeparam name="TVertex">Vertex type.</typeparam>
+        /// <typeparam name="TEdge">Edge type.</typeparam>
+        /// <typeparam name="TGraph">Graph type.</typeparam>
+        /// <param name="stream">Stream from which deserializing the graph.</param>
+        /// <returns>Deserialized graph.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="stream"/> is not readable.</exception>
+        [Pure]
+        public static TGraph DeserializeFromBinary<TVertex, TEdge, TGraph>(
+            [NotNull] this Stream stream)
+            where TGraph : IGraph<TVertex, TEdge>
+            where TEdge : IEdge<TVertex>
+        {
+            return stream.DeserializeFromBinary<TVertex, TEdge, TGraph>(BinaryConstants.DefaultOptions);
         }
 #endif
 

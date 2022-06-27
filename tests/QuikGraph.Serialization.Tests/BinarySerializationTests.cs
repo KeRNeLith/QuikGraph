@@ -1,11 +1,13 @@
-#if SUPPORTS_GRAPHS_SERIALIZATION
+﻿#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
 using System;
 using System.IO;
 using JetBrains.Annotations;
+using MessagePack;
+using MessagePack.Formatters;
 using NUnit.Framework;
+using QuikGraph.Serialization.Formatters;
+using static QuikGraph.Serialization.Formatters.FormatterHelpers;
 using static QuikGraph.Serialization.Tests.SerializationTestCaseSources;
-
-#pragma warning disable 618 // Obsolete API usage
 
 namespace QuikGraph.Serialization.Tests
 {
@@ -15,7 +17,279 @@ namespace QuikGraph.Serialization.Tests
     [TestFixture]
     internal sealed class BinarySerializationTests
     {
+        #region Test formatters
+
+        private static void SerializeEquatableTestVertex(
+            ref MessagePackWriter writer,
+            [NotNull] EquatableTestVertex vertex,
+            [NotNull] MessagePackSerializerOptions options)
+        {
+            NullableStringFormatter.Instance.Serialize(ref writer, vertex.ID, options);
+            NullableStringFormatter.Instance.Serialize(ref writer, vertex.StringDefault, options);
+            NullableStringFormatter.Instance.Serialize(ref writer, vertex.String, options);
+            writer.Write(vertex.Bool);
+            writer.WriteInt32(vertex.Int);
+            writer.WriteInt64(vertex.Long);
+            SingleFormatter.Instance.Serialize(ref writer, vertex.Float, options);
+            DoubleFormatter.Instance.Serialize(ref writer, vertex.Double, options);
+        }
+
+        private static void DeserializeEquatableTestVertex(
+            ref MessagePackReader reader,
+            [NotNull] MessagePackSerializerOptions options,
+            out string id,
+            out string strDefault,
+            out string str,
+            out bool b,
+            out int i,
+            out long l,
+            out float f,
+            out double d)
+        {
+            id = NullableStringFormatter.Instance.Deserialize(ref reader, options);
+            strDefault = NullableStringFormatter.Instance.Deserialize(ref reader, options);
+            str = NullableStringFormatter.Instance.Deserialize(ref reader, options);
+            b = reader.ReadBoolean();
+            i = reader.ReadInt32();
+            l = reader.ReadInt64();
+            f = SingleFormatter.Instance.Deserialize(ref reader, options);
+            d = DoubleFormatter.Instance.Deserialize(ref reader, options);
+        }
+
+        private static void SerializeEquatableTestEdge(
+            ref MessagePackWriter writer,
+            [NotNull] EquatableTestEdge edge,
+            [NotNull] MessagePackSerializerOptions options)
+        {
+            SerializeEdge(ref writer, edge, options);
+            NullableStringFormatter.Instance.Serialize(ref writer, edge.ID, options);
+            NullableStringFormatter.Instance.Serialize(ref writer, edge.String, options);
+            writer.Write(edge.Bool);
+            writer.WriteInt32(edge.Int);
+            writer.WriteInt64(edge.Long);
+            SingleFormatter.Instance.Serialize(ref writer, edge.Float, options);
+            DoubleFormatter.Instance.Serialize(ref writer, edge.Double, options);
+        }
+
+        private static void DeserializeEquatableTestEdge(
+            ref MessagePackReader reader,
+            [NotNull] MessagePackSerializerOptions options,
+            out EquatableTestVertex source,
+            out EquatableTestVertex target,
+            out string id,
+            out string str,
+            out bool b,
+            out int i,
+            out long l,
+            out float f,
+            out double d)
+        {
+            DeserializeEdge(ref reader, options, out source, out target);
+            id = NullableStringFormatter.Instance.Deserialize(ref reader, options);
+            str = NullableStringFormatter.Instance.Deserialize(ref reader, options);
+            b = reader.ReadBoolean();
+            i = reader.ReadInt32();
+            l = reader.ReadInt64();
+            f = SingleFormatter.Instance.Deserialize(ref reader, options);
+            d = DoubleFormatter.Instance.Deserialize(ref reader, options);
+        }
+
+        private sealed class EquatableTestVertexFormatter : FormatterBase<EquatableTestVertex>
+        {
+            /// <inheritdoc />
+            protected override int DataCount => 8;
+
+            /// <inheritdoc />
+            protected override void OnSerialize(
+                ref MessagePackWriter writer,
+                EquatableTestVertex value,
+                MessagePackSerializerOptions options)
+            {
+                SerializeEquatableTestVertex(ref writer, value, options);
+            }
+
+            /// <inheritdoc />
+            protected override EquatableTestVertex OnDeserialize(
+                ref MessagePackReader reader,
+                int dataCount,
+                ref int readCount,
+                MessagePackSerializerOptions options)
+            {
+                DeserializeEquatableTestVertex(ref reader, options,
+                    out string id,
+                    out string strDefault,
+                    out string str,
+                    out bool b,
+                    out int i,
+                    out long l,
+                    out float f,
+                    out double d);
+
+                readCount += 8;
+                return new EquatableTestVertex(id)
+                {
+                    StringDefault = strDefault,
+                    String = str,
+                    Bool = b,
+                    Int = i,
+                    Long = l,
+                    Float = f,
+                    Double = d
+                };
+            }
+        }
+
+        private sealed class EquatableAdditionalDataTestVertexFormatter : FormatterBase<EquatableAdditionalDataTestVertex>
+        {
+            /// <inheritdoc />
+            protected override int DataCount => 9;
+
+            /// <inheritdoc />
+            protected override void OnSerialize(
+                ref MessagePackWriter writer,
+                EquatableAdditionalDataTestVertex value,
+                MessagePackSerializerOptions options)
+            {
+                SerializeEquatableTestVertex(ref writer, value, options);
+                DoubleFormatter.Instance.Serialize(ref writer, value.Data, options);
+            }
+
+            /// <inheritdoc />
+            protected override EquatableAdditionalDataTestVertex OnDeserialize(
+                ref MessagePackReader reader,
+                int dataCount,
+                ref int readCount,
+                MessagePackSerializerOptions options)
+            {
+                DeserializeEquatableTestVertex(ref reader, options,
+                    out string id,
+                    out string strDefault,
+                    out string str,
+                    out bool b,
+                    out int i,
+                    out long l,
+                    out float f,
+                    out double d);
+                double data = DoubleFormatter.Instance.Deserialize(ref reader, options);
+
+                readCount += 9;
+                return new EquatableAdditionalDataTestVertex(id, data)
+                {
+                    StringDefault = strDefault,
+                    String = str,
+                    Bool = b,
+                    Int = i,
+                    Long = l,
+                    Float = f,
+                    Double = d
+                };
+            }
+        }
+
+        private sealed class EquatableTestEdgeFormatter : FormatterBase<EquatableTestEdge>
+        {
+            /// <inheritdoc />
+            protected override int DataCount => 9;
+
+            /// <inheritdoc />
+            protected override void OnSerialize(
+                ref MessagePackWriter writer,
+                EquatableTestEdge value,
+                MessagePackSerializerOptions options)
+            {
+                SerializeEquatableTestEdge(ref writer, value, options);
+            }
+
+            /// <inheritdoc />
+            protected override EquatableTestEdge OnDeserialize(
+                ref MessagePackReader reader,
+                int dataCount,
+                ref int readCount,
+                MessagePackSerializerOptions options)
+            {
+                DeserializeEquatableTestEdge(ref reader, options,
+                    out EquatableTestVertex source,
+                    out EquatableTestVertex target,
+                    out string id,
+                    out string str,
+                    out bool b,
+                    out int i,
+                    out long l,
+                    out float f,
+                    out double d);
+
+                readCount += 9;
+                return new EquatableTestEdge(source, target, id)
+                {
+                    String = str,
+                    Bool = b,
+                    Int = i,
+                    Long = l,
+                    Float = f,
+                    Double = d
+                };
+            }
+        }
+
+        private sealed class EquatableAdditionalDataTestEdgeFormatter : FormatterBase<EquatableAdditionalDataTestEdge>
+        {
+            /// <inheritdoc />
+            protected override int DataCount => 10;
+
+            /// <inheritdoc />
+            protected override void OnSerialize(
+                ref MessagePackWriter writer,
+                EquatableAdditionalDataTestEdge value,
+                MessagePackSerializerOptions options)
+            {
+                SerializeEquatableTestEdge(ref writer, value, options);
+                DoubleFormatter.Instance.Serialize(ref writer, value.Data, options);
+            }
+
+            /// <inheritdoc />
+            protected override EquatableAdditionalDataTestEdge OnDeserialize(
+                ref MessagePackReader reader,
+                int dataCount,
+                ref int readCount,
+                MessagePackSerializerOptions options)
+            {
+                DeserializeEquatableTestEdge(ref reader, options,
+                    out EquatableTestVertex source,
+                    out EquatableTestVertex target,
+                    out string id,
+                    out string str,
+                    out bool b,
+                    out int i,
+                    out long l,
+                    out float f,
+                    out double d);
+                double data = DoubleFormatter.Instance.Deserialize(ref reader, options);
+
+                readCount += 10;
+                return new EquatableAdditionalDataTestEdge(source, target, id, data)
+                {
+                    String = str,
+                    Bool = b,
+                    Int = i,
+                    Long = l,
+                    Float = f,
+                    Double = d
+                };
+            }
+        }
+
+        #endregion
+
         #region Helpers
+
+        [NotNull, ItemNotNull]
+        private static readonly IMessagePackFormatter[] TestFormatters =
+        {
+            new EquatableAdditionalDataTestVertexFormatter(),
+            new EquatableTestVertexFormatter(),
+            new EquatableAdditionalDataTestEdgeFormatter(),
+            new EquatableTestEdgeFormatter()
+        };
 
         [Pure]
         [NotNull]
@@ -28,12 +302,12 @@ namespace QuikGraph.Serialization.Tests
             // Serialize
             using (var stream = new MemoryStream())
             {
-                graph.SerializeToBinary(stream);
+                graph.SerializeToBinary(stream, TestFormatters);
 
-                // Deserialize
                 stream.Position = 0;
 
-                TGraph deserializedGraph = stream.DeserializeFromBinary<TVertex, TEdge, TGraph>();
+                // Deserialize
+                TGraph deserializedGraph = stream.DeserializeFromBinary<TVertex, TEdge, TGraph>(TestFormatters);
                 Assert.IsNotNull(deserializedGraph);
                 Assert.AreNotSame(graph, deserializedGraph);
 
@@ -271,6 +545,9 @@ namespace QuikGraph.Serialization.Tests
             {
                 Assert.Throws<ArgumentNullException>(
                     () => ((AdjacencyGraph<int, Edge<int>>)null).SerializeToBinary(stream));
+
+                Assert.Throws<ArgumentNullException>(
+                    () => ((AdjacencyGraph<int, Edge<int>>)null).SerializeToBinary(stream, (MessagePackSerializerOptions)null));
             }
 
             var graph = new AdjacencyGraph<int, Edge<int>>();
@@ -278,19 +555,41 @@ namespace QuikGraph.Serialization.Tests
             {
                 Assert.Throws<ArgumentException>(
                     () => graph.SerializeToBinary(stream));
+
+                Assert.Throws<ArgumentException>(
+                    () => graph.SerializeToBinary(stream, (MessagePackSerializerOptions)null));
             }
 
             Assert.Throws<ArgumentNullException>(
                 () => graph.SerializeToBinary(null));
 
+            Assert.Throws<ArgumentNullException>(
+                () => graph.SerializeToBinary(null, (MessagePackSerializerOptions)null));
+
+            Assert.Throws<ArgumentNullException>(
+                () => ((AdjacencyGraph<int, Edge<int>>)null).SerializeToBinary(null, (MessagePackSerializerOptions)null));
+
+
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             Assert.Throws<ArgumentNullException>(
                 () => ((Stream)null).DeserializeFromBinary<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>());
+
+            using (var stream = new MemoryStream())
+            {
+                Assert.Throws<ArgumentNullException>(
+                    () => stream.DeserializeFromBinary<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>((MessagePackSerializerOptions)null));
+            }
+
+            Assert.Throws<ArgumentNullException>(
+                () => ((Stream)null).DeserializeFromBinary<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>((MessagePackSerializerOptions)null));
 
             using (var stream = new TestStream())
             {
                 Assert.Throws<ArgumentException>(
                     () => stream.DeserializeFromBinary<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>());
+
+                Assert.Throws<ArgumentException>(
+                    () => stream.DeserializeFromBinary<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>((MessagePackSerializerOptions)null));
             }
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
             // ReSharper restore AssignNullToNotNullAttribute
