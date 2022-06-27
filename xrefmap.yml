@@ -37907,6 +37907,19 @@ references:
   commentId: T:QuikGraph.Serialization.XmlReaderExtensions
   fullName: QuikGraph.Serialization.XmlReaderExtensions
   nameWithType: XmlReaderExtensions
+- uid: QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString(System.Xml.XmlReader,System.String,System.String)
+  name: ReadElementAsNullableString(XmlReader, String, String)
+  href: api/QuikGraph.Serialization.XmlReaderExtensions.html#QuikGraph_Serialization_XmlReaderExtensions_ReadElementAsNullableString_System_Xml_XmlReader_System_String_System_String_
+  commentId: M:QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString(System.Xml.XmlReader,System.String,System.String)
+  fullName: QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString(System.Xml.XmlReader, System.String, System.String)
+  nameWithType: XmlReaderExtensions.ReadElementAsNullableString(XmlReader, String, String)
+- uid: QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString*
+  name: ReadElementAsNullableString
+  href: api/QuikGraph.Serialization.XmlReaderExtensions.html#QuikGraph_Serialization_XmlReaderExtensions_ReadElementAsNullableString_
+  commentId: Overload:QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString
+  isSpec: "True"
+  fullName: QuikGraph.Serialization.XmlReaderExtensions.ReadElementAsNullableString
+  nameWithType: XmlReaderExtensions.ReadElementAsNullableString
 - uid: QuikGraph.Serialization.XmlReaderExtensions.ReadElementContentAsArray*
   name: ReadElementContentAsArray
   href: api/QuikGraph.Serialization.XmlReaderExtensions.html#QuikGraph_Serialization_XmlReaderExtensions_ReadElementContentAsArray_
