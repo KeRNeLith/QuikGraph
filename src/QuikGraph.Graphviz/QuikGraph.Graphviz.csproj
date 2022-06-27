@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net45;netstandard1.3;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net45;netstandard1.3;netstandard2.0;net5.0</TargetFrameworks>
 
     <GeneratePackageOnBuild>$(Generate_QuikGraph_Graphviz)</GeneratePackageOnBuild>
 
@@ -60,6 +60,10 @@ New:
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <AssemblyTitle>QuikGraph.Graphviz .NET Standard 2.0</AssemblyTitle>
     <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
+    <AssemblyTitle>QuikGraph.Graphviz .NET 5.0</AssemblyTitle>
+    <DefineConstants>$(DefineConstants);NET5_0;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->

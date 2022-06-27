@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net35;net40;net461;netstandard1.3;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks>net35;net40;net461;netstandard1.3;netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
 
     <GeneratePackageOnBuild>$(Generate_QuikGraph_Serialization)</GeneratePackageOnBuild>
 
@@ -85,6 +85,10 @@ Updates:
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
     <AssemblyTitle>QuikGraph.Serialization .NET Standard 2.1</AssemblyTitle>
     <DefineConstants>$(DefineConstants);NETSTANDARD2_1;$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
+    <AssemblyTitle>QuikGraph.Serialization .NET 5.0</AssemblyTitle>
+    <DefineConstants>$(DefineConstants);NET5_0;$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->
