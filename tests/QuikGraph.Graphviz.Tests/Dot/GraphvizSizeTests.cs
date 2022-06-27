@@ -1,7 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
 using QuikGraph.Graphviz.Dot;
-using static QuikGraph.Tests.SerializationTestHelpers;
 
 namespace QuikGraph.Graphviz.Tests
 {

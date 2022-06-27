@@ -1,7 +1,6 @@
 ﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
-using static QuikGraph.Tests.SerializationTestHelpers;
 
 namespace QuikGraph.Tests.Collections
 {

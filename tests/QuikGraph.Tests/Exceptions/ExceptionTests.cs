@@ -2,7 +2,6 @@
 using System;
 using JetBrains.Annotations;
 using NUnit.Framework;
-using static QuikGraph.Tests.SerializationTestHelpers;
 
 namespace QuikGraph.Tests.Exceptions
 {
@@ -39,35 +38,6 @@ namespace QuikGraph.Tests.Exceptions
             ExceptionConstructorTest((m, e) => new NoPathFoundException(m, e));
             ExceptionConstructorTest((m, e) => new ParallelEdgeNotAllowedException(m, e));
             ExceptionConstructorTest((m, e) => new VertexNotFoundException(m, e));
-        }
-
-        private static void ExceptionSerializationTest<TException>(
-            [NotNull, InstantHandle] Func<TException> createException)
-            where TException : Exception
-        {
-            Exception exception = createException();
-
-            // Save the full ToString() value, including the exception message and stack trace.
-            string exceptionToString = exception.ToString();
-
-            Exception deserializedException = SerializeAndDeserialize(exception);
-
-            // Double-check that the exception message and stack trace (owned by the base Exception) are preserved
-            Assert.AreNotSame(exception, deserializedException);
-            Assert.AreEqual(exceptionToString, deserializedException.ToString());
-        }
-
-        [Test]
-        public void ExceptionsSerialization()
-        {
-            ExceptionSerializationTest(() => new NegativeCapacityException());
-            ExceptionSerializationTest(() => new NegativeCycleGraphException());
-            ExceptionSerializationTest(() => new NegativeWeightException());
-            ExceptionSerializationTest(() => new NonAcyclicGraphException());
-            ExceptionSerializationTest(() => new NonStronglyConnectedGraphException());
-            ExceptionSerializationTest(() => new NoPathFoundException());
-            ExceptionSerializationTest(() => new ParallelEdgeNotAllowedException());
-            ExceptionSerializationTest(() => new VertexNotFoundException());
         }
     }
 }
