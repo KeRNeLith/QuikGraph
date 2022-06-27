@@ -77,16 +77,16 @@ Misc:
     <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
-    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);$(SUPPORTED_SERIALIZATION);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Resources -->
