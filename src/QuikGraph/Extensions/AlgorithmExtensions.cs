@@ -589,7 +589,7 @@ namespace QuikGraph.Algorithms
 
             var algorithm = new TopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
             algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
+            return algorithm.SortedVertices;
         }
 
         /// <summary>
@@ -612,7 +612,7 @@ namespace QuikGraph.Algorithms
 
             var algorithm = new UndirectedTopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
             algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
+            return algorithm.SortedVertices;
         }
 
         /// <summary>
@@ -635,7 +635,7 @@ namespace QuikGraph.Algorithms
 
             var algorithm = new SourceFirstTopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
             algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
+            return algorithm.SortedVertices;
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace QuikGraph.Algorithms
 
             var algorithm = new UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
             algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
+            return algorithm.SortedVertices;
         }
 
         /// <summary>
@@ -701,7 +701,7 @@ namespace QuikGraph.Algorithms
 
             var algorithm = new SourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge>(graph, direction, graph.VertexCount);
             algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
+            return algorithm.SortedVertices;
         }
 
         #endregion

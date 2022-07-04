@@ -288,7 +288,7 @@ namespace QuikGraph
             if (computedPath.Count > 0)
             {
                 computedPath.Reverse();
-                path = computedPath.AsEnumerable();
+                path = computedPath;
                 return true;
             }
 

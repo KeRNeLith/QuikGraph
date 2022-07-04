@@ -44,7 +44,7 @@ namespace QuikGraph.Algorithms.Observers
         /// Encountered vertices.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TVertex> Vertices => _vertices.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _vertices;
 
         #region IObserver<TAlgorithm>
 

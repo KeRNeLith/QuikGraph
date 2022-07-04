@@ -293,7 +293,7 @@ namespace QuikGraph.Algorithms.Exploration
                 _verticesEdgesCache[vertex] = edgeList;
             }
 
-            edges = edgeList.AsEnumerable();
+            edges = edgeList;
             return true;
         }
 

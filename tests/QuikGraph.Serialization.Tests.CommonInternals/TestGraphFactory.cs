@@ -37,7 +37,7 @@ namespace QuikGraph.Tests
             {
                 string[] filePaths = Directory.GetFiles(testPath, "g.*.graphml");
                 if (filter is null)
-                    return filePaths.AsEnumerable();
+                    return filePaths;
                 return filePaths.Where(filter);
             }
             throw new AssertionException("GraphML folder must exist.");

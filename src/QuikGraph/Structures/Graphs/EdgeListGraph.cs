@@ -63,7 +63,7 @@ namespace QuikGraph
         public int VertexCount => GetVertices().Count;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => GetVertices().AsEnumerable();
+        public IEnumerable<TVertex> Vertices => GetVertices();
 
         [Pure]
         [NotNull, ItemNotNull]
@@ -103,7 +103,7 @@ namespace QuikGraph
         public int EdgeCount => _edges.Count;
 
         /// <inheritdoc />
-        public IEnumerable<TEdge> Edges => _edges.Keys.AsEnumerable();
+        public IEnumerable<TEdge> Edges => _edges.Keys;
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)

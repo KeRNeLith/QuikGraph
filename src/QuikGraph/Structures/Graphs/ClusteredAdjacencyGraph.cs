@@ -101,7 +101,7 @@ namespace QuikGraph
         private readonly List<IClusteredGraph> _clusters = new List<IClusteredGraph>();
 
         /// <inheritdoc />
-        public IEnumerable Clusters => _clusters.AsEnumerable();
+        public IEnumerable Clusters => _clusters;
 
         /// <inheritdoc />
         public int ClustersCount => _clusters.Count;

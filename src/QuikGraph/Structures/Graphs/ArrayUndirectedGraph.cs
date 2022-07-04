@@ -77,7 +77,7 @@ namespace QuikGraph
         private readonly IDictionary<TVertex, TEdge[]> _vertexEdges;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _vertexEdges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _vertexEdges.Keys;
 
         #endregion
 
@@ -106,7 +106,7 @@ namespace QuikGraph
         private readonly IList<TEdge> _edges;
 
         /// <inheritdoc />
-        public IEnumerable<TEdge> Edges => _edges.AsEnumerable();
+        public IEnumerable<TEdge> Edges => _edges;
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)
@@ -136,7 +136,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_vertexEdges.TryGetValue(vertex, out TEdge[] edges))
-                return edges.AsEnumerable();
+                return edges;
             throw new VertexNotFoundException();
         }
 

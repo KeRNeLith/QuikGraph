@@ -114,7 +114,7 @@ namespace QuikGraph.Algorithms.Exploration
         /// Gets the enumeration of unexplored vertices.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TVertex> UnExploredVertices => _unExploredVertices.AsEnumerable();
+        public IEnumerable<TVertex> UnExploredVertices => _unExploredVertices;
 
         /// <summary>
         /// Indicates if the algorithm finished successfully or not.

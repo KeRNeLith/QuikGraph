@@ -113,7 +113,7 @@ namespace QuikGraph
         public int VertexCount => _outEdgeStartRanges.Count;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _outEdgeStartRanges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _outEdgeStartRanges.Keys;
 
         /// <inheritdoc />
         public bool ContainsVertex(TVertex vertex)

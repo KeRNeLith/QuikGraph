@@ -132,7 +132,7 @@ namespace QuikGraph
 
             adjacentVertices.Remove(vertex);
 
-            return adjacentVertices.AsEnumerable();
+            return adjacentVertices;
         }
 
         #region IGraph<TVertex,TEdge>
@@ -154,7 +154,7 @@ namespace QuikGraph
         public int VertexCount => _adjacentEdges.Count;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _adjacentEdges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _adjacentEdges.Keys;
 
         /// <inheritdoc />
         public bool ContainsVertex(TVertex vertex)
@@ -179,7 +179,7 @@ namespace QuikGraph
         private IList<TEdge> _edges = new List<TEdge>();
 
         /// <inheritdoc />
-        public IEnumerable<TEdge> Edges => _edges.AsEnumerable();
+        public IEnumerable<TEdge> Edges => _edges;
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)
@@ -219,7 +219,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_adjacentEdges.TryGetValue(vertex, out IEdgeList<TVertex, TEdge> edges))
-                return edges.AsEnumerable();
+                return edges;
             throw new VertexNotFoundException();
         }
 

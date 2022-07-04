@@ -183,7 +183,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_inEdges.TryGetValue(vertex, out EdgeList<TVertex, TEdge> inEdges))
-                return inEdges.AsEnumerable();
+                return inEdges;
             throw new VertexNotFoundException();
         }
 
@@ -195,7 +195,7 @@ namespace QuikGraph
 
             if (_inEdges.TryGetValue(vertex, out EdgeList<TVertex, TEdge> inEdges))
             {
-                edges = inEdges.AsEnumerable();
+                edges = inEdges;
                 return true;
             }
 

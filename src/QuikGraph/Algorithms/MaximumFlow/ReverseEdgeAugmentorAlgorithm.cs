@@ -50,7 +50,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// Edges added to the initial graph (augmented ones).
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TEdge> AugmentedEdges => _augmentedEdges.AsEnumerable();
+        public IEnumerable<TEdge> AugmentedEdges => _augmentedEdges;
 
         /// <summary>
         /// Edges associated to their reversed edges.

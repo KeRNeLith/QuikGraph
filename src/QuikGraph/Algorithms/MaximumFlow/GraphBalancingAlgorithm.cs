@@ -181,7 +181,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// Enumerable of vertices that add surplus to the graph balance.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TVertex> SurplusVertices => _surplusVertices.AsEnumerable();
+        public IEnumerable<TVertex> SurplusVertices => _surplusVertices;
 
         [NotNull, ItemNotNull]
         private readonly List<TEdge> _surplusEdges = new List<TEdge>();
@@ -190,7 +190,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// Enumerable of edges linked to vertices that add surplus to the graph balance.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TEdge> SurplusEdges => _surplusEdges.AsEnumerable();
+        public IEnumerable<TEdge> SurplusEdges => _surplusEdges;
 
         [NotNull, ItemNotNull]
         private readonly List<TVertex> _deficientVertices = new List<TVertex>();
@@ -199,7 +199,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// Enumerable of vertices that add deficit to the graph balance.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TVertex> DeficientVertices => _deficientVertices.AsEnumerable();
+        public IEnumerable<TVertex> DeficientVertices => _deficientVertices;
 
         [NotNull, ItemNotNull]
         private readonly List<TEdge> _deficientEdges = new List<TEdge>();
@@ -208,7 +208,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// Enumerable of edges linked to vertices that add deficit to the graph balance.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TEdge> DeficientEdges => _deficientEdges.AsEnumerable();
+        public IEnumerable<TEdge> DeficientEdges => _deficientEdges;
 
         /// <summary>
         /// Edges capacities.

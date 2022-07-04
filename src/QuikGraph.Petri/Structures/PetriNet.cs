@@ -50,19 +50,19 @@ namespace QuikGraph.Petri
         private readonly List<IPlace<TToken>> _places = new List<IPlace<TToken>>();
 
         /// <inheritdoc />
-        public IEnumerable<IPlace<TToken>> Places => _places.AsEnumerable();
+        public IEnumerable<IPlace<TToken>> Places => _places;
 
         [NotNull, ItemNotNull]
         private readonly List<ITransition<TToken>> _transitions = new List<ITransition<TToken>>();
 
         /// <inheritdoc />
-        public IEnumerable<ITransition<TToken>> Transitions => _transitions.AsEnumerable();
+        public IEnumerable<ITransition<TToken>> Transitions => _transitions;
 
         [NotNull, ItemNotNull]
         private readonly List<IArc<TToken>> _arcs = new List<IArc<TToken>>();
 
         /// <inheritdoc />
-        public IEnumerable<IArc<TToken>> Arcs => _arcs.AsEnumerable();
+        public IEnumerable<IArc<TToken>> Arcs => _arcs;
 
         [NotNull]
         private readonly PetriGraph<TToken> _graph = new PetriGraph<TToken>();

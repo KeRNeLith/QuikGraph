@@ -46,7 +46,7 @@ namespace QuikGraph.Algorithms.Observers
         /// Encountered edges.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<TEdge> Edges => _edges.AsEnumerable();
+        public IEnumerable<TEdge> Edges => _edges;
 
         #region IObserver<TAlgorithm>
 

@@ -88,7 +88,7 @@ namespace QuikGraph
         private readonly IDictionary<TVertex, InOutEdges> _vertexEdges;
 
         /// <inheritdoc />
-        public IEnumerable<TVertex> Vertices => _vertexEdges.Keys.AsEnumerable();
+        public IEnumerable<TVertex> Vertices => _vertexEdges.Keys;
 
         /// <inheritdoc />
         public bool ContainsVertex(TVertex vertex)
@@ -202,7 +202,7 @@ namespace QuikGraph
         public IEnumerable<TEdge> OutEdges(TVertex vertex)
         {
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
-                return inOutEdges.OutEdges.AsEnumerable();
+                return inOutEdges.OutEdges;
 
             throw new VertexNotFoundException();
         }
@@ -215,7 +215,7 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
             {
-                edges = inOutEdges.OutEdges.AsEnumerable();
+                edges = inOutEdges.OutEdges;
                 return true;
             }
 
@@ -261,7 +261,7 @@ namespace QuikGraph
         public IEnumerable<TEdge> InEdges(TVertex vertex)
         {
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
-                return inOutEdges.InEdges.AsEnumerable();
+                return inOutEdges.InEdges;
 
             throw new VertexNotFoundException();
         }
@@ -274,7 +274,7 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
             {
-                edges = inOutEdges.InEdges.AsEnumerable();
+                edges = inOutEdges.InEdges;
                 return true;
             }
 
