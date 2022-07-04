@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -46,8 +46,8 @@ Misc:
   <!-- Dependencies -->
   <!-- Externals -->
   <ItemGroup>
-    <PackageReference Include="AutomaticGraphLayout" Version="1.1.11" />
-    <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.11" />
+    <PackageReference Include="AutomaticGraphLayout" Version="1.1.12" />
+    <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.12" />
   </ItemGroup>
 
   <!-- QuikGraph reference -->

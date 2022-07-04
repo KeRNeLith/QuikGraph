@@ -54,7 +54,7 @@
   <!-- Dependencies -->
   <!-- Externals -->
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.43" />
   </ItemGroup>
 
   <!-- Shared Projects -->
