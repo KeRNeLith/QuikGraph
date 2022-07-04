@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{FAAD5B1C-1217-48D6-B1EF-7CAC0440D6A4}"
 	ProjectSection(SolutionItems) = preProject
@@ -133,6 +133,7 @@ Global
 		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{90e1536b-6b95-4072-8c60-10e4dc30ae1a}*SharedItemsImports = 5
 		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{98e60a67-c326-4b83-8eff-b77e9c651945}*SharedItemsImports = 13
 		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{a9a5c115-0680-44b3-a87e-5ecf4c93814e}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{ce984360-54f0-406f-b8a9-e75897daed3b}*SharedItemsImports = 13
 		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{f7008baf-1f3a-4406-80b1-4a2f2cdc0cdd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal
