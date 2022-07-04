@@ -34,23 +34,17 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
-Fixes:
-- Fix the serialization implementation of UndirectedGraph, ArrayUndirectedGraph and UndirectedBidirectionalGraph.
-- Fix A* implementation to also compute cost on tree edge.
-
+    <PackageReleaseNotes>➟ Release 2.5.0
 Updates:
-- Remove some serializable attributes from algorithms and predicates classes (homognization).
-- Remove serializable attributes from delegate graphs implementations.
-- All QuikGraph exceptions can be constructed with a custom message and an eventual inner exception.
-- CompressedSparseRowGraph also implements IEdgeListGraph interface.
-- EquateGraphs.Equate helpers now supports a wider range of graph comparisons.
+- Input type for transitive closure/reduction algorithms is more open (IEdgeListGraph rather than BidirectionalGraph).
+- CryptoRandom no more use deprecate random number generator.
+- Extends algorithms using CrytoRandom by default (CyclePoppingRandomTreeAlgorithm, MarkovEdgeChainBase, MinimumVertexCoverApproximationAlgorithm).
 
 New:
-- Add the IDistancesCollection to interface the distance information retrieval from shortest path algorithms. Legacy accesses to distances are marked as obsolete.
+- Add cycle checking for edge set and undirected graphs (DAG - Directed Acyclic Graph check).
 
 Misc:
-- Remove the dependency to System.Collections.NonGeneric for .NET Standard 1.3 target.</PackageReleaseNotes>
+- Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET</PackageTags>
   </PropertyGroup>
 

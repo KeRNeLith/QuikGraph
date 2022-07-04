@@ -28,9 +28,22 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Serialization</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
+    <PackageReleaseNotes>➟ Release 2.5.0
+Fixes:
+- Fix fields being written several times during GraphML serialization for types with multiple inheritance layers.
+- Fix user data that may be skipped during GraphML deserialization.
+- Better handle null strings being serialized through GraphML serialization.
+
 Updates:
-- Update package dependencies.</PackageReleaseNotes>
+- Deprecate binary serialization for targets lower than .NET Framework 4.6.1.
+- Update package dependencies.
+
+Optims:
+- Optimize generated method calls for GraphML serialization.
+
+Misc:
+- Add target .NET Framework 4.6.1.
+- Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization</PackageTags>
   </PropertyGroup>
 

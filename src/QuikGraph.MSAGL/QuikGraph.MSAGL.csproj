@@ -28,12 +28,12 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.MSAGL</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.0
-Fixes:
-- Update reference to AutomaticGraphLayout packages in order to fix assembly strong naming issues.
-
+    <PackageReleaseNotes>➟ Release 2.5.0
 Updates:
-- Update package dependencies.</PackageReleaseNotes>
+- Update package dependencies.
+
+Misc:
+- Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET MSAGL</PackageTags>
   </PropertyGroup>
 

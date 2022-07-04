@@ -28,15 +28,13 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Graphviz</PackageId>
-    <PackageReleaseNotes>➟ Release 2.3.1
-Fixes:
-- Properly treat common vertex format when converting a graph to Graphviz.
-
+    <PackageReleaseNotes>➟ Release 2.5.0
 Updates:
-- Label has priority if set over Record on GraphvizVertex.
+- Deprecate ToSvg API (underlying web service is down).
+- Update package dependencies.
 
-New:
-- Add support of HTML labels.</PackageReleaseNotes>
+Misc:
+- Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization Graphviz</PackageTags>
   </PropertyGroup>
 

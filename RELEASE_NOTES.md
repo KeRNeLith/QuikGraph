@@ -1,5 +1,127 @@
 # Release notes
 
+## What's new in 2.5.0 July 4 2022
+
+### QuikGraph
+
+#### Updates:
+* Input type for transitive closure/reduction algorithms is more open (IEdgeListGraph rather than BidirectionalGraph).
+* CryptoRandom no more use deprecate random number generator.
+* Extends algorithms using CrytoRandom by default (CyclePoppingRandomTreeAlgorithm, MarkovEdgeChainBase, MinimumVertexCoverApproximationAlgorithm).
+
+#### New:
+* Add cycle checking for edge set and undirected graphs (DAG - Directed Acyclic Graph check).
+
+#### Misc:
+* Assembly is CLS compliant (Common Language Specification).
+
+### QuikGraph.Serialization
+
+#### Fixes:
+* Fix fields being written several times during GraphML serialization for types with multiple inheritance layers.
+* Fix user data that may be skipped during GraphML deserialization.
+* Better handle null strings being serialized through GraphML serialization.
+
+#### Updates:
+* Deprecate binary serialization for targets lower than .NET Framework 4.6.1.
+* Update package dependencies.
+
+#### Optims:
+* Optimize generated method calls for GraphML serialization.
+
+#### Misc:
+* Add target .NET Framework 4.6.1.
+* Assembly is CLS compliant (Common Language Specification).
+
+### QuikGraph.Graphviz
+
+#### Updates:
+* Deprecate ToSvg API (underlying web service is down).
+* Update package dependencies.
+
+#### Misc:
+* Assembly is CLS compliant (Common Language Specification).
+
+### QuikGraph.Data
+
+#### Updates:
+* Update package dependencies.
+
+#### Misc:
+* Assembly is CLS compliant (Common Language Specification).
+
+### QuikGraph.MSAGL
+
+#### Updates:
+* Update package dependencies.
+
+#### Misc:
+* Assembly is CLS compliant (Common Language Specification).
+
+### QuikGraph.Petri
+
+#### Updates:
+* Update package dependencies.
+
+#### Misc:
+* Assembly is CLS compliant (Common Language Specification).
+
+---
+
+## What's new in 2.4.0 July 3 2022
+
+### QuikGraph
+
+#### Updates:
+* Vertices and edges removal notifications from AdjacencyGraph, EdgeListGraph, BidirectionalGraph and UndirectedGraph are more consistent.
+
+#### Optims:
+* Optimize vertices and/or edges removal operations on AdjacencyGraph, BidirectionalGraph, BidirectionalMatrixGraph, ClusteredAdjacencyGraph and UndirectedGraph.
+
+#### New:
+* Expose a Prim relaxer.
+
+#### Misc:
+* Improve library documentation related to raisable exceptions.
+* Remove the dependency to System.Reflection.TypeExtensions for .NET Standard 1.3 target.
+
+### QuikGraph.Serialization
+
+#### Updates:
+* GraphML deserialization extensions now work on IMutableVertexAndEdgeSet rather than IMutableVertexAndEdgeListGraph (allow deserialization on undirected graph).
+* Update package dependencies.
+
+#### Misc:
+* Add target to reduce dependencies in some cases.
+
+### QuikGraph.Graphviz
+
+#### Fixes:
+* Fix the conversion to Graphviz from delegate graph implementations.
+
+#### Optims:
+* Slight optimizations.
+
+#### Updates:
+* Update package dependencies.
+
+### QuikGraph.Data
+
+#### Updates:
+* Update package dependencies.
+
+### QuikGraph.MSAGL
+
+#### Updates:
+* Update package dependencies.
+
+### QuikGraph.Petri
+
+#### Updates:
+* Update package dependencies.
+
+---
+
 ## What's new in 2.3.1 August 30 2021
 
 ### QuikGraph.Graphviz
@@ -12,6 +134,8 @@
 
 #### New:
 * Add support of HTML labels.
+
+---
 
 ## What's new in 2.3.0 February 4 2021
 
