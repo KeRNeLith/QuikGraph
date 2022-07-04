@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Collections;
 
@@ -20,7 +19,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         private readonly TopologicalSortDirection _direction;
 
         [NotNull, ItemNotNull]
-        private readonly IList<TVertex> _sortedVertices;
+        private readonly List<TVertex> _sortedVertices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceFirstBidirectionalTopologicalSortAlgorithm{TVertex,TEdge}"/> class.

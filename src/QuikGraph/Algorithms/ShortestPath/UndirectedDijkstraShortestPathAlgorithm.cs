@@ -19,7 +19,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         , IDistanceRecorderAlgorithm<TVertex>
         where TEdge : IEdge<TVertex>
     {
-        private IPriorityQueue<TVertex> _vertexQueue;
+        private FibonacciQueue<TVertex, double> _vertexQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UndirectedDijkstraShortestPathAlgorithm{TVertex,TEdge}"/> class.

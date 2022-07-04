@@ -74,7 +74,7 @@ namespace QuikGraph
         public int VertexCount => _vertexEdges.Count;
 
         [NotNull]
-        private readonly IDictionary<TVertex, TEdge[]> _vertexEdges;
+        private readonly Dictionary<TVertex, TEdge[]> _vertexEdges;
 
         /// <inheritdoc />
         public IEnumerable<TVertex> Vertices => _vertexEdges.Keys;
@@ -103,7 +103,7 @@ namespace QuikGraph
         public int EdgeCount { get; }
 
         [NotNull, ItemNotNull]
-        private readonly IList<TEdge> _edges;
+        private readonly List<TEdge> _edges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> Edges => _edges;
@@ -204,10 +204,10 @@ namespace QuikGraph
         private ArrayUndirectedGraph(SerializationInfo info, StreamingContext context)
         {
             AllowParallelEdges = (bool)info.GetValue("AllowParallelEdges", typeof(bool));
-            _vertexEdges = (IDictionary<TVertex, TEdge[]>)info.GetValue(
+            _vertexEdges = (Dictionary<TVertex, TEdge[]>)info.GetValue(
                 "VertexEdges",
-                typeof(IDictionary<TVertex, TEdge[]>));
-            _edges = (IList<TEdge>)info.GetValue("Edges", typeof(IList<TEdge>));
+                typeof(Dictionary<TVertex, TEdge[]>));
+            _edges = (List<TEdge>)info.GetValue("Edges", typeof(List<TEdge>));
             EdgeEqualityComparer = EdgeExtensions.GetUndirectedVertexEquality<TVertex, TEdge>();
             EdgeCount = _edges.Count;
         }

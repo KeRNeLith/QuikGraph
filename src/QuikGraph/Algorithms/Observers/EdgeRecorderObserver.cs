@@ -40,7 +40,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         [NotNull, ItemNotNull]
-        private readonly IList<TEdge> _edges;
+        private readonly List<TEdge> _edges;
 
         /// <summary>
         /// Encountered edges.

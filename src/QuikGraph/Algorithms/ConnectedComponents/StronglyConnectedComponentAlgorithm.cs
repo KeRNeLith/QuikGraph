@@ -22,7 +22,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         , IConnectedComponentAlgorithm<TVertex, TEdge, IVertexListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        [NotNull]
+        [NotNull, ItemNotNull]
         private readonly Stack<TVertex> _stack;
 
         private int _dfsTime;

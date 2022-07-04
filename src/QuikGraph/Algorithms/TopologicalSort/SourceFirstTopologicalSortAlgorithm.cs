@@ -18,7 +18,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         private readonly BinaryQueue<TVertex, int> _heap;
 
         [NotNull, ItemNotNull]
-        private readonly IList<TVertex> _sortedVertices;
+        private readonly List<TVertex> _sortedVertices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SourceFirstTopologicalSortAlgorithm{TVertex,TEdge}"/> class.

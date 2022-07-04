@@ -12,7 +12,7 @@ namespace QuikGraph.Algorithms.TSP
         private readonly BidirectionalGraph<TVertex, TEdge> _graph;
 
         [NotNull]
-        private readonly IDictionary<EquatableEdge<TVertex>, double> _weight;
+        private readonly Dictionary<EquatableEdge<TVertex>, double> _weight;
 
         [NotNull]
         public BidirectionalGraph<TVertex, TEdge> Path { get; }

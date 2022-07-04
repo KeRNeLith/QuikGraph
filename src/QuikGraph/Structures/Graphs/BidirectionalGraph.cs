@@ -183,7 +183,7 @@ namespace QuikGraph
         }
 
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _vertexOutEdges;
+        private VertexEdgeDictionary<TVertex, TEdge> _vertexOutEdges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> OutEdges(TVertex vertex)
@@ -286,7 +286,7 @@ namespace QuikGraph
         }
 
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _vertexInEdges;
+        private VertexEdgeDictionary<TVertex, TEdge> _vertexInEdges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> InEdges(TVertex vertex)

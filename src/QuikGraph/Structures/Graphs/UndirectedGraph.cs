@@ -36,7 +36,7 @@ namespace QuikGraph
         where TEdge : IEdge<TVertex>
     {
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _adjacentEdges =
+        private VertexEdgeDictionary<TVertex, TEdge> _adjacentEdges =
             new VertexEdgeDictionary<TVertex, TEdge>();
 
         /// <summary>
@@ -176,7 +176,7 @@ namespace QuikGraph
         public int EdgeCount { get; private set; }
 
         [NotNull, ItemNotNull]
-        private IList<TEdge> _edges = new List<TEdge>();
+        private List<TEdge> _edges = new List<TEdge>();
 
         /// <inheritdoc />
         public IEnumerable<TEdge> Edges => _edges;
@@ -709,10 +709,10 @@ namespace QuikGraph
             : this((bool)info.GetValue("AllowParallelEdges", typeof(bool)))
         {
             EdgeCapacity = (int)info.GetValue("EdgeCapacity", typeof(int));
-            _adjacentEdges = (IVertexEdgeDictionary<TVertex, TEdge>)info.GetValue(
+            _adjacentEdges = (VertexEdgeDictionary<TVertex, TEdge>)info.GetValue(
                 "AdjacentEdges",
-                typeof(IVertexEdgeDictionary<TVertex, TEdge>));
-            _edges = (IList<TEdge>)info.GetValue("Edges", typeof(IList<TEdge>));
+                typeof(VertexEdgeDictionary<TVertex, TEdge>));
+            _edges = (List<TEdge>)info.GetValue("Edges", typeof(List<TEdge>));
             EdgeCount = _edges.Count;
         }
 
@@ -741,8 +741,8 @@ namespace QuikGraph
         #region ICloneable
 
         private UndirectedGraph(
-            [NotNull, ItemNotNull] IList<TEdge> edges,
-            [NotNull] IVertexEdgeDictionary<TVertex, TEdge> adjacentEdges,
+            [NotNull, ItemNotNull] List<TEdge> edges,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> adjacentEdges,
             [NotNull] EdgeEqualityComparer<TVertex> edgeEqualityComparer,
             int edgeCapacity,
             bool allowParallelEdges)

@@ -38,7 +38,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         [NotNull, ItemNotNull]
-        private readonly IList<TVertex> _vertices;
+        private readonly List<TVertex> _vertices;
 
         /// <summary>
         /// Encountered vertices.

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Algorithms.Search;
 
@@ -14,7 +13,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         where TEdge : IEdge<TVertex>
     {
         [NotNull, ItemNotNull]
-        private readonly IList<TVertex> _sortedVertices;
+        private readonly List<TVertex> _sortedVertices;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UndirectedTopologicalSortAlgorithm{TVertex,TEdge}"/> class.
@@ -85,7 +84,8 @@ namespace QuikGraph.Algorithms.TopologicalSort
                     dfs.BackEdge -= BackEdge;
                     dfs.FinishVertex -= OnVertexFinished;
 
-                    SortedVertices = _sortedVertices.Reverse().ToArray();
+                    _sortedVertices.Reverse();
+                    SortedVertices = _sortedVertices.ToArray();
                 }
             }
         }

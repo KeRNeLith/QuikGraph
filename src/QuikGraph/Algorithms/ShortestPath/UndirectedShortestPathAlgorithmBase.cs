@@ -22,7 +22,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         /// <summary>
         /// Vertices distances.
         /// </summary>
-        private IDictionary<TVertex, double> _distances;
+        private Dictionary<TVertex, double> _distances;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UndirectedShortestPathAlgorithmBase{TVertex,TEdge}"/> class.

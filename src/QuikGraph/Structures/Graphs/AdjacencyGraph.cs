@@ -107,7 +107,7 @@ namespace QuikGraph
         public int VertexCount => _vertexEdges.Count;
 
         [NotNull]
-        private IVertexEdgeDictionary<TVertex, TEdge> _vertexEdges;
+        private VertexEdgeDictionary<TVertex, TEdge> _vertexEdges;
 
         /// <inheritdoc />
         public virtual IEnumerable<TVertex> Vertices => _vertexEdges.Keys;
@@ -659,7 +659,7 @@ namespace QuikGraph
         #region ICloneable
 
         private AdjacencyGraph(
-            [NotNull] IVertexEdgeDictionary<TVertex, TEdge> vertexEdges,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> vertexEdges,
             int edgeCount,
             int edgeCapacity,
             bool allowParallelEdges)
