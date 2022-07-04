@@ -42,7 +42,7 @@
   <ItemGroup Condition="$(UseQuikGraphMSAGLNuget)">
     <PackageReference Include="AutomaticGraphLayout" Version="1.1.11" />
     <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.11" />
-    <PackageReference Include="QuikGraph.MSAGL" Version="2.3.0" />
+    <PackageReference Include="QuikGraph.MSAGL" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup Condition="!$(UseQuikGraphMSAGLNuget)">
     <ProjectReference Include="..\..\src\QuikGraph.MSAGL\QuikGraph.MSAGL.csproj" />

@@ -60,7 +60,7 @@
   <!-- Projects -->
   <!-- QuikGraph.Petri reference -->
   <ItemGroup Condition="$(UseQuikGraphPetriNuget)">
-    <PackageReference Include="QuikGraph.Petri" Version="2.3.0" />
+    <PackageReference Include="QuikGraph.Petri" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup Condition="!$(UseQuikGraphPetriNuget)">
     <ProjectReference Include="..\..\src\QuikGraph.Petri\QuikGraph.Petri.csproj" />

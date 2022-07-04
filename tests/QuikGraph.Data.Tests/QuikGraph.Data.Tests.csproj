@@ -58,7 +58,7 @@
   <!-- Projects -->
   <!-- QuikGraph.Data reference -->
   <ItemGroup Condition="$(UseQuikGraphDataNuget)">
-    <PackageReference Include="QuikGraph.Data" Version="2.3.0" />
+    <PackageReference Include="QuikGraph.Data" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup Condition="!$(UseQuikGraphDataNuget)">
     <ProjectReference Include="..\..\src\QuikGraph.Data\QuikGraph.Data.csproj" />

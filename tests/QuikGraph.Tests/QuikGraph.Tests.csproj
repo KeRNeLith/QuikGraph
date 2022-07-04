@@ -66,14 +66,14 @@
 
   <!-- QuikGraph reference -->
   <ItemGroup Condition="$(UseQuikGraphCoreNuget)">
-    <PackageReference Include="QuikGraph" Version="2.3.0" />
+    <PackageReference Include="QuikGraph" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup Condition="!$(UseQuikGraphCoreNuget)">
     <ProjectReference Include="..\..\src\QuikGraph\QuikGraph.csproj" />
   </ItemGroup>
   <!-- QuikGraph.Serialization reference -->
   <ItemGroup Condition="$(UseQuikGraphSerializationNuget)">
-    <PackageReference Include="QuikGraph.Serialization" Version="2.3.0" />
+    <PackageReference Include="QuikGraph.Serialization" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup Condition="!$(UseQuikGraphSerializationNuget)">
     <ProjectReference Include="..\..\src\QuikGraph.Serialization\QuikGraph.Serialization.csproj" />
