@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace QuikGraph.Serialization.Collections
 {
     /// <summary>
-    /// Implementation of a <see cref="Dictionary{TKey,TValue}"/> made for serialization.
+    /// Implementation of a <see cref="T:System.Collections.Generic.Dictionary{TKey,TValue}"/> made for serialization.
     /// </summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>

@@ -23,7 +23,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Default <see cref="IFormatterResolver"/> used for serialization with QuikGraph structures.
+        /// Default <see cref="T:MessagePack.IFormatterResolver"/> used for serialization with QuikGraph structures.
         /// </summary>
         [NotNull]
         public static IFormatterResolver DefaultResolver { get; }

@@ -20,7 +20,7 @@ namespace QuikGraph.Serialization
     {
 #if SUPPORTS_BINARY_GRAPH_SERIALIZATION
         /// <summary>
-        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
@@ -56,14 +56,14 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">The graph to serialize.</param>
         /// <param name="stream">Stream in which serializing the graph.</param>
         /// <param name="formatters">
-        /// A list of instances of <see cref="IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
+        /// A list of instances of <see cref="T:MessagePack.Formatters.IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
         /// The formatters are searched in the order given, so if two formatters support serializing the same type, the first one is used.
         /// </param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
@@ -92,7 +92,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="MessagePackSerializer"/>.
+        /// Serializes the <paramref name="graph"/> to the <paramref name="stream"/> using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
@@ -111,7 +111,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
@@ -141,14 +141,14 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <typeparam name="TGraph">Graph type.</typeparam>
         /// <param name="stream">Stream from which deserializing the graph.</param>
         /// <param name="formatters">
-        /// A list of instances of <see cref="IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
+        /// A list of instances of <see cref="T:MessagePack.Formatters.IMessagePackFormatter{T}"/> to prefer (above the <see cref="BinaryConstants.DefaultResolver"/>).
         /// The formatters are searched in the order given, so if two formatters support serializing the same type, the first one is used.
         /// </param>
         /// <returns>Deserialized graph.</returns>
@@ -173,7 +173,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="MessagePackSerializer"/>.
+        /// Deserializes a graph instance from a <paramref name="stream"/> that was serialized using the <see cref="T:MessagePack.MessagePackSerializer"/>.
         /// </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
