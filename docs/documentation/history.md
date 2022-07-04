@@ -4,9 +4,9 @@
 
 Below is some summarized information about the history of this library in order to have a better idea of where it comes from.
 
-- [QuickGraph](#QuickGraph)
-- [YC.QuickGraph](#YC.QuickGraph)
-- [QuikGraph](#QuikGraph) <= Here we are
+- [QuickGraph](#quickgraph)
+- [YC.QuickGraph](#ycquickgraph)
+- [QuikGraph](#quikgraph) <= Here we are
 
 ## QuickGraph
 
