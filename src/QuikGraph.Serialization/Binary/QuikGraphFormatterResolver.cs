@@ -46,15 +46,10 @@ namespace QuikGraph.Serialization
         // GetFormatter<T>'s get cost should be minimized so use type cache.
         private static class FormatterCache<T>
         {
+            // Generic's static constructor should be minimized for reduce type generation size!
+            // use outer helper method
             [CanBeNull]
-            public static readonly IMessagePackFormatter<T> Formatter;
-
-            static FormatterCache()
-            {
-                // Generic's static constructor should be minimized for reduce type generation size!
-                // use outer helper method
-                Formatter = (IMessagePackFormatter<T>)FormatterResolverCache.GetFormatter(typeof(T));
-            }
+            public static readonly IMessagePackFormatter<T> Formatter = (IMessagePackFormatter<T>)FormatterResolverCache.GetFormatter(typeof(T));
         }
     }
 }

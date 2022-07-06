@@ -1,5 +1,10 @@
 ﻿#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
+#if SUPPORTS_SERIALIZATION
+using System;
+using System.Runtime.Serialization;
+#endif
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 namespace QuikGraph.Serialization.Collections
 {
@@ -8,6 +13,9 @@ namespace QuikGraph.Serialization.Collections
     /// </summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public sealed class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>
     {
         /// <summary>
@@ -26,6 +34,13 @@ namespace QuikGraph.Serialization.Collections
             : base(capacity)
         {
         }
+
+#if SUPPORTS_SERIALIZATION
+        private SerializableDictionary([NotNull] SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+#endif
     }
 }
 #endif

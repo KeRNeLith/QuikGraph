@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Collections;
 using QuikGraph.Serialization.Collections;
@@ -87,16 +88,14 @@ namespace QuikGraph.Serialization
             if (FormattersCache.TryGetValue(objectType, out object formatter))
                 return formatter;
 
-            foreach (Mapping mapping in FormatterMappings)
+            int formatterIndex = Array.FindIndex(FormatterMappings, mapping => objectType.IsAssignableToGenericType(mapping.ObjectType));
+            if (formatterIndex >= 0)
             {
-                if (objectType.IsAssignableToGenericType(mapping.ObjectType))
-                {
-                    Type formatterType = mapping.FormatterType.MakeGenericType(objectType.GenericTypeArguments);
-                    Debug.Assert(!formatterType.IsGenericTypeDefinition);
-                    formatter = Activator.CreateInstance(formatterType);
-                    FormattersCache[objectType] = formatter;
-                    return formatter;
-                }
+                Type formatterType = FormatterMappings[formatterIndex].FormatterType.MakeGenericType(objectType.GenericTypeArguments);
+                Debug.Assert(!formatterType.IsGenericTypeDefinition);
+                formatter = Activator.CreateInstance(formatterType);
+                FormattersCache[objectType] = formatter;
+                return formatter;
             }
 
             // If type can not get, must return null for fallback mechanism
@@ -119,14 +118,9 @@ namespace QuikGraph.Serialization
                 if ((type.IsGenericType ? type.GetGenericTypeDefinition() : type) == genericType)
                     return true;
 
-                if (genericType.IsInterface)
-                {
-                    foreach (Type interfaceType in type.GetInterfaces())
-                    {
-                        if (interfaceType.IsAssignableToGenericType(genericType))
-                            return true;
-                    }
-                }
+                if (genericType.IsInterface
+                    && type.GetInterfaces().Any(interfaceType => interfaceType.IsAssignableToGenericType(genericType)))
+                    return true;
 
                 type = type.BaseType;
             }
