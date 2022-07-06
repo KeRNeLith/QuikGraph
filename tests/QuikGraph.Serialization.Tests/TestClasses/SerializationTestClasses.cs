@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
@@ -663,7 +663,53 @@ namespace QuikGraph.Serialization.Tests
         {
             if (other is null)
                 return false;
-            return Id == other.Id;
+            if (ReferenceEquals(this, other))
+                return true;
+            return _id == other._id
+                   && _firstName == other._firstName
+                   && _lastName == other._lastName
+                   && _middleName == other._middleName
+                   && _suffix == other._suffix
+                   && _nickName == other._nickName
+                   && _maidenName == other._maidenName
+                   && _gender == other._gender
+                   && Nullable.Equals(_birthDate, other._birthDate)
+                   && _birthPlace == other._birthPlace
+                   && Nullable.Equals(_deathDate, other._deathDate)
+                   && _deathPlace == other._deathPlace
+                   && _isLiving == other._isLiving;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
+        {
+            if (obj is null)
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (GetType() != obj.GetType())
+                return false;
+            return Equals((Person)obj);
+        }
+
+        /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
+        public override int GetHashCode()
+        {
+            int hashCode = _id.GetHashCode();
+            hashCode = (hashCode * 397) ^ _firstName.GetHashCode();
+            hashCode = (hashCode * 397) ^ (_lastName != null ? _lastName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (_middleName != null ? _middleName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (_suffix != null ? _suffix.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (_nickName != null ? _nickName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (_maidenName != null ? _maidenName.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ (int)_gender;
+            hashCode = (hashCode * 397) ^ _birthDate.GetHashCode();
+            hashCode = (hashCode * 397) ^ (_birthPlace != null ? _birthPlace.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ _deathDate.GetHashCode();
+            hashCode = (hashCode * 397) ^ (_deathPlace != null ? _deathPlace.GetHashCode() : 0);
+            hashCode = (hashCode * 397) ^ _isLiving.GetHashCode();
+            return hashCode;
         }
 
         #endregion

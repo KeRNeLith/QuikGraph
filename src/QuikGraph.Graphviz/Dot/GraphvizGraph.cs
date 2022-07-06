@@ -251,7 +251,7 @@ namespace QuikGraph.Graphviz.Dot
 
         [Pure]
         [NotNull]
-        internal string GenerateDot([NotNull] Dictionary<string, object> properties)
+        internal static string GenerateDot([NotNull] Dictionary<string, object> properties)
         {
             var dotParts = new List<string>(properties.Count);
             foreach (KeyValuePair<string, object> pair in properties)

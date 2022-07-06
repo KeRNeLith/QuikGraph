@@ -56,6 +56,28 @@ namespace QuikGraph
                    && EqualityComparer<TVertex>.Default.Equals(Target, other.Target);
         }
 
+        /// <summary>
+        /// Indicates whether both <see cref="SEquatableEdge{TVertex}"/> are equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SEquatableEdge{TVertex}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SEquatableEdge{TVertex}"/> to compare.</param>
+        /// <returns>True if both <see cref="SEquatableEdge{TVertex}"/> are equal, otherwise false.</returns>
+        public static bool operator ==(SEquatableEdge<TVertex> edge1, SEquatableEdge<TVertex> edge2)
+        {
+            return edge1.Equals(edge2);
+        }
+
+        /// <summary>
+        /// Indicates whether both <see cref="SEquatableEdge{TVertex}"/> are not equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SEquatableEdge{TVertex}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SEquatableEdge{TVertex}"/> to compare.</param>
+        /// <returns>True if both <see cref="SEquatableEdge{TVertex}"/> are not equal, otherwise false.</returns>
+        public static bool operator !=(SEquatableEdge<TVertex> edge1, SEquatableEdge<TVertex> edge2)
+        {
+            return !(edge1 == edge2);
+        }
+
         /// <inheritdoc />
         public override int GetHashCode()
         {

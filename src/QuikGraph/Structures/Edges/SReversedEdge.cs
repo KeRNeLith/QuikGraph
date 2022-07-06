@@ -57,6 +57,28 @@ namespace QuikGraph
             return EqualityComparer<TEdge>.Default.Equals(OriginalEdge, other.OriginalEdge);
         }
 
+        /// <summary>
+        /// Indicates whether both <see cref="SReversedEdge{TVertex,TEdge}"/> are equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SReversedEdge{TVertex,TEdge}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SReversedEdge{TVertex,TEdge}"/> to compare.</param>
+        /// <returns>True if both <see cref="SReversedEdge{TVertex,TEdge}"/> are equal, otherwise false.</returns>
+        public static bool operator ==(SReversedEdge<TVertex, TEdge> edge1, SReversedEdge<TVertex, TEdge> edge2)
+        {
+            return edge1.Equals(edge2);
+        }
+
+        /// <summary>
+        /// Indicates whether both <see cref="SReversedEdge{TVertex,TEdge}"/> are not equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SReversedEdge{TVertex,TEdge}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SReversedEdge{TVertex,TEdge}"/> to compare.</param>
+        /// <returns>True if both <see cref="SReversedEdge{TVertex,TEdge}"/> are not equal, otherwise false.</returns>
+        public static bool operator !=(SReversedEdge<TVertex, TEdge> edge1, SReversedEdge<TVertex, TEdge> edge2)
+        {
+            return !(edge1 == edge2);
+        }
+
         /// <inheritdoc />
         public override int GetHashCode()
         {

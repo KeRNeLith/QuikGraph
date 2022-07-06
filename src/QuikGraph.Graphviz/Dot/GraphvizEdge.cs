@@ -191,7 +191,7 @@ namespace QuikGraph.Graphviz.Dot
 
         [Pure]
         [NotNull]
-        internal string GenerateDot([NotNull] Dictionary<string, object> properties)
+        internal static string GenerateDot([NotNull] Dictionary<string, object> properties)
         {
             var builder = new StringBuilder();
 

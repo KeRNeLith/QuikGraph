@@ -90,6 +90,28 @@ namespace QuikGraph
                    && EqualityComparer<TVertex>.Default.Equals(Target, other.Target);
         }
 
+        /// <summary>
+        /// Indicates whether both <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> are equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> to compare.</param>
+        /// <returns>True if both <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> are equal, otherwise false.</returns>
+        public static bool operator ==(SEquatableTaggedEdge<TVertex, TTag> edge1, SEquatableTaggedEdge<TVertex, TTag> edge2)
+        {
+            return edge1.Equals(edge2);
+        }
+
+        /// <summary>
+        /// Indicates whether both <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> are not equal.
+        /// </summary>
+        /// <param name="edge1">First <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> to compare.</param>
+        /// <param name="edge2">Second <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> to compare.</param>
+        /// <returns>True if both <see cref="SEquatableTaggedEdge{TVertex,TTag}"/> are not equal, otherwise false.</returns>
+        public static bool operator !=(SEquatableTaggedEdge<TVertex, TTag> edge1, SEquatableTaggedEdge<TVertex, TTag> edge2)
+        {
+            return !(edge1 == edge2);
+        }
+
         /// <inheritdoc />
         public override int GetHashCode()
         {

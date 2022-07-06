@@ -72,42 +72,70 @@ namespace QuikGraph.Tests.Structures
             Assert.IsTrue(edge1.Equals((object)edge2));
             Assert.IsTrue(edge1.Equals(edge2));
             Assert.IsTrue(edge2.Equals(edge1));
+            Assert.IsTrue(edge1 == edge2);
+            Assert.IsTrue(edge2 == edge1);
+            Assert.IsFalse(edge1 != edge2);
+            Assert.IsFalse(edge2 != edge1);
 
             Assert.AreNotEqual(edge1, edge3);
             Assert.AreNotEqual(edge3, edge1);
             Assert.IsFalse(edge1.Equals((object)edge3));
             Assert.IsFalse(edge1.Equals(edge3));
             Assert.IsFalse(edge3.Equals(edge1));
+            Assert.IsFalse(edge1 == edge3);
+            Assert.IsFalse(edge3 == edge1);
+            Assert.IsTrue(edge1 != edge3);
+            Assert.IsTrue(edge3 != edge1);
 
             Assert.AreEqual(edge3, edge4);
             Assert.AreEqual(edge4, edge3);
             Assert.IsTrue(edge3.Equals((object)edge4));
             Assert.IsTrue(edge3.Equals(edge4));
             Assert.IsTrue(edge4.Equals(edge3));
+            Assert.IsTrue(edge3 == edge4);
+            Assert.IsTrue(edge4 == edge3);
+            Assert.IsFalse(edge3 != edge4);
+            Assert.IsFalse(edge4 != edge3);
 
             Assert.AreNotEqual(edge3, edge5);
             Assert.AreNotEqual(edge5, edge3);
             Assert.IsFalse(edge3.Equals((object)edge5));
             Assert.IsFalse(edge3.Equals(edge5));
             Assert.IsFalse(edge5.Equals(edge3));
+            Assert.IsFalse(edge3 == edge5);
+            Assert.IsFalse(edge5 == edge3);
+            Assert.IsTrue(edge3 != edge5);
+            Assert.IsTrue(edge5 != edge3);
 
             Assert.AreEqual(edge3, edge6);  // Tag is not taken into account for equality
             Assert.AreEqual(edge6, edge3);  // Tag is not taken into account for equality
             Assert.IsTrue(edge3.Equals((object)edge6)); // Tag is not taken into account for equality
             Assert.IsTrue(edge3.Equals(edge6));  // Tag is not taken into account for equality
             Assert.IsTrue(edge6.Equals(edge3));  // Tag is not taken into account for equality
+            Assert.IsTrue(edge3 == edge6);
+            Assert.IsTrue(edge6 == edge3);
+            Assert.IsFalse(edge3 != edge6);
+            Assert.IsFalse(edge6 != edge3);
 
             Assert.AreEqual(edge6, edge7);
             Assert.AreEqual(edge7, edge6);
             Assert.IsTrue(edge6.Equals((object)edge7));
             Assert.IsTrue(edge6.Equals(edge7));
             Assert.IsTrue(edge7.Equals(edge6));
+            Assert.IsTrue(edge6 == edge7);
+            Assert.IsTrue(edge7 == edge6);
+            Assert.IsFalse(edge6 != edge7);
+            Assert.IsFalse(edge7 != edge6);
 
             Assert.AreEqual(edge6, edge8);  // Tag is not taken into account for equality
             Assert.AreEqual(edge8, edge6);  // Tag is not taken into account for equality
             Assert.IsTrue(edge6.Equals((object)edge8)); // Tag is not taken into account for equality
             Assert.IsTrue(edge6.Equals(edge8));  // Tag is not taken into account for equality
             Assert.IsTrue(edge8.Equals(edge6));  // Tag is not taken into account for equality
+            Assert.IsTrue(edge6 == edge8);
+            Assert.IsTrue(edge8 == edge6);
+            Assert.IsFalse(edge6 != edge8);
+            Assert.IsFalse(edge8 != edge6);
 
             Assert.AreNotEqual(null, edge1);
             Assert.IsFalse(edge1.Equals(null));
