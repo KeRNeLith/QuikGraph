@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
+using QuikGraph.Collections;
 
 namespace QuikGraph
 {
@@ -15,9 +16,6 @@ namespace QuikGraph
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class ArrayAdjacencyGraph<TVertex, TEdge> : IVertexAndEdgeListGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
@@ -46,6 +44,22 @@ namespace QuikGraph
             }
         }
 
+        // Serialization constructor
+        internal ArrayAdjacencyGraph(
+            bool allowParallelEdges,
+            int edgeCount,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> vertexOutEdges)
+        {
+            Debug.Assert(edgeCount >= 0);
+            Debug.Assert(vertexOutEdges != null);
+
+            AllowParallelEdges = allowParallelEdges;
+            EdgeCount = edgeCount;
+            _vertexOutEdges = vertexOutEdges.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.ToArray());
+        }
+
         #region IGraph<TVertex,TEdge>
 
         /// <inheritdoc />
@@ -66,6 +80,8 @@ namespace QuikGraph
 
         [NotNull]
         private readonly Dictionary<TVertex, TEdge[]> _vertexOutEdges;
+        [NotNull]
+        internal Dictionary<TVertex, TEdge[]> VertexOutEdges => _vertexOutEdges;
 
         /// <inheritdoc />
         public IEnumerable<TVertex> Vertices => _vertexOutEdges.Keys;

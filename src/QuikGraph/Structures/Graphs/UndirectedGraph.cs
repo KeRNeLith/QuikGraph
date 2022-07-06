@@ -8,10 +8,6 @@ using System.Reflection;
 #if SUPPORTS_AGGRESSIVE_INLINING
 using System.Runtime.CompilerServices;
 #endif
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-using System.Runtime.Serialization;
-using System.Security.Permissions;
-#endif
 using JetBrains.Annotations;
 using QuikGraph.Collections;
 
@@ -22,16 +18,10 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
-#if SUPPORTS_SERIALIZATION
-    [Serializable]
-#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class UndirectedGraph<TVertex, TEdge> : IMutableUndirectedGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
         , ICloneable
-#endif
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-        , ISerializable
 #endif
         where TEdge : IEdge<TVertex>
     {
@@ -93,6 +83,66 @@ namespace QuikGraph
                     orderedSource = source;
                     orderedTarget = target;
                 };
+        }
+
+        // Serialization constructor
+        internal UndirectedGraph(
+            bool allowParallelEdges,
+            int edgeCapacity,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> vertices,
+            [NotNull, ItemNotNull] IEnumerable<TEdge> edges)
+            : this(allowParallelEdges)
+        {
+            Debug.Assert(vertices != null);
+            Debug.Assert(edges != null);
+
+            AllowParallelEdges = allowParallelEdges;
+            EdgeCapacity = edgeCapacity;
+            _edges = edges.ToList();
+            EdgeCount = _edges.Count;
+            FillAdjacentEdges();
+
+            #region Local function
+
+            void FillAdjacentEdges()
+            {
+                foreach (TVertex vertex in vertices)
+                {
+                    _adjacentEdges.Add(
+                        vertex,
+                        EdgeCapacity > 0
+                            ? new EdgeList<TVertex, TEdge>(EdgeCapacity)
+                            : new EdgeList<TVertex, TEdge>());
+                }
+
+                foreach (TEdge edge in _edges)
+                {
+                    _adjacentEdges[edge.Source].Add(edge);
+                    if (!edge.IsSelfEdge())
+                    {
+                        _adjacentEdges[edge.Target].Add(edge);
+                    }
+                }
+            }
+
+            #endregion
+        }
+
+        private UndirectedGraph(
+            bool allowParallelEdges,
+            int edgeCapacity,
+            [NotNull] EdgeEqualityComparer<TVertex> edgeEqualityComparer,
+            [NotNull, ItemNotNull] List<TEdge> edges,
+            [NotNull] VertexEdgeDictionary<TVertex, TEdge> adjacentEdges)
+            : this(allowParallelEdges, edgeEqualityComparer)
+        {
+            Debug.Assert(edges != null);
+            Debug.Assert(adjacentEdges != null);
+
+            EdgeCount = edges.Count;
+            EdgeCapacity = edgeCapacity;
+            _edges = edges;
+            _adjacentEdges = adjacentEdges;
         }
 
         private delegate void ReorderVertices(
@@ -294,7 +344,7 @@ namespace QuikGraph
         {
             IList<TEdge> edges = _edges;
             _edges = new List<TEdge>();
-            IVertexEdgeDictionary<TVertex, TEdge> adjacentEdges = _adjacentEdges;
+            VertexEdgeDictionary<TVertex, TEdge> adjacentEdges = _adjacentEdges;
             _adjacentEdges = new VertexEdgeDictionary<TVertex, TEdge>();
             EdgeCount = 0;
 
@@ -699,63 +749,7 @@ namespace QuikGraph
 
         #endregion
 
-#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
-        #region ISerializable
-
-        /// <summary>
-        /// Constructor used during runtime serialization.
-        /// </summary>
-        protected UndirectedGraph(SerializationInfo info, StreamingContext context)
-            : this((bool)info.GetValue("AllowParallelEdges", typeof(bool)))
-        {
-            EdgeCapacity = (int)info.GetValue("EdgeCapacity", typeof(int));
-            _adjacentEdges = (VertexEdgeDictionary<TVertex, TEdge>)info.GetValue(
-                "AdjacentEdges",
-                typeof(VertexEdgeDictionary<TVertex, TEdge>));
-            _edges = (List<TEdge>)info.GetValue("Edges", typeof(List<TEdge>));
-            EdgeCount = _edges.Count;
-        }
-
-        /// <inheritdoc />
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            GetObjectData(info, context);
-        }
-
-        /// <summary>
-        /// Gets the data to serialize.
-        /// </summary>
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        protected virtual void GetObjectData([NotNull] SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("AllowParallelEdges", AllowParallelEdges);
-            info.AddValue("EdgeCapacity", EdgeCapacity);
-            info.AddValue("AdjacentEdges", _adjacentEdges);
-            info.AddValue("Edges", _edges);
-        }
-
-        #endregion
-#endif
-
         #region ICloneable
-
-        private UndirectedGraph(
-            [NotNull, ItemNotNull] List<TEdge> edges,
-            [NotNull] VertexEdgeDictionary<TVertex, TEdge> adjacentEdges,
-            [NotNull] EdgeEqualityComparer<TVertex> edgeEqualityComparer,
-            int edgeCapacity,
-            bool allowParallelEdges)
-            : this(allowParallelEdges, edgeEqualityComparer)
-        {
-            Debug.Assert(edges != null);
-            Debug.Assert(adjacentEdges != null);
-
-            _edges = edges;
-            _adjacentEdges = adjacentEdges;
-            EdgeCount = edges.Count;
-            EdgeCapacity = edgeCapacity;
-        }
 
         /// <summary>
         /// Clones this graph.
@@ -766,11 +760,11 @@ namespace QuikGraph
         public UndirectedGraph<TVertex, TEdge> Clone()
         {
             return new UndirectedGraph<TVertex, TEdge>(
-                _edges.ToList(),
-                _adjacentEdges.Clone(),
-                EdgeEqualityComparer,
+                AllowParallelEdges,
                 EdgeCapacity,
-                AllowParallelEdges);
+                EdgeEqualityComparer,
+                _edges.ToList(),
+                _adjacentEdges.Clone());
         }
 
 #if SUPPORTS_CLONEABLE

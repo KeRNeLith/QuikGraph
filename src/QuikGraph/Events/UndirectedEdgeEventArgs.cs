@@ -1,7 +1,4 @@
-﻿#if SUPPORTS_SERIALIZATION
-using System;
-#endif
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace QuikGraph
 {

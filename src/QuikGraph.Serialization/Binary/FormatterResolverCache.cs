@@ -1,4 +1,4 @@
-#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
+﻿#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -33,6 +33,21 @@ namespace QuikGraph.Serialization
         [NotNull]
         private static readonly Mapping[] FormatterMappings =
         {
+            // Graphs
+            new Mapping(typeof(BidirectionalGraph<,>), typeof(BidirectionalGraphFormatter<,>)),
+            new Mapping(typeof(BidirectionalAdapterGraph<,>), typeof(BidirectionalAdapterGraphFormatter<,>)),
+            new Mapping(typeof(ArrayBidirectionalGraph<,>), typeof(ArrayBidirectionalGraphFormatter<,>)),
+            new Mapping(typeof(ReversedBidirectionalGraph<,>), typeof(ReversedBidirectionalGraphFormatter<,>)),
+            new Mapping(typeof(BidirectionalMatrixGraph<>), typeof(BidirectionalMatrixGraphFormatter<>)),
+            new Mapping(typeof(AdjacencyGraph<,>), typeof(AdjacencyGraphFormatter<,>)),
+            new Mapping(typeof(ArrayAdjacencyGraph<,>), typeof(ArrayAdjacencyGraphFormatter<,>)),
+            new Mapping(typeof(ClusteredAdjacencyGraph<,>), typeof(ClusteredAdjacencyGraphFormatter<,>)),
+            new Mapping(typeof(UndirectedBidirectionalGraph<,>), typeof(UndirectedBidirectionalGraphFormatter<,>)),
+            new Mapping(typeof(UndirectedGraph<,>), typeof(UndirectedGraphFormatter<,>)),
+            new Mapping(typeof(ArrayUndirectedGraph<,>), typeof(ArrayUndirectedGraphFormatter<,>)),
+            new Mapping(typeof(EdgeListGraph<,>), typeof(EdgeListGraphFormatter<,>)),
+            new Mapping(typeof(CompressedSparseRowGraph<>), typeof(CompressedSparseRowGraphFormatter<>)),
+
             // Edges
             new Mapping(typeof(EquatableTaggedEdge<,>), typeof(EquatableTaggedEdgeFormatter<,>)),
             new Mapping(typeof(EquatableEdge<>), typeof(EquatableEdgeFormatter<>)),
@@ -58,6 +73,9 @@ namespace QuikGraph.Serialization
             new Mapping(typeof(SerializableDictionary<,>), typeof(SerializableDictionaryFormatter<,>)),
             new Mapping(typeof(VertexEdgeDictionary<,>), typeof(VertexEdgeDictionaryFormatter<,>)),
             new Mapping(typeof(EdgeEdgeDictionary<,>), typeof(EdgeEdgeDictionaryFormatter<,>)),
+
+            // Others
+            new Mapping(typeof(BidirectionalMatrixGraphFormatter<>.EdgeStorage), typeof(BidirectionalMatrixGraphFormatter<>.EdgeStorageFormatter))
         };
 
         [NotNull]
