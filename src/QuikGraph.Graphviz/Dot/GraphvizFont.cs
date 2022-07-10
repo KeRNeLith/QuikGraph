@@ -6,6 +6,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz font.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public sealed class GraphvizFont
     {
         /// <summary>

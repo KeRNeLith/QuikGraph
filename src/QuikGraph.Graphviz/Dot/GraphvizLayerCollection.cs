@@ -9,6 +9,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz layer collection.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class GraphvizLayerCollection : Collection<GraphvizLayer>
     {
         /// <summary>

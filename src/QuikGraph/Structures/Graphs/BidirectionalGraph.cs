@@ -20,6 +20,9 @@ namespace QuikGraph
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class BidirectionalGraph<TVertex, TEdge>
         : IEdgeListAndIncidenceGraph<TVertex, TEdge>

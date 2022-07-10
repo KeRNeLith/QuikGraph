@@ -13,6 +13,9 @@ namespace QuikGraph
     /// <remarks>Vertex list graph for out-edges only and dictionary cache for in-edges.</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class BidirectionalAdapterGraph<TVertex, TEdge> : IBidirectionalGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>

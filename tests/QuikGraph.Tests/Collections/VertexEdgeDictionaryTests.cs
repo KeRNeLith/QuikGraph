@@ -1,7 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
+#if SUPPORTS_SERIALIZATION
 using static QuikGraph.Tests.SerializationTestHelpers;
+#endif
 
 namespace QuikGraph.Tests.Collections
 {
@@ -19,6 +21,24 @@ namespace QuikGraph.Tests.Collections
             Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, Edge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
         }
+
+#if SUPPORTS_SERIALIZATION
+        [Test]
+        public void Serialization()
+        {
+            var dictionary = new VertexEdgeDictionary<int, EquatableEdge<int>>();
+
+            VertexEdgeDictionary<int, EquatableEdge<int>> deserializedDictionary = SerializeAndDeserialize(dictionary);
+            Assert.AreNotSame(dictionary, deserializedDictionary);
+            CollectionAssert.IsEmpty(deserializedDictionary);
+
+            dictionary.Add(1, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(1, 2) });
+            dictionary.Add(2, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(2, 3) });
+            deserializedDictionary = SerializeAndDeserialize(dictionary);
+            Assert.AreNotSame(dictionary, deserializedDictionary);
+            CollectionAssert.AreEqual(dictionary, deserializedDictionary);
+        }
+#endif
 
         [Test]
         public void Clone()

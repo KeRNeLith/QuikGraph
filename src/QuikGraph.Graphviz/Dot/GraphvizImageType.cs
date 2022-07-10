@@ -1,4 +1,7 @@
-﻿#if SUPPORTS_DESCRIPTION
+﻿#if SUPPORTS_SERIALIZATION
+using System;
+#endif
+#if SUPPORTS_DESCRIPTION
 using System.ComponentModel;
 #endif
 
@@ -7,6 +10,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Enumeration of possible image types.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public enum GraphvizImageType
     {
         /// <summary>

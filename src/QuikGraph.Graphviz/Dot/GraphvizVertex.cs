@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#if SUPPORTS_SERIALIZATION
+using System;
+#endif
+using System.Collections.Generic;
 #if SUPPORTS_AGGRESSIVE_INLINING
 using System.Runtime.CompilerServices;
 #endif
@@ -13,6 +16,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz vertex.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class GraphvizVertex
     {
         /// <summary>

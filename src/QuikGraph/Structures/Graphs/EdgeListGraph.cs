@@ -16,6 +16,9 @@ namespace QuikGraph
     /// <remarks>Only mutable by its edges, vertices are not stored but computed on demand.</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class EdgeListGraph<TVertex, TEdge> : IMutableEdgeListGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE

@@ -1,8 +1,15 @@
-﻿namespace QuikGraph.Graphviz.Dot
+﻿#if SUPPORTS_SERIALIZATION
+using System;
+#endif
+
+namespace QuikGraph.Graphviz.Dot
 {
     /// <summary>
     /// Enumeration of possible edge directions.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public enum GraphvizEdgeDirection
     {
         /// <summary>

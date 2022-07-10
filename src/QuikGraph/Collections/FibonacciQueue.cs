@@ -12,6 +12,9 @@ namespace QuikGraph.Collections
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TDistance">Distance type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public sealed class FibonacciQueue<TVertex, TDistance> : IPriorityQueue<TVertex>
     {

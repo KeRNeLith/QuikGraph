@@ -13,6 +13,9 @@ namespace QuikGraph
     /// Mutable bidirectional graph data structure based on a matrix.
     /// </summary>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class BidirectionalMatrixGraph<TEdge> : IBidirectionalGraph<int, TEdge>, IMutableEdgeListGraph<int, TEdge>
 #if SUPPORTS_CLONEABLE

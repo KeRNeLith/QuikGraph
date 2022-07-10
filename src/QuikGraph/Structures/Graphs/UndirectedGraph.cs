@@ -8,6 +8,10 @@ using System.Reflection;
 #if SUPPORTS_AGGRESSIVE_INLINING
 using System.Runtime.CompilerServices;
 #endif
+#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
+using System.Runtime.Serialization;
+using System.Security.Permissions;
+#endif
 using JetBrains.Annotations;
 using QuikGraph.Collections;
 
@@ -18,10 +22,16 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public class UndirectedGraph<TVertex, TEdge> : IMutableUndirectedGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
         , ICloneable
+#endif
+#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
+        , ISerializable
 #endif
         where TEdge : IEdge<TVertex>
     {
@@ -748,6 +758,45 @@ namespace QuikGraph
         }
 
         #endregion
+
+#if SUPPORTS_SERIALIZATION && NETSTANDARD2_0
+        #region ISerializable
+
+        /// <summary>
+        /// Constructor used during runtime serialization.
+        /// </summary>
+        protected UndirectedGraph([NotNull] SerializationInfo info, StreamingContext context)
+            : this((bool)info.GetValue("AllowParallelEdges", typeof(bool)))
+        {
+            EdgeCapacity = (int)info.GetValue("EdgeCapacity", typeof(int));
+            _adjacentEdges = (VertexEdgeDictionary<TVertex, TEdge>)info.GetValue(
+                "AdjacentEdges",
+                typeof(VertexEdgeDictionary<TVertex, TEdge>));
+            _edges = (List<TEdge>)info.GetValue("Edges", typeof(List<TEdge>));
+            EdgeCount = _edges.Count;
+        }
+
+        /// <inheritdoc />
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            GetObjectData(info, context);
+        }
+
+        /// <summary>
+        /// Gets the data to serialize.
+        /// </summary>
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        protected virtual void GetObjectData([NotNull] SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("AllowParallelEdges", AllowParallelEdges);
+            info.AddValue("EdgeCapacity", EdgeCapacity);
+            info.AddValue("AdjacentEdges", _adjacentEdges);
+            info.AddValue("Edges", _edges);
+        }
+
+        #endregion
+#endif
 
         #region ICloneable
 

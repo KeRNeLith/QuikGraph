@@ -10,6 +10,9 @@ namespace QuikGraph
     /// A struct based <see cref="IUndirectedEdge{TVertex}"/> implementation (it is by design an equatable edge).
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("{" + nameof(Source) + "}<->{" + nameof(Target) + "}")]
     [StructLayout(LayoutKind.Auto)]
     public struct SUndirectedEdge<TVertex> : IUndirectedEdge<TVertex>

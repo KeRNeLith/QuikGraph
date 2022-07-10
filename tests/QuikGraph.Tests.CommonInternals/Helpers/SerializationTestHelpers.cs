@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿#if SUPPORTS_SERIALIZATION
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using JetBrains.Annotations;
 
@@ -29,3 +30,4 @@ namespace QuikGraph.Tests
         }
     }
 }
+#endif

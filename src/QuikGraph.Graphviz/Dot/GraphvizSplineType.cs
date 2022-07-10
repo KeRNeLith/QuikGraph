@@ -1,9 +1,16 @@
-﻿namespace QuikGraph.Graphviz.Dot
+﻿#if SUPPORTS_SERIALIZATION
+using System;
+#endif
+
+namespace QuikGraph.Graphviz.Dot
 {
     /// <summary>
     /// Enumeration of possible spline types.
     /// <see href="https://www.graphviz.org/doc/info/attrs.html#d:splines">See details</see>
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public enum GraphvizSplineType
     {
         /// <summary>

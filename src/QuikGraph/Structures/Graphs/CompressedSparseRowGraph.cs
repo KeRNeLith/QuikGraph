@@ -13,12 +13,18 @@ namespace QuikGraph
     /// (http://www.cs.utk.edu/~dongarra/etemplates/node373.html)
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class CompressedSparseRowGraph<TVertex> : IVertexListGraph<TVertex, SEquatableEdge<TVertex>>, IEdgeListGraph<TVertex, SEquatableEdge<TVertex>>
 #if SUPPORTS_CLONEABLE
         , ICloneable
 #endif
     {
+#if SUPPORTS_SERIALIZATION
+        [Serializable]
+#endif
         private struct Range
         {
             public readonly int Start;

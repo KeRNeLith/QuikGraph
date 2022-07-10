@@ -8,6 +8,9 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class EdgeEventArgs<TVertex, TEdge> : EventArgs
         where TEdge : IEdge<TVertex>
     {

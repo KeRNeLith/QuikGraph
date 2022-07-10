@@ -1,4 +1,4 @@
-﻿#if SUPPORTS_CLONEABLE
+﻿#if SUPPORTS_SERIALIZATION || SUPPORTS_CLONEABLE
 using System;
 #endif
 using System.Collections.Generic;
@@ -11,6 +11,9 @@ namespace QuikGraph.Collections
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public sealed class EdgeList<TVertex, TEdge> : List<TEdge>, IEdgeList<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {

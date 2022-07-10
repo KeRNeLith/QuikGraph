@@ -10,8 +10,11 @@ namespace QuikGraph
     /// The default struct based <see cref="IEdge{TVertex}"/> implementation (it is by design an equatable edge) (directed edge).
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-    [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}")]
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [StructLayout(LayoutKind.Auto)]
+    [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}")]
     public struct SEdge<TVertex> : IEdge<TVertex>
     {
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using System;
+using JetBrains.Annotations;
 
 namespace QuikGraph
 {
@@ -7,6 +8,9 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class UndirectedEdgeEventArgs<TVertex, TEdge> : EdgeEventArgs<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {

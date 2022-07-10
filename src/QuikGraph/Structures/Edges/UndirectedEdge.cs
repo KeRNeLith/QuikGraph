@@ -10,6 +10,9 @@ namespace QuikGraph
     /// The default <see cref="IUndirectedEdge{TVertex}"/> implementation.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("{" + nameof(Source) + "}<->{" + nameof(Target) + "}")]
     public class UndirectedEdge<TVertex> : IUndirectedEdge<TVertex>
     {

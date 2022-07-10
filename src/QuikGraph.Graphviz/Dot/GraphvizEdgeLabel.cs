@@ -10,6 +10,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz edge label.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class GraphvizEdgeLabel
     {
         /// <summary>

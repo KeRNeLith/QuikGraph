@@ -12,6 +12,9 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TTag">Tag type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}:{" + nameof(Tag) + "}")]
     public struct STaggedUndirectedEdge<TVertex, TTag> : IUndirectedEdge<TVertex>, ITagged<TTag>

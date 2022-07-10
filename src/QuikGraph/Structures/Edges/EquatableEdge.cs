@@ -9,6 +9,9 @@ namespace QuikGraph
     /// An <see cref="IEdge{TVertex}"/> implementation that supports equality (directed edge).
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}")]
     public class EquatableEdge<TVertex> : Edge<TVertex>, IEquatable<EquatableEdge<TVertex>>
     {

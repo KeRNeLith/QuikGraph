@@ -24,6 +24,9 @@ namespace QuikGraph.Collections
     /// </remarks>
     /// <typeparam name="TValue">Value type.</typeparam>
     /// <typeparam name="TPriority">Priority metric type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("Count = {" + nameof(Count) + "}")]
     public class BinaryHeap<TPriority, TValue> : IEnumerable<KeyValuePair<TPriority, TValue>>
     {

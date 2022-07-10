@@ -16,6 +16,9 @@ namespace QuikGraph
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class ArrayBidirectionalGraph<TVertex, TEdge> : IBidirectionalGraph<TVertex, TEdge>
 #if SUPPORTS_CLONEABLE
@@ -23,6 +26,9 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
+#if SUPPORTS_SERIALIZATION
+        [Serializable]
+#endif
         private sealed class InOutEdges
         {
             [NotNull, ItemNotNull]

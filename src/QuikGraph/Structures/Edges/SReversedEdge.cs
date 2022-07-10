@@ -11,6 +11,9 @@ namespace QuikGraph
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Original edge type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay("{" + nameof(Source) + "}<-{" + nameof(Target) + "}")]
     public struct SReversedEdge<TVertex, TEdge> : IEdge<TVertex>, IEquatable<SReversedEdge<TVertex, TEdge>>

@@ -13,6 +13,9 @@ namespace QuikGraph.Graphviz.Dot
     /// <summary>
     /// Graphviz graph.
     /// </summary>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public class GraphvizGraph
     {
         [NotNull]

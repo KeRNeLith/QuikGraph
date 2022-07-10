@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#if SUPPORTS_SERIALIZATION
+using System;
+#endif
+using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace QuikGraph.Collections
@@ -8,6 +11,9 @@ namespace QuikGraph.Collections
     /// </summary>
     /// <typeparam name="TPriority">Priority type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     public sealed class FibonacciHeapCell<TPriority, TValue>
     {
         /// <summary>

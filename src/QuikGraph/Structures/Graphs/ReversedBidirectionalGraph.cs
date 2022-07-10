@@ -12,6 +12,9 @@ namespace QuikGraph
     /// <remarks>It is mutable via the original graph.</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+#if SUPPORTS_SERIALIZATION
+    [Serializable]
+#endif
     [DebuggerDisplay("VertexCount = {" + nameof(VertexCount) + "}, EdgeCount = {" + nameof(EdgeCount) + "}")]
     public sealed class ReversedBidirectionalGraph<TVertex, TEdge> : IBidirectionalGraph<TVertex, SReversedEdge<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
