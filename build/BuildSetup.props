@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <Import Project="./DeployBuild.props" />
+  <Import Project="./WorkingBuild.props" />
   <Import Project="./PackagesGeneration.props" />
 
   <!-- Build variables -->
