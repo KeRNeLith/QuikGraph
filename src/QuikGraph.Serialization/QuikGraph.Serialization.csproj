@@ -51,7 +51,7 @@ Misc:
   <!-- Supported serialization -->
   <PropertyGroup>
     <SUPPORTS_SERIALIZATION></SUPPORTS_SERIALIZATION>
-    <SUPPORTS_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_SERIALIZATION</SUPPORTS_SERIALIZATION>
+    <SUPPORTS_SERIALIZATION Condition="'$(TargetFramework)'!='netstandard1.3'">SUPPORTS_SERIALIZATION</SUPPORTS_SERIALIZATION>
 
     <SUPPORTS_BINARY_GRAPH_SERIALIZATION></SUPPORTS_BINARY_GRAPH_SERIALIZATION>
     <SUPPORTS_BINARY_GRAPH_SERIALIZATION Condition="'$(TargetFramework)'!='net35' AND '$(TargetFramework)'!='net40' AND '$(TargetFramework)'!='netstandard1.3'">SUPPORTS_BINARY_GRAPH_SERIALIZATION</SUPPORTS_BINARY_GRAPH_SERIALIZATION>

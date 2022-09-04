@@ -14,7 +14,7 @@ namespace QuikGraph.Tests.Collections
     internal sealed class BinaryQueueTests : QueueTestsBase
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             AssertQueueProperties(
                 new BinaryQueue<int, double>(_ => 1.0));

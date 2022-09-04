@@ -51,7 +51,7 @@ namespace QuikGraph
 
             VertexCount = vertexCount;
             EdgeCount = edgeCount;
-            _edges = edges ?? throw new ArgumentNullException(nameof(edges));
+            _edges = edges;
         }
 
         #region Helpers

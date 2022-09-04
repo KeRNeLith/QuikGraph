@@ -14,12 +14,20 @@ namespace QuikGraph.Tests.Collections
     internal sealed class VertexEdgeDictionaryTests
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             // ReSharper disable ObjectCreationAsStatement
             Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, Edge<int>>());
             Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, Edge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
+        }
+
+        [Test]
+        public void Constructor_Throws()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentOutOfRangeException>(() => new VertexEdgeDictionary<int, Edge<int>>(-5));
         }
 
 #if SUPPORTS_SERIALIZATION

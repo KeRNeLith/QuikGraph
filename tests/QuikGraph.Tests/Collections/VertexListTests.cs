@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
 
@@ -11,7 +11,7 @@ namespace QuikGraph.Tests.Collections
     internal sealed class VertexListTests
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             // ReSharper disable ObjectCreationAsStatement
             Assert.DoesNotThrow(() => new VertexList<int>());
@@ -20,6 +20,14 @@ namespace QuikGraph.Tests.Collections
             var otherList = new VertexList<int>(list);
             CollectionAssert.AreEqual(list, otherList);
             // ReSharper restore ObjectCreationAsStatement
+        }
+
+        [Test]
+        public void Constructor_Throws()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentOutOfRangeException>(() => new VertexList<int>(-5));
         }
 
         [Test]

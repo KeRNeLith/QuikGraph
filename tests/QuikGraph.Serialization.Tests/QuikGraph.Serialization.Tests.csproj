@@ -21,38 +21,41 @@
   </PropertyGroup>
 
   <!-- Targets defines -->
+  <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net451'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net452'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net462'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net47'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net471'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net472'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net48'">
-    <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
     <DefineConstants>$(DefineConstants);SUPPORTS_BINARY_GRAPH_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>

@@ -26,6 +26,34 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
+        /// Checks if given <paramref name="type"/> is assignable to given <paramref name="genericType"/>.
+        /// </summary>
+        /// <param name="type">Type to check if assignable.</param>
+        /// <param name="genericType">Type to check compatibility with.</param>
+        /// <returns>True if <paramref name="type"/> is assignable to <paramref name="genericType"/>, false otherwise.</returns>
+        [Pure]
+        public static bool IsAssignableToGenericType([NotNull] Type type, [NotNull] Type genericType)
+        {
+            while (true)
+            {
+                if (type is null || type == typeof(object))
+                    return false;
+
+                if (type == genericType)
+                    return true;
+
+                if ((type.IsGenericType ? type.GetGenericTypeDefinition() : type) == genericType)
+                    return true;
+
+                if (genericType.IsInterface
+                    && type.GetInterfaces().Any(interfaceType => IsAssignableToGenericType(interfaceType, genericType)))
+                    return true;
+
+                type = type.BaseType;
+            }
+        }
+
+        /// <summary>
         /// Checks if the given <paramref name="property"/> is an indexed one.
         /// </summary>
         /// <param name="property">A <see cref="PropertyInfo"/>.</param>

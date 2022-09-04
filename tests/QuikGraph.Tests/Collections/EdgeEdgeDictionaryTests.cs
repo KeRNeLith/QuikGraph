@@ -14,12 +14,20 @@ namespace QuikGraph.Tests.Collections
     internal sealed class EdgeEdgeDictionaryTests
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             // ReSharper disable ObjectCreationAsStatement
             Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>());
             Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
+        }
+
+        [Test]
+        public void Constructor_Throws()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentOutOfRangeException>(() => new EdgeEdgeDictionary<int, Edge<int>>(-5));
         }
 
 #if SUPPORTS_SERIALIZATION

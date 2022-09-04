@@ -5,8 +5,6 @@ using JetBrains.Annotations;
 using MessagePack;
 using MessagePack.Formatters;
 using NUnit.Framework;
-using QuikGraph.Serialization.Formatters;
-using static QuikGraph.Serialization.Formatters.FormatterHelpers;
 using static QuikGraph.Serialization.Tests.SerializationTestCaseSources;
 
 namespace QuikGraph.Serialization.Tests
@@ -17,269 +15,6 @@ namespace QuikGraph.Serialization.Tests
     [TestFixture]
     internal sealed class BinarySerializationTests
     {
-        #region Test formatters
-
-        private static void SerializeEquatableTestVertex(
-            ref MessagePackWriter writer,
-            [NotNull] EquatableTestVertex vertex,
-            [NotNull] MessagePackSerializerOptions options)
-        {
-            NullableStringFormatter.Instance.Serialize(ref writer, vertex.ID, options);
-            NullableStringFormatter.Instance.Serialize(ref writer, vertex.StringDefault, options);
-            NullableStringFormatter.Instance.Serialize(ref writer, vertex.String, options);
-            writer.Write(vertex.Bool);
-            writer.WriteInt32(vertex.Int);
-            writer.WriteInt64(vertex.Long);
-            SingleFormatter.Instance.Serialize(ref writer, vertex.Float, options);
-            DoubleFormatter.Instance.Serialize(ref writer, vertex.Double, options);
-        }
-
-        private static void DeserializeEquatableTestVertex(
-            ref MessagePackReader reader,
-            [NotNull] MessagePackSerializerOptions options,
-            out string id,
-            out string strDefault,
-            out string str,
-            out bool b,
-            out int i,
-            out long l,
-            out float f,
-            out double d)
-        {
-            id = NullableStringFormatter.Instance.Deserialize(ref reader, options);
-            strDefault = NullableStringFormatter.Instance.Deserialize(ref reader, options);
-            str = NullableStringFormatter.Instance.Deserialize(ref reader, options);
-            b = reader.ReadBoolean();
-            i = reader.ReadInt32();
-            l = reader.ReadInt64();
-            f = SingleFormatter.Instance.Deserialize(ref reader, options);
-            d = DoubleFormatter.Instance.Deserialize(ref reader, options);
-        }
-
-        private static void SerializeEquatableTestEdge(
-            ref MessagePackWriter writer,
-            [NotNull] EquatableTestEdge edge,
-            [NotNull] MessagePackSerializerOptions options)
-        {
-            SerializeEdge(ref writer, edge, options);
-            NullableStringFormatter.Instance.Serialize(ref writer, edge.ID, options);
-            NullableStringFormatter.Instance.Serialize(ref writer, edge.String, options);
-            writer.Write(edge.Bool);
-            writer.WriteInt32(edge.Int);
-            writer.WriteInt64(edge.Long);
-            SingleFormatter.Instance.Serialize(ref writer, edge.Float, options);
-            DoubleFormatter.Instance.Serialize(ref writer, edge.Double, options);
-        }
-
-        private static void DeserializeEquatableTestEdge(
-            ref MessagePackReader reader,
-            [NotNull] MessagePackSerializerOptions options,
-            out EquatableTestVertex source,
-            out EquatableTestVertex target,
-            out string id,
-            out string str,
-            out bool b,
-            out int i,
-            out long l,
-            out float f,
-            out double d)
-        {
-            DeserializeEdge(ref reader, options, out source, out target);
-            id = NullableStringFormatter.Instance.Deserialize(ref reader, options);
-            str = NullableStringFormatter.Instance.Deserialize(ref reader, options);
-            b = reader.ReadBoolean();
-            i = reader.ReadInt32();
-            l = reader.ReadInt64();
-            f = SingleFormatter.Instance.Deserialize(ref reader, options);
-            d = DoubleFormatter.Instance.Deserialize(ref reader, options);
-        }
-
-        private sealed class EquatableTestVertexFormatter : FormatterBase<EquatableTestVertex>
-        {
-            /// <inheritdoc />
-            protected override int DataCount => 8;
-
-            /// <inheritdoc />
-            protected override void OnSerialize(
-                ref MessagePackWriter writer,
-                EquatableTestVertex value,
-                MessagePackSerializerOptions options)
-            {
-                SerializeEquatableTestVertex(ref writer, value, options);
-            }
-
-            /// <inheritdoc />
-            protected override EquatableTestVertex OnDeserialize(
-                ref MessagePackReader reader,
-                int dataCount,
-                ref int readCount,
-                MessagePackSerializerOptions options)
-            {
-                DeserializeEquatableTestVertex(ref reader, options,
-                    out string id,
-                    out string strDefault,
-                    out string str,
-                    out bool b,
-                    out int i,
-                    out long l,
-                    out float f,
-                    out double d);
-
-                readCount += 8;
-                return new EquatableTestVertex(id)
-                {
-                    StringDefault = strDefault,
-                    String = str,
-                    Bool = b,
-                    Int = i,
-                    Long = l,
-                    Float = f,
-                    Double = d
-                };
-            }
-        }
-
-        private sealed class EquatableAdditionalDataTestVertexFormatter : FormatterBase<EquatableAdditionalDataTestVertex>
-        {
-            /// <inheritdoc />
-            protected override int DataCount => 9;
-
-            /// <inheritdoc />
-            protected override void OnSerialize(
-                ref MessagePackWriter writer,
-                EquatableAdditionalDataTestVertex value,
-                MessagePackSerializerOptions options)
-            {
-                SerializeEquatableTestVertex(ref writer, value, options);
-                DoubleFormatter.Instance.Serialize(ref writer, value.Data, options);
-            }
-
-            /// <inheritdoc />
-            protected override EquatableAdditionalDataTestVertex OnDeserialize(
-                ref MessagePackReader reader,
-                int dataCount,
-                ref int readCount,
-                MessagePackSerializerOptions options)
-            {
-                DeserializeEquatableTestVertex(ref reader, options,
-                    out string id,
-                    out string strDefault,
-                    out string str,
-                    out bool b,
-                    out int i,
-                    out long l,
-                    out float f,
-                    out double d);
-                double data = DoubleFormatter.Instance.Deserialize(ref reader, options);
-
-                readCount += 9;
-                return new EquatableAdditionalDataTestVertex(id, data)
-                {
-                    StringDefault = strDefault,
-                    String = str,
-                    Bool = b,
-                    Int = i,
-                    Long = l,
-                    Float = f,
-                    Double = d
-                };
-            }
-        }
-
-        private sealed class EquatableTestEdgeFormatter : FormatterBase<EquatableTestEdge>
-        {
-            /// <inheritdoc />
-            protected override int DataCount => 9;
-
-            /// <inheritdoc />
-            protected override void OnSerialize(
-                ref MessagePackWriter writer,
-                EquatableTestEdge value,
-                MessagePackSerializerOptions options)
-            {
-                SerializeEquatableTestEdge(ref writer, value, options);
-            }
-
-            /// <inheritdoc />
-            protected override EquatableTestEdge OnDeserialize(
-                ref MessagePackReader reader,
-                int dataCount,
-                ref int readCount,
-                MessagePackSerializerOptions options)
-            {
-                DeserializeEquatableTestEdge(ref reader, options,
-                    out EquatableTestVertex source,
-                    out EquatableTestVertex target,
-                    out string id,
-                    out string str,
-                    out bool b,
-                    out int i,
-                    out long l,
-                    out float f,
-                    out double d);
-
-                readCount += 9;
-                return new EquatableTestEdge(source, target, id)
-                {
-                    String = str,
-                    Bool = b,
-                    Int = i,
-                    Long = l,
-                    Float = f,
-                    Double = d
-                };
-            }
-        }
-
-        private sealed class EquatableAdditionalDataTestEdgeFormatter : FormatterBase<EquatableAdditionalDataTestEdge>
-        {
-            /// <inheritdoc />
-            protected override int DataCount => 10;
-
-            /// <inheritdoc />
-            protected override void OnSerialize(
-                ref MessagePackWriter writer,
-                EquatableAdditionalDataTestEdge value,
-                MessagePackSerializerOptions options)
-            {
-                SerializeEquatableTestEdge(ref writer, value, options);
-                DoubleFormatter.Instance.Serialize(ref writer, value.Data, options);
-            }
-
-            /// <inheritdoc />
-            protected override EquatableAdditionalDataTestEdge OnDeserialize(
-                ref MessagePackReader reader,
-                int dataCount,
-                ref int readCount,
-                MessagePackSerializerOptions options)
-            {
-                DeserializeEquatableTestEdge(ref reader, options,
-                    out EquatableTestVertex source,
-                    out EquatableTestVertex target,
-                    out string id,
-                    out string str,
-                    out bool b,
-                    out int i,
-                    out long l,
-                    out float f,
-                    out double d);
-                double data = DoubleFormatter.Instance.Deserialize(ref reader, options);
-
-                readCount += 10;
-                return new EquatableAdditionalDataTestEdge(source, target, id, data)
-                {
-                    String = str,
-                    Bool = b,
-                    Int = i,
-                    Long = l,
-                    Float = f,
-                    Double = d
-                };
-            }
-        }
-
-        #endregion
-
         #region Helpers
 
         [NotNull, ItemNotNull]
@@ -293,7 +28,9 @@ namespace QuikGraph.Serialization.Tests
 
         [Pure]
         [NotNull]
-        private static TGraph SerializeDeserialize<TVertex, TEdge, TGraph>([NotNull] TGraph graph)
+        private static TGraph SerializeDeserialize<TVertex, TEdge, TGraph>(
+            [NotNull] TGraph graph,
+            [CanBeNull, ItemNotNull] IMessagePackFormatter[] formatters)
             where TGraph : IGraph<TVertex, TEdge>
             where TEdge : IEdge<TVertex>
         {
@@ -302,17 +39,35 @@ namespace QuikGraph.Serialization.Tests
             // Serialize
             using (var stream = new MemoryStream())
             {
-                graph.SerializeToBinary(stream, TestFormatters);
+                graph.SerializeToBinary(stream, formatters);
 
                 stream.Position = 0;
 
                 // Deserialize
-                TGraph deserializedGraph = stream.DeserializeFromBinary<TVertex, TEdge, TGraph>(TestFormatters);
+                TGraph deserializedGraph = stream.DeserializeFromBinary<TVertex, TEdge, TGraph>(formatters);
                 Assert.IsNotNull(deserializedGraph);
                 Assert.AreNotSame(graph, deserializedGraph);
 
                 return deserializedGraph;
             }
+        }
+
+        [Pure]
+        [NotNull]
+        private static TGraph SerializeDeserialize_Simple<TVertex, TEdge, TGraph>([NotNull] TGraph graph)
+            where TGraph : IGraph<TVertex, TEdge>
+            where TEdge : IEdge<TVertex>
+        {
+            return SerializeDeserialize<TVertex, TEdge, TGraph>(graph, null);
+        }
+
+        [Pure]
+        [NotNull]
+        private static TGraph SerializeDeserialize_Complex<TVertex, TEdge, TGraph>([NotNull] TGraph graph)
+            where TGraph : IGraph<TVertex, TEdge>
+            where TEdge : IEdge<TVertex>
+        {
+            return SerializeDeserialize<TVertex, TEdge, TGraph>(graph, TestFormatters);
         }
 
         #endregion
@@ -321,12 +76,12 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_AdjacencyGraph_Simple([NotNull] AdjacencyGraph<int, EquatableEdge<int>> graph)
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph1 =
-                SerializeDeserialize<int, EquatableEdge<int>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayAdjacencyGraph<int, EquatableEdge<int>>(graph);
             ArrayAdjacencyGraph<int, EquatableEdge<int>> deserializedGraph2 =
-                SerializeDeserialize<int, EquatableEdge<int>, ArrayAdjacencyGraph<int, EquatableEdge<int>>>(arrayGraph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, ArrayAdjacencyGraph<int, EquatableEdge<int>>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
         }
 
@@ -334,12 +89,12 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_AdjacencyGraph_Complex([NotNull] AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> graph)
         {
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph1 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
         }
 
@@ -348,7 +103,7 @@ namespace QuikGraph.Serialization.Tests
         {
             var bidirectionalAdapterGraph = new BidirectionalAdapterGraph<int, EquatableEdge<int>>(graph);
             BidirectionalAdapterGraph<int, EquatableEdge<int>> deserializedGraph =
-                SerializeDeserialize<int, EquatableEdge<int>, BidirectionalAdapterGraph<int, EquatableEdge<int>>>(bidirectionalAdapterGraph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, BidirectionalAdapterGraph<int, EquatableEdge<int>>>(bidirectionalAdapterGraph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -357,7 +112,7 @@ namespace QuikGraph.Serialization.Tests
         {
             var bidirectionalAdapterGraph = new BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge>>(bidirectionalAdapterGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge>>(bidirectionalAdapterGraph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -365,7 +120,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_ClusteredGraph_Simple([NotNull] ClusteredAdjacencyGraph<int, EquatableEdge<int>> graph)
         {
             ClusteredAdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
-                SerializeDeserialize<int, EquatableEdge<int>, ClusteredAdjacencyGraph<int, EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, ClusteredAdjacencyGraph<int, EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -373,7 +128,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_ClusteredGraph_Complex([NotNull] ClusteredAdjacencyGraph<EquatableTestVertex, EquatableTestEdge> graph)
         {
             ClusteredAdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, ClusteredAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, ClusteredAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -381,7 +136,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_CompressedGraph_Simple([NotNull] CompressedSparseRowGraph<int> graph)
         {
             CompressedSparseRowGraph<int> deserializedGraph =
-                SerializeDeserialize<int, SEquatableEdge<int>, CompressedSparseRowGraph<int>>(graph);
+                SerializeDeserialize_Simple<int, SEquatableEdge<int>, CompressedSparseRowGraph<int>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -389,7 +144,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_CompressedGraph_Complex([NotNull] CompressedSparseRowGraph<EquatableTestVertex> graph)
         {
             CompressedSparseRowGraph<EquatableTestVertex> deserializedGraph =
-                SerializeDeserialize<EquatableTestVertex, SEquatableEdge<EquatableTestVertex>, CompressedSparseRowGraph<EquatableTestVertex>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, SEquatableEdge<EquatableTestVertex>, CompressedSparseRowGraph<EquatableTestVertex>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -397,22 +152,22 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_BidirectionalGraph_Simple([NotNull] BidirectionalGraph<int, EquatableEdge<int>> graph)
         {
             BidirectionalGraph<int, EquatableEdge<int>> deserializedGraph =
-                SerializeDeserialize<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
 
             var arrayGraph = new ArrayBidirectionalGraph<int, EquatableEdge<int>>(graph);
             ArrayBidirectionalGraph<int, EquatableEdge<int>> deserializedGraph2 =
-                SerializeDeserialize<int, EquatableEdge<int>, ArrayBidirectionalGraph<int, EquatableEdge<int>>>(arrayGraph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, ArrayBidirectionalGraph<int, EquatableEdge<int>>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
 
             var reversedGraph = new ReversedBidirectionalGraph<int, EquatableEdge<int>>(graph);
             ReversedBidirectionalGraph<int, EquatableEdge<int>> deserializedGraph3 =
-                SerializeDeserialize<int, SReversedEdge<int, EquatableEdge<int>>, ReversedBidirectionalGraph<int, EquatableEdge<int>>>(reversedGraph);
+                SerializeDeserialize_Simple<int, SReversedEdge<int, EquatableEdge<int>>, ReversedBidirectionalGraph<int, EquatableEdge<int>>>(reversedGraph);
             Assert.IsTrue(EquateGraphs.Equate(reversedGraph, deserializedGraph3));
 
             var undirectedBidirectionalGraph = new UndirectedBidirectionalGraph<int, EquatableEdge<int>>(graph);
             UndirectedBidirectionalGraph<int, EquatableEdge<int>> deserializedGraph4 =
-                SerializeDeserialize<int, EquatableEdge<int>, UndirectedBidirectionalGraph<int, EquatableEdge<int>>>(undirectedBidirectionalGraph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, UndirectedBidirectionalGraph<int, EquatableEdge<int>>>(undirectedBidirectionalGraph);
             Assert.IsTrue(EquateGraphs.Equate(undirectedBidirectionalGraph, deserializedGraph4));
         }
 
@@ -420,22 +175,22 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_BidirectionalGraph_Complex([NotNull] BidirectionalGraph<EquatableTestVertex, EquatableTestEdge> graph)
         {
             BidirectionalGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, BidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, BidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
 
             var arrayGraph = new ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
 
             var reversedGraph = new ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph3 =
-                SerializeDeserialize<EquatableTestVertex, SReversedEdge<EquatableTestVertex, EquatableTestEdge>, ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(reversedGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, SReversedEdge<EquatableTestVertex, EquatableTestEdge>, ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(reversedGraph);
             Assert.IsTrue(EquateGraphs.Equate(reversedGraph, deserializedGraph3));
 
             var undirectedBidirectionalGraph = new UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph4 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(undirectedBidirectionalGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(undirectedBidirectionalGraph);
             Assert.IsTrue(EquateGraphs.Equate(undirectedBidirectionalGraph, deserializedGraph4));
         }
 
@@ -443,7 +198,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_BidirectionalMatrixGraph([NotNull] BidirectionalMatrixGraph<EquatableEdge<int>> graph)
         {
             BidirectionalMatrixGraph<EquatableEdge<int>> deserializedGraph =
-                SerializeDeserialize<int, EquatableEdge<int>, BidirectionalMatrixGraph<EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, BidirectionalMatrixGraph<EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -451,12 +206,12 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_UndirectedGraph_Simple([NotNull] UndirectedGraph<int, EquatableEdge<int>> graph)
         {
             UndirectedGraph<int, EquatableEdge<int>> deserializedGraph1 =
-                SerializeDeserialize<int, EquatableEdge<int>, UndirectedGraph<int, EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, UndirectedGraph<int, EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayUndirectedGraph<int, EquatableEdge<int>>(graph);
             ArrayUndirectedGraph<int, EquatableEdge<int>> deserializedGraph2 =
-                SerializeDeserialize<int, EquatableEdge<int>, ArrayUndirectedGraph<int, EquatableEdge<int>>>(arrayGraph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, ArrayUndirectedGraph<int, EquatableEdge<int>>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph2));
         }
 
@@ -464,12 +219,12 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_UndirectedGraph_Complex([NotNull] UndirectedGraph<EquatableTestVertex, EquatableTestEdge> graph)
         {
             UndirectedGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph1 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, UndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, UndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph2));
         }
 
@@ -477,7 +232,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_EdgeListGraph_Simple([NotNull] EdgeListGraph<int, EquatableEdge<int>> graph)
         {
             EdgeListGraph<int, EquatableEdge<int>> deserializedGraph =
-                SerializeDeserialize<int, EquatableEdge<int>, EdgeListGraph<int, EquatableEdge<int>>>(graph);
+                SerializeDeserialize_Simple<int, EquatableEdge<int>, EdgeListGraph<int, EquatableEdge<int>>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -485,7 +240,7 @@ namespace QuikGraph.Serialization.Tests
         public void BinarySerialization_EdgeListGraph_Complex([NotNull] EdgeListGraph<EquatableTestVertex, EquatableTestEdge> graph)
         {
             EdgeListGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
-                SerializeDeserialize<EquatableTestVertex, EquatableTestEdge, EdgeListGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
+                SerializeDeserialize_Complex<EquatableTestVertex, EquatableTestEdge, EdgeListGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
             Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
         }
 
@@ -540,6 +295,8 @@ namespace QuikGraph.Serialization.Tests
         [Test]
         public void BinarySerialization_Throws()
         {
+            var graph = new AdjacencyGraph<int, Edge<int>>();
+
             // ReSharper disable AssignNullToNotNullAttribute
             using (var stream = new MemoryStream())
             {
@@ -547,10 +304,12 @@ namespace QuikGraph.Serialization.Tests
                     () => ((AdjacencyGraph<int, Edge<int>>)null).SerializeToBinary(stream));
 
                 Assert.Throws<ArgumentNullException>(
+                    () => graph.SerializeToBinary(stream, (MessagePackSerializerOptions)null));
+
+                Assert.Throws<ArgumentNullException>(
                     () => ((AdjacencyGraph<int, Edge<int>>)null).SerializeToBinary(stream, (MessagePackSerializerOptions)null));
             }
 
-            var graph = new AdjacencyGraph<int, Edge<int>>();
             using (var stream = new TestStream())
             {
                 Assert.Throws<ArgumentException>(

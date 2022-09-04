@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Collections;
 using QuikGraph.Serialization.Collections;
 using QuikGraph.Serialization.Formatters;
+using static QuikGraph.Serialization.SerializationHelpers;
 
 namespace QuikGraph.Serialization
 {
@@ -88,7 +88,7 @@ namespace QuikGraph.Serialization
             if (FormattersCache.TryGetValue(objectType, out object formatter))
                 return formatter;
 
-            int formatterIndex = Array.FindIndex(FormatterMappings, mapping => objectType.IsAssignableToGenericType(mapping.ObjectType));
+            int formatterIndex = Array.FindIndex(FormatterMappings, mapping => IsAssignableToGenericType(objectType, mapping.ObjectType));
             if (formatterIndex >= 0)
             {
                 Type formatterType = FormatterMappings[formatterIndex].FormatterType.MakeGenericType(objectType.GenericTypeArguments);
@@ -104,27 +104,7 @@ namespace QuikGraph.Serialization
 
         #region Helpers
 
-        [Pure]
-        private static bool IsAssignableToGenericType([NotNull] this Type type, [NotNull] Type genericType)
-        {
-            while (true)
-            {
-                if (type is null || type == typeof(object))
-                    return false;
-
-                if (type == genericType)
-                    return true;
-
-                if ((type.IsGenericType ? type.GetGenericTypeDefinition() : type) == genericType)
-                    return true;
-
-                if (genericType.IsInterface
-                    && type.GetInterfaces().Any(interfaceType => interfaceType.IsAssignableToGenericType(genericType)))
-                    return true;
-
-                type = type.BaseType;
-            }
-        }
+        
 
         #endregion
     }

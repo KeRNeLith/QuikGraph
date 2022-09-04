@@ -13,7 +13,7 @@ namespace QuikGraph.Tests.Collections
     internal sealed class FibonacciQueueTests : QueueTestsBase
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             AssertQueueProperties(
                 new FibonacciQueue<int, double>(_ => 1.0));

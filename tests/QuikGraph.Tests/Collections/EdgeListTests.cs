@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
 
@@ -11,19 +11,27 @@ namespace QuikGraph.Tests.Collections
     internal sealed class EdgeListTests
     {
         [Test]
-        public void Constructors()
+        public void Constructor()
         {
             // ReSharper disable ObjectCreationAsStatement
             Assert.DoesNotThrow(() => new EdgeList<int, Edge<int>>());
             Assert.DoesNotThrow(() => new EdgeList<int, Edge<int>>(12));
             var list = new EdgeList<int, EquatableEdge<int>>
             {
-                new EquatableEdge<int>(1, 2),
-                new EquatableEdge<int>(2, 3)
+                new(1, 2),
+                new(2, 3)
             };
             var otherList = new EdgeList<int, EquatableEdge<int>>(list);
             CollectionAssert.AreEqual(list, otherList);
             // ReSharper restore ObjectCreationAsStatement
+        }
+
+        [Test]
+        public void Constructor_Throws()
+        {
+            // ReSharper disable once ObjectCreationAsStatement
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentOutOfRangeException>(() => new EdgeList<int, Edge<int>>(-5));
         }
 
         [Test]

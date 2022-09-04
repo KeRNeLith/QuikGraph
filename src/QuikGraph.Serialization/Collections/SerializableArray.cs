@@ -1,4 +1,5 @@
 ﻿#if SUPPORTS_BINARY_GRAPH_SERIALIZATION
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -23,7 +24,7 @@ namespace QuikGraph.Serialization.Collections
         /// <param name="array">Array to serialize.</param>
         public SerializableArray([NotNull, ItemCanBeNull] T[] array)
         {
-            Array = array;
+            Array = array ?? throw new ArgumentNullException(nameof(array));
         }
 
         /// <inheritdoc />
