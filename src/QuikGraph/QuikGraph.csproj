@@ -19,15 +19,17 @@
 
 QuikGraph provides generic directed/undirected graph data structures and algorithms for .NET. It comes with algorithms such as depth first seach, breath first search, A* search, shortest path, k-shortest path, maximum flow, etc...
 
-This package is a version of the original QuickGraph renamed QuikGraph and ported to .NET Core.
+This package is a version of the original QuickGraph renamed QuikGraph and ported to modern C# .NET development.
 It should be seen as an alternative to the old frozen QuickGraph from CodePlex but with fixes.
 
 It does not include every sub modules of the original library such as F# stuff, adapters, etc.
-This build is only the Core of QuikGraph taking advantage of .NET Core.
+This build is only the Core of QuikGraph taking advantage of modern .NET.
+The other sub modules are available as separate NuGet packages.
 
 Supported platforms:
 - .NET Standard 1.3+
 - .NET Core 1.0+
+- .NET 5.0+
 - .NET Framework 3.5+
 
 Supports Source Link</Description>
@@ -50,24 +52,19 @@ Misc:
 
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <AssemblyTitle>QuikGraph .NET 3.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET35;SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <AssemblyTitle>QuikGraph .NET 4.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET40;SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <AssemblyTitle>QuikGraph .NET 4.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET45;SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <AssemblyTitle>QuikGraph .NET Standard 1.3</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD1_3;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <AssemblyTitle>QuikGraph .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_CLONEABLE;SUPPORTS_CONVERTER;SUPPORTS_TYPE_FULL_FEATURES;SUPPORTS_ENUMERABLE_COVARIANT;SUPPORTS_SORTEDSET;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

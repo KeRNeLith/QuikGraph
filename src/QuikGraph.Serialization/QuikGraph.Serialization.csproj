@@ -17,11 +17,12 @@
     <Copyright>Copyright © 2020</Copyright>
     <Description>.NET library that provides serialization features related to QuikGraph data structures.
 
-This package is the serialization subset of the original QuickGraph renamed QuikGraph and ported to .NET Core.
+This package is the serialization subset of the original QuickGraph renamed QuikGraph and ported to modern C# .NET development.
 
 Supported platforms:
 - .NET Standard 1.3+
 - .NET Core 1.0+
+- .NET 5.0+
 - .NET Framework 3.5+
 
 Supports Source Link</Description>
@@ -47,37 +48,32 @@ Misc:
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard1.3'">
-    <EmbeddedResource Include="**\*.dtd" />
-    <EmbeddedResource Include="**\*.xsd" />
-  </ItemGroup>
-
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <AssemblyTitle>QuikGraph.Serialization .NET 3.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET35;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;$(AdditionalConstants)</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <AssemblyTitle>QuikGraph.Serialization .NET 4.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET40;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;DEPRECATE_BINARY_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net461'">
-    <AssemblyTitle>QuikGraph.Serialization .NET 4.6.1</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET461;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <AssemblyTitle>QuikGraph.Serialization .NET Standard 1.3</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD1_3;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <AssemblyTitle>QuikGraph.Serialization .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
-    <AssemblyTitle>QuikGraph.Serialization .NET Standard 2.1</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_1;SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_GRAPHS_SERIALIZATION;SUPPORTS_XML_DTD_PROCESSING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+
+  <!-- Resources -->
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.3'">
+    <EmbeddedResource Include="**\*.dtd" />
+    <EmbeddedResource Include="**\*.xsd" />
+  </ItemGroup>
 
   <!-- Dependencies -->
   <!-- Externals -->

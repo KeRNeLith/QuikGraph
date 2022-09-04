@@ -17,11 +17,12 @@
     <Copyright>Copyright © 2020</Copyright>
     <Description>.NET library that provides a bridge from QuikGraph graphs structures to Graphviz and Dot language serialization.
 
-This package is the Graphviz subset of the original QuickGraph renamed QuikGraph and ported to .NET Core.
+This package is the Graphviz subset of the original QuickGraph renamed QuikGraph and ported to modern C# .NET development.
 
 Supported platforms:
 - .NET Standard 1.3+
 - .NET Core 1.0+
+- .NET 5.0+
 - .NET Framework 3.5+
 
 Supports Source Link</Description>
@@ -40,24 +41,19 @@ Misc:
 
   <!-- Targets defines -->
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <AssemblyTitle>QuikGraph.Graphviz .NET 3.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET35;SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;REQUIRE_STRING_COMPATIBILITY;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;REQUIRE_STRING_COMPATIBILITY;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <AssemblyTitle>QuikGraph.Graphviz .NET 4.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET40;SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <AssemblyTitle>QuikGraph.Graphviz .NET 4.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET45;SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;SUPPORTS_BASIC_EXTENSIONS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard1.3'">
-    <AssemblyTitle>QuikGraph.Graphviz .NET Standard 1.3</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD1_3;SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_AGGRESSIVE_INLINING;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <AssemblyTitle>QuikGraph.Graphviz .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>$(DefineConstants);SUPPORTS_SERIALIZATION;SUPPORTS_DESCRIPTION;SUPPORTS_AGGRESSIVE_INLINING;SUPPORTS_SVG_CONVERSION;SUPPORTS_STREAM_FULL_FEATURES;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->

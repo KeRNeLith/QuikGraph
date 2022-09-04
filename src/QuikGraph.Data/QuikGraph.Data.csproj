@@ -17,11 +17,12 @@
     <Copyright>Copyright © 2020</Copyright>
     <Description>.NET library that provides convenient graph helpers related to DataTable (and also serialization to Graphviz).
 
-This package is a subset related to DataTable of the original QuickGraph renamed QuikGraph and ported to .NET Core.
+This package is a subset related to DataTable of the original QuickGraph renamed QuikGraph and ported to modern C# .NET development.
 
 Supported platforms:
 - .NET Standard 2.0+
 - .NET Core 2.0+
+- .NET 5.0+
 - .NET Framework 3.5+
 
 Supports Source Link</Description>
@@ -35,16 +36,6 @@ Updates:
 Misc:
 - Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET Serialization Data</PackageTags>
-  </PropertyGroup>
-
-  <!-- Targets defines -->
-  <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <AssemblyTitle>QuikGraph.Data .NET 3.5</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NET35;$(AdditionalConstants)</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <AssemblyTitle>QuikGraph.Data .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->

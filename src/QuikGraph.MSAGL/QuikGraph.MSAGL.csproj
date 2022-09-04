@@ -17,11 +17,12 @@
     <Copyright>Copyright © 2020</Copyright>
     <Description>.NET library that provides a bridge from QuikGraph graphs to MSAGL library.
 
-This package is the MSAGL subset of the original QuickGraph renamed QuikGraph and ported to .NET Core.
+This package is the MSAGL subset of the original QuickGraph renamed QuikGraph and ported to modern C# .NET development.
 
 Supported platforms:
 - .NET Standard 2.0+
 - .NET Core 2.0+
+- .NET 5.0+
 - .NET Framework 4.6.1+
 
 Supports Source Link</Description>
@@ -35,12 +36,6 @@ Updates:
 Misc:
 - Assembly is CLS compliant (Common Language Specification).</PackageReleaseNotes>
     <PackageTags>QuickGraph QuikGraph Graph Structure Algorithm C# .NET MSAGL</PackageTags>
-  </PropertyGroup>
-
-  <!-- Targets defines -->
-  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
-    <AssemblyTitle>QuikGraph.MSAGL .NET Standard 2.0</AssemblyTitle>
-    <DefineConstants>$(DefineConstants);NETSTANDARD2_0;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <!-- Dependencies -->
