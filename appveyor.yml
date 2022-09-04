@@ -30,7 +30,7 @@ environment:
   DocFXVersion: 2.59.2
   NUnitConsoleVersion: 3.15.2
   OpenCoverVersion: 4.7.1221
-  CoverallsVersion: 3.0.0
+  CoverallsVersion: 4.0.1
   COVERALLS_REPO_TOKEN:
     secure: V9+BC6iS7KQL2KD+Wo2HrCYWP81uJqeAOH+SM6imJfwAGT4jmFO2K7LebXyZXTKy
   GITHUB_ACCESS_TOKEN:
