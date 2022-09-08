@@ -6,19 +6,19 @@ using JetBrains.Annotations;
 namespace QuikGraph.Algorithms.VertexColoring
 {
     /// <summary>
-    /// Algorithm that walk through a graph and color vertices with the minimum number of colors possible.
+    /// Algorithm that walk through a graph and greedy color vertices.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class VertexColoringAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
+    public sealed class GreedyVertexColoringAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexColoringAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new instance of the <see cref="GreedyVertexColoringAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public VertexColoringAlgorithm([NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph)
+        public GreedyVertexColoringAlgorithm([NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph)
             : base(visitedGraph)
         {
         }
