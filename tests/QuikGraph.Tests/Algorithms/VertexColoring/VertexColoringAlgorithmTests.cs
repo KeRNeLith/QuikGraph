@@ -8,16 +8,16 @@ using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
 namespace QuikGraph.Tests.Algorithms.GraphColoring
 {
     /// <summary>
-    /// Tests for <see cref="VertexColoringAlgorithm{TVertex,TEdge}"/>.
+    /// Tests for <see cref="GreedyVertexColoringAlgorithm{TVertex,TEdge}"/>.
     /// </summary>
     [TestFixture]
-    internal sealed class VertexColoringAlgorithmTests
+    internal sealed class GreedyVertexColoringAlgorithmTests
     {
         [Test]
         public void Constructor()
         {
             var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new VertexColoringAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<int, Edge<int>>(graph);
             AssertAlgorithmState(algorithm, graph);
             CollectionAssert.IsEmpty(algorithm.Colors);
         }
@@ -28,14 +28,14 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new VertexColoringAlgorithm<int, Edge<int>>(null));
+                () => new GreedyVertexColoringAlgorithm<int, Edge<int>>(null));
         }
 
         [Test]
         public void VertexColoringEmptyGraph()
         {
             var graph = new UndirectedGraph<char, Edge<char>>(true);
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
@@ -58,7 +58,7 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
                                       (2)
             */
             UndirectedGraph<char, Edge<char>> graph = CreateTestGraph();
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
@@ -113,7 +113,7 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
                                                   (2)
             */
             UndirectedGraph<char, Edge<char>> graph = CreateTestGraph();
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
@@ -177,7 +177,7 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
             (this graph has a minimum number of vertex colors only if to swap (1) and (4) vertices)
             */
             UndirectedGraph<char, Edge<char>> graph = CreateTestGraph();
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
@@ -246,7 +246,7 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
                                                 \____(3)____/
             */
             UndirectedGraph<char, Edge<char>> graph = CreateTestGraph();
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
@@ -323,7 +323,7 @@ namespace QuikGraph.Tests.Algorithms.GraphColoring
             */
 
             UndirectedGraph<char, Edge<char>> graph = CreateTestGraph();
-            var algorithm = new VertexColoringAlgorithm<char, Edge<char>>(graph);
+            var algorithm = new GreedyVertexColoringAlgorithm<char, Edge<char>>(graph);
             algorithm.Compute();
 
             IDictionary<char, int?> coloredVertices = algorithm.Colors;
