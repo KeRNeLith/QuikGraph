@@ -25,6 +25,16 @@ namespace QuikGraph.Tests.Structures
             CheckTaggedEdge(new TaggedUndirectedEdge<ComparableTestVertex, TestObject>(v1, v2, null), v1, v2, (TestObject)null);
             CheckTaggedEdge(new TaggedUndirectedEdge<ComparableTestVertex, TestObject>(v1, v1, null), v1, v1, (TestObject)null);
             CheckTaggedEdge(new TaggedUndirectedEdge<ComparableTestVertex, TestObject>(v1, v2, tag), v1, v2, tag);
+
+            // Order correctly on creation
+            CheckTaggedEdge(new TaggedUndirectedEdge<int, TestObject>(2, 1, null), 1, 2, (TestObject)null);
+
+            // Comparable
+            var comparableV1 = new ComparableTestVertex("v1");
+            var comparableV2 = new ComparableTestVertex("v2");
+            CheckTaggedEdge(
+                new TaggedUndirectedEdge<ComparableTestVertex, TestObject>(comparableV2, comparableV1, null),
+                comparableV1, comparableV2, (TestObject)null);
         }
 
         [Test]
@@ -32,21 +42,19 @@ namespace QuikGraph.Tests.Structures
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => new TaggedUndirectedEdge<TestVertex, TestObject>(null, new TestVertex("v1"), null));
-            Assert.Throws<ArgumentNullException>(() => new TaggedUndirectedEdge<TestVertex, TestObject>(new TestVertex("v1"), null, null));
-            Assert.Throws<ArgumentNullException>(() => new TaggedUndirectedEdge<TestVertex, TestObject>(null, null, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                new TaggedUndirectedEdge<TestVertex, TestObject>(null, new TestVertex("v1"), null));
+            Assert.Throws<ArgumentNullException>(() =>
+                new TaggedUndirectedEdge<TestVertex, TestObject>(new TestVertex("v1"), null, null));
+            Assert.Throws<ArgumentNullException>(() =>
+                new TaggedUndirectedEdge<TestVertex, TestObject>(null, null, null));
             // ReSharper restore AssignNullToNotNullAttribute
-
-            Assert.Throws<ArgumentException>(() => new TaggedUndirectedEdge<int, TestObject>(2, 1, null));
 
             // Not comparable
             var v1 = new TestVertex("v1");
             var v2 = new TestVertex("v2");
             Assert.Throws<ArgumentException>(() => new TaggedUndirectedEdge<TestVertex, TestObject>(v1, v2, null));
 
-            var comparableV1 = new ComparableTestVertex("v1");
-            var comparableV2 = new ComparableTestVertex("v2");
-            Assert.Throws<ArgumentException>(() => new TaggedUndirectedEdge<ComparableTestVertex, TestObject>(comparableV2, comparableV1, null));
             // ReSharper restore ObjectCreationAsStatement
         }
 

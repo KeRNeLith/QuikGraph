@@ -21,6 +21,14 @@ namespace QuikGraph.Tests.Structures
             var v2 = new ComparableTestVertex("v2");
             CheckEdge(new UndirectedEdge<ComparableTestVertex>(v1, v2), v1, v2);
             CheckEdge(new UndirectedEdge<ComparableTestVertex>(v1, v1), v1, v1);
+
+            // Order correctly on creation
+            CheckEdge(new UndirectedEdge<int>(2, 1), 1, 2);
+
+            // Comparable
+            var comparableV1 = new ComparableTestVertex("v1");
+            var comparableV2 = new ComparableTestVertex("v2");
+            CheckEdge(new UndirectedEdge<ComparableTestVertex>(comparableV2, comparableV1), comparableV1, comparableV2);
         }
 
         [Test]
@@ -33,16 +41,11 @@ namespace QuikGraph.Tests.Structures
             Assert.Throws<ArgumentNullException>(() => new UndirectedEdge<TestVertex>(null, null));
             // ReSharper restore AssignNullToNotNullAttribute
 
-            Assert.Throws<ArgumentException>(() => new UndirectedEdge<int>(2, 1));
 
             // Not comparable
             var v1 = new TestVertex("v1");
             var v2 = new TestVertex("v2");
             Assert.Throws<ArgumentException>(() => new UndirectedEdge<TestVertex>(v1, v2));
-
-            var comparableV1 = new ComparableTestVertex("v1");
-            var comparableV2 = new ComparableTestVertex("v2");
-            Assert.Throws<ArgumentException>(() => new UndirectedEdge<ComparableTestVertex>(comparableV2, comparableV1));
             // ReSharper restore ObjectCreationAsStatement
         }
 
