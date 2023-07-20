@@ -366,6 +366,142 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         }
 
         [Test]
+        public void InspectPath_RejectSomePaths()
+        {
+            var graph = new AdjacencyGraph<string, EquatableTaggedEdge<string, double>>(false);
+            graph.AddVertexRange(new[] { "A", "B", "C", "D" });
+            var edges = new[]
+            {
+                new EquatableTaggedEdge<string, double>("A", "B", 5),
+                new EquatableTaggedEdge<string, double>("A", "C", 6),
+                new EquatableTaggedEdge<string, double>("B", "C", 7),
+                new EquatableTaggedEdge<string, double>("B", "D", 8),
+                new EquatableTaggedEdge<string, double>("C", "D", 9)
+            };
+            graph.AddEdgeRange(edges);
+
+            // ignore all paths where "B" comes in the 2nd position
+            var algorithm = new YenShortestPathsAlgorithm<string>(graph, "A", "D", 5, inspectPath: InspectPath);
+            YenShortestPathsAlgorithm<string>.SortedPath[] paths = algorithm.Execute().ToArray();
+
+            // Expecting to find 3 paths:
+            // * => A-B-D (gets ignored)
+            // 1 => A-C-D
+            // * => A-B-C-D (gets ignored)
+            // Consistently checking the result
+            Assert.AreEqual(1, paths.Length);
+            // 1
+            EquatableTaggedEdge<string, double>[] path0 = paths[0].ToArray();
+            Assert.AreEqual(path0[0], edges[1]);
+            Assert.AreEqual(path0[1], edges[4]);
+
+            #region Local functions
+
+            YenShortestPathsAlgorithm<string>.InspectPathResult InspectPath(YenShortestPathsAlgorithm<string>.InspectPathParameters inspectPathParameters)
+            {
+                var pathAcceptance = inspectPathParameters.Path.GetVertex(1) == "B"
+                    ? YenShortestPathsAlgorithm<string>.PathAcceptance.Reject
+                    : YenShortestPathsAlgorithm<string>.PathAcceptance.Accept;
+
+                return new YenShortestPathsAlgorithm<string>.InspectPathResult(pathAcceptance, YenShortestPathsAlgorithm<string>.SearchContinuation.Continue);
+            }
+
+            #endregion
+        }
+
+        [Test]
+        public void InspectPath_StopsSearchWhenConditionIsMet_ForInitialShortestPath()
+        {
+            var graph = new AdjacencyGraph<string, EquatableTaggedEdge<string, double>>(false);
+            graph.AddVertexRange(new[] { "A", "B", "C", "D" });
+            var edges = new[]
+            {
+                new EquatableTaggedEdge<string, double>("A", "B", 5),
+                new EquatableTaggedEdge<string, double>("A", "C", 6),
+                new EquatableTaggedEdge<string, double>("B", "C", 7),
+                new EquatableTaggedEdge<string, double>("B", "D", 8),
+                new EquatableTaggedEdge<string, double>("C", "D", 9)
+            };
+            graph.AddEdgeRange(edges);
+
+            // stop when we have found a shortest path that exceeds some costs
+            var algorithm = new YenShortestPathsAlgorithm<string>(graph, "A", "D", 10, inspectPath: InspectPath);
+            YenShortestPathsAlgorithm<string>.SortedPath[] paths = algorithm.Execute().ToArray();
+
+            // Expecting to get 3 paths:
+            // 1 => A-B-D (cost = 13)
+            // * => A-C-D (path limit reached)
+            // * => A-B-C-D (path limit reached)
+            // Consistently checking the result
+            Assert.AreEqual(1, paths.Length);
+            // 1
+            EquatableTaggedEdge<string, double>[] path0 = paths[0].ToArray();
+            Assert.AreEqual(path0[0], edges[0]);
+            Assert.AreEqual(path0[1], edges[3]);
+
+            #region Local functions
+
+            YenShortestPathsAlgorithm<string>.InspectPathResult InspectPath(YenShortestPathsAlgorithm<string>.InspectPathParameters inspectPathParameters)
+            {
+                var searchContinuation = inspectPathParameters.Path.Sum(x => x.Tag) >= 10
+                    ? YenShortestPathsAlgorithm<string>.SearchContinuation.StopSearch
+                    : YenShortestPathsAlgorithm<string>.SearchContinuation.Continue;
+
+                return new YenShortestPathsAlgorithm<string>.InspectPathResult(YenShortestPathsAlgorithm<string>.PathAcceptance.Accept, searchContinuation);
+            }
+
+            #endregion
+        }
+
+        [Test]
+        public void InspectPath_StopsSearchWhenConditionIsMet_ForNthShortestPath()
+        {
+            var graph = new AdjacencyGraph<string, EquatableTaggedEdge<string, double>>(false);
+            graph.AddVertexRange(new[] { "A", "B", "C", "D" });
+            var edges = new[]
+            {
+                new EquatableTaggedEdge<string, double>("A", "B", 5),
+                new EquatableTaggedEdge<string, double>("A", "C", 6),
+                new EquatableTaggedEdge<string, double>("B", "C", 7),
+                new EquatableTaggedEdge<string, double>("B", "D", 8),
+                new EquatableTaggedEdge<string, double>("C", "D", 9)
+            };
+            graph.AddEdgeRange(edges);
+
+            // stop when we have found a shortest path that exceeds some costs
+            var algorithm = new YenShortestPathsAlgorithm<string>(graph, "A", "D", 10, inspectPath: InspectPath);
+            YenShortestPathsAlgorithm<string>.SortedPath[] paths = algorithm.Execute().ToArray();
+
+            // Expecting to get 3 paths:
+            // 1 => A-B-D (cost = 13)
+            // 2 => A-C-D (cost = 15)
+            // * => A-B-C-D (path limit reached)
+            // Consistently checking the result
+            Assert.AreEqual(2, paths.Length);
+            // 1
+            EquatableTaggedEdge<string, double>[] path0 = paths[0].ToArray();
+            Assert.AreEqual(path0[0], edges[0]);
+            Assert.AreEqual(path0[1], edges[3]);
+            // 2
+            EquatableTaggedEdge<string, double>[] path1 = paths[1].ToArray();
+            Assert.AreEqual(path1[0], edges[1]);
+            Assert.AreEqual(path1[1], edges[4]);
+
+            #region Local functions
+
+            YenShortestPathsAlgorithm<string>.InspectPathResult InspectPath(YenShortestPathsAlgorithm<string>.InspectPathParameters inspectPathParameters)
+            {
+                var searchContinuation = inspectPathParameters.Path.Sum(x => x.Tag) >= 15
+                    ? YenShortestPathsAlgorithm<string>.SearchContinuation.StopSearch
+                    : YenShortestPathsAlgorithm<string>.SearchContinuation.Continue;
+
+                return new YenShortestPathsAlgorithm<string>.InspectPathResult(YenShortestPathsAlgorithm<string>.PathAcceptance.Accept, searchContinuation);
+            }
+
+            #endregion
+        }
+
+        [Test]
         public void SortedPathHashCode()
         {
             var edges = new[]

@@ -17,6 +17,95 @@ namespace QuikGraph.Algorithms.ShortestPath
     public class YenShortestPathsAlgorithm<TVertex>
     {
         /// <summary>
+        /// Struct provides the parameters used for the path inspection.
+        /// </summary>
+        public struct InspectPathParameters
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InspectPathParameters"/> struct.
+            /// </summary>
+            public InspectPathParameters(SortedPath path, IEnumerable<SortedPath> shortestPaths, IEnumerable<SortedPath> acceptedPaths)
+            {
+                Path = path;
+                ShortestPaths = shortestPaths;
+                AcceptedPaths = acceptedPaths;
+            }
+
+            /// <summary>
+            /// The current found shortest path.
+            /// </summary>
+            public SortedPath Path { get; }
+
+            /// <summary>
+            /// All shortest paths found so far. They might were accepted or not. Includes the current found path.
+            /// </summary>
+            public IEnumerable<SortedPath> ShortestPaths { get; }
+
+            /// <summary>
+            /// All shortest paths that were accepted so far.
+            /// </summary>
+            public IEnumerable<SortedPath> AcceptedPaths { get; }
+        }
+
+        /// <summary>
+        /// Struct provides the result of the path inspection.
+        /// </summary>
+        public struct InspectPathResult
+        {
+            /// <summary>
+            /// Initializes a new instance of the <see cref="InspectPathResult"/> struct.
+            /// </summary>
+            public InspectPathResult(PathAcceptance pathAcceptance, SearchContinuation searchContinuation)
+            {
+                PathAcceptance = pathAcceptance;
+                SearchContinuation = searchContinuation;
+            }
+
+            /// <summary>
+            /// Decides whether to add the found path to the result set.
+            /// </summary>
+            public PathAcceptance PathAcceptance { get; }
+
+            /// <summary>
+            /// Decide whether to stop searching for more paths.
+            /// </summary>
+            public SearchContinuation SearchContinuation { get; }
+        }
+
+        /// <summary>
+        /// After path inspection, decide whether to add the found path to the result set.
+        /// </summary>
+        public enum PathAcceptance
+        {
+            /// <summary>
+            /// The found shortest path will be added to the result list.
+            /// </summary>
+            Accept,
+
+            /// <summary>
+            /// The found shortest path will not be added to the result list.
+            /// </summary>
+            Reject
+        }
+
+        /// <summary>
+        /// After path inspection, decide whether to stop searching for more paths.
+        /// </summary>
+        [Flags]
+        public enum SearchContinuation
+        {
+            /// <summary>
+            /// Continue the search until the k shortest paths are found
+            /// </summary>
+            Continue,
+
+            /// <summary>
+            /// The the search and return the found paths even if not k iterations have been done.
+            /// </summary>
+            StopSearch
+        }
+
+        /// <summary>
         /// Class representing a sorted path.
         /// </summary>
         public struct SortedPath : IEnumerable<EquatableTaggedEdge<TVertex, double>>, IEquatable<SortedPath>
@@ -109,6 +198,9 @@ namespace QuikGraph.Algorithms.ShortestPath
         [NotNull]
         private readonly Func<IEnumerable<SortedPath>, IEnumerable<SortedPath>> _filter;
 
+        [NotNull]
+        private readonly Func<InspectPathParameters, InspectPathResult> _inspectPath;
+
         // Limit for the amount of paths
         private readonly int _k;
 
@@ -127,6 +219,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         /// <param name="k">Maximum number of path to search.</param>
         /// <param name="edgeWeights">Optional function that computes the weight for a given edge.</param>
         /// <param name="filter">Optional filter of found paths.</param>
+        /// <param name="inspectPath">Optional function to inspect a found shortest path right after it was found.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="target"/> is <see langword="null"/>.</exception>
@@ -139,7 +232,8 @@ namespace QuikGraph.Algorithms.ShortestPath
             [NotNull] TVertex target,
             int k,
             [CanBeNull] Func<EquatableTaggedEdge<TVertex, double>, double> edgeWeights = null,
-            [CanBeNull] Func<IEnumerable<SortedPath>, IEnumerable<SortedPath>> filter = null)
+            [CanBeNull] Func<IEnumerable<SortedPath>, IEnumerable<SortedPath>> filter = null,
+            [CanBeNull] Func<InspectPathParameters, InspectPathResult> inspectPath = null)
         {
             if (graph is null)
                 throw new ArgumentNullException(nameof(graph));
@@ -160,6 +254,7 @@ namespace QuikGraph.Algorithms.ShortestPath
             _graph = graph.Clone();
             _weights = edgeWeights ?? DefaultGetWeights;
             _filter = filter ?? DefaultFilter;
+            _inspectPath = inspectPath ?? DefaultInspectPath;
         }
 
         [Pure]
@@ -173,6 +268,12 @@ namespace QuikGraph.Algorithms.ShortestPath
         private static double DefaultGetWeights([NotNull] EquatableTaggedEdge<TVertex, double> edge)
         {
             return edge.Tag;
+        }
+
+        [Pure]
+        private static InspectPathResult DefaultInspectPath(InspectPathParameters inspectPathParameters)
+        {
+            return new InspectPathResult(PathAcceptance.Accept, SearchContinuation.Continue);
         }
 
         [Pure]
@@ -327,19 +428,48 @@ namespace QuikGraph.Algorithms.ShortestPath
         {
             SortedPath initialPath = GetInitialShortestPath();
             var shortestPaths = new List<SortedPath> { initialPath };
+            var acceptedPaths = new List<SortedPath>();
+
+            InspectPathResult inspectPathResult = _inspectPath(new InspectPathParameters(initialPath, shortestPaths, acceptedPaths));
+
+            if (inspectPathResult.PathAcceptance == PathAcceptance.Accept)
+            {
+                acceptedPaths.Add(initialPath);
+            }
+
+            if (inspectPathResult.SearchContinuation == SearchContinuation.StopSearch)
+            {
+                return _filter(acceptedPaths);
+            }
 
             // Initialize the set to store the potential k-th shortest path
             var shortestPathCandidates = new BinaryQueue<SortedPath, double>(GetPathDistance);
+            var previousPath = initialPath;
 
             for (int k = 1; k < _k; ++k)
             {
-                SortedPath previousPath = shortestPaths[k - 1];
-
                 if (!SearchAndAddKthShortestPath(previousPath, shortestPaths, shortestPathCandidates))
+                {
                     break;
+                }
+
+                SortedPath newPath = shortestPaths[k];
+                inspectPathResult = _inspectPath(new InspectPathParameters(newPath, shortestPaths, acceptedPaths));
+
+                if (inspectPathResult.PathAcceptance == PathAcceptance.Accept)
+                {
+                    acceptedPaths.Add(newPath);
+                }
+
+                if (inspectPathResult.SearchContinuation == SearchContinuation.StopSearch)
+                {
+                    break;
+                }
+
+                previousPath = newPath;
             }
 
-            return _filter(shortestPaths);
+            return _filter(acceptedPaths);
         }
 
         [NotNull, ItemNotNull]
