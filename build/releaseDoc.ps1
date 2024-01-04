@@ -61,7 +61,8 @@ if ($env:APPVEYOR_REPO_BRANCH -ne "master")
 }
 
 # Chocolatey DocFX
-cinst docfx --version $env:DocFXVersion -y
+dotnet tool install --tool-path tools --version $env:DocFXVersion docfx
+$docFx = (Resolve-Path "tools\docfx.exe").ToString();
 
 git config --global core.autocrlf true
 git config --global core.eol lf
@@ -70,7 +71,7 @@ git config --global user.email $env:GITHUB_EMAIL
 git config --global user.name "KeRNeLith"
 
 "Generating documentation site..."
-docfx ./docs/docfx.json
+& $docFx ./docs/docfx.json
 
 $SOURCE_DIR=$pwd.Path
 $TEMP_REPO_DIR="$pwd/../QuikGraph-gh-pages"

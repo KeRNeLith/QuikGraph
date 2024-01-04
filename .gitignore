@@ -201,6 +201,9 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 
+# Nuget tools
+tools/
+
 # =========================
 # Windows detritus
 # =========================

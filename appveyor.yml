@@ -27,8 +27,8 @@ skip_commits:
 environment:
   SONARQUBE_TOKEN:
     secure: 2I3bluR+2upDl17M1Qmnil/eSAhUFcv4uaW5vvZOveWsFkYY773KQtLmK7H8dcLI
-  DocFXVersion: 2.59.2
-  NUnitConsoleVersion: 3.15.2
+  DocFXVersion: 2.74.1
+  NUnitConsoleVersion: 3.16.3
   OpenCoverVersion: 4.7.1221
   CoverallsVersion: 4.0.1
   COVERALLS_REPO_TOKEN:
