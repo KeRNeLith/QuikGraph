@@ -26,7 +26,7 @@ skip_commits:
 
 environment:
   SONARQUBE_TOKEN:
-    secure: 2I3bluR+2upDl17M1Qmnil/eSAhUFcv4uaW5vvZOveWsFkYY773KQtLmK7H8dcLI
+    secure: 9qF2fvHcUYN0XrqZhbkeQFGYSJvnyyxA0kQ9aq7sNEugxvrVRbrKeVH3Pfzfc4wT
   DocFXVersion: 2.74.1
   NUnitConsoleVersion: 3.16.3
   OpenCoverVersion: 4.7.1221
@@ -86,12 +86,15 @@ build:
   verbosity: minimal
 
 build_script:
+# Java setup
+  - set JAVA_HOME=C:\Program Files\Java\jdk21
+  - set PATH=%JAVA_HOME%\bin;%PATH%
 # Start SonarQube analysis (only for Release configuration)
   - ps: $analysisFile = (Convert-Path SonarQube.Analysis.xml).ToString()
   - ps: >-
       if ($env:IsFullIntegrationBuild -eq $true)
       {
-          & $sonarScanner begin /k:"quikgraph" /s:$analysisFile /o:"kernelith-github" /d:sonar.host.url="https://sonarcloud.io" /d:"sonar.branch.name=$env:APPVEYOR_REPO_BRANCH" /d:sonar.cs.opencover.reportsPaths="coverage.xml" /d:sonar.login="$env:SONARQUBE_TOKEN"
+          & $sonarScanner begin /k:"quikgraph" /s:$analysisFile /o:"kernelith-github" /d:sonar.host.url="https://sonarcloud.io" /d:"sonar.branch.name=$env:APPVEYOR_REPO_BRANCH" /d:sonar.cs.opencover.reportsPaths="coverage.xml" /d:sonar.token="$env:SONARQUBE_TOKEN"
       }
   - msbuild
 
@@ -130,7 +133,7 @@ test_script:
           & $opencover -register:Path64 -filter:"+[*]* -[*.Test*]* -[*]JetBrains.Annotations*" -excludebyfile:"*\Dgml.cs;*\SortedSet.cs;*\BitHelper.cs" -hideskipped:File -target:"$nunitConsole" -targetargs:"$testAssemblies --result=\`"TestResult.xml\`" --where \`"cat != VerboseTest and cat != CISkip\`"" -returntargetcode -log:Warn -output:coverage.xml;
           $testsPassed = $?;
           
-          & $sonarScanner end /d:"sonar.login=$env:SONARQUBE_TOKEN"
+          & $sonarScanner end /d:"sonar.token=$env:SONARQUBE_TOKEN"
           
           & $coveralls --opencover -i coverage.xml --repoToken $env:COVERALLS_REPO_TOKEN --useRelativePaths --commitId $env:APPVEYOR_REPO_COMMIT --commitBranch $env:APPVEYOR_REPO_BRANCH --commitAuthor $env:APPVEYOR_REPO_COMMIT_AUTHOR --commitEmail $env:APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL --commitMessage $env:APPVEYOR_REPO_COMMIT_MESSAGE --jobId $env:APPVEYOR_BUILD_NUMBER --serviceName appveyor
       }
