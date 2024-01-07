@@ -180,10 +180,13 @@ namespace QuikGraph
 
             if (ContainsVertex(source))
             {
-                foreach (TEdge adjacentEdge in AdjacentEdges(source).Where(adjacentEdge => EdgeEqualityComparer(adjacentEdge, source, target)))
+                foreach (TEdge adjacentEdge in AdjacentEdges(source))
                 {
-                    edge = adjacentEdge;
-                    return true;
+                    if (EdgeEqualityComparer(adjacentEdge, source, target))
+                    {
+                        edge = adjacentEdge;
+                        return true;
+                    }
                 }
             }
 

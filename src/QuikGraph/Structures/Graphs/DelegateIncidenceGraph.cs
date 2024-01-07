@@ -52,10 +52,13 @@ namespace QuikGraph
 
             if (TryGetOutEdges(source, out IEnumerable<TEdge> outEdges))
             {
-                foreach (TEdge outEdge in outEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target)))
+                foreach (TEdge outEdge in outEdges)
                 {
-                    edge = outEdge;
-                    return true;
+                    if (EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target))
+                    {
+                        edge = outEdge;
+                        return true;
+                    }
                 }
             }
 

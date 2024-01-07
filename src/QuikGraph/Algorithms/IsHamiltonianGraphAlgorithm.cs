@@ -116,7 +116,7 @@ namespace QuikGraph.Algorithms
             int n = _graph.VertexCount;
             return n == 1
                 || (n >= 3 && _graph.Vertices.All(SatisfiesDiracTheorem))
-                || GetPermutations().Any(ExistsInGraph);
+                || GetPermutations().Exists(ExistsInGraph);
         }
 
         #region Helpers

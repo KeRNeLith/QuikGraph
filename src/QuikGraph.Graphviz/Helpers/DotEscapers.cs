@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
 namespace QuikGraph.Graphviz
@@ -26,12 +27,22 @@ namespace QuikGraph.Graphviz
         [NotNull]
         private static readonly Regex RecordEscapeRegex = new Regex(
             $"(?<{EolGroupName}>{EolPattern})|(?<{CommonGroupName}>\\||<|>|{DoubleQuotePattern}| |{BackslashPattern})",
-            RegexOptions.ExplicitCapture | RegexOptions.Multiline | RegexOptions.Compiled);
+            RegexOptions.ExplicitCapture | RegexOptions.Multiline | RegexOptions.Compiled
+#if NET45_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+            , TimeSpan.FromSeconds(10));
+#else
+            );
+#endif
 
         [NotNull]
         private static readonly Regex GeneralEscapeRegex = new Regex(
             $"(?<{EolGroupName}>{EolPattern})|(?<{CommonGroupName}>{DoubleQuotePattern}|{BackslashPattern})",
-            RegexOptions.Multiline | RegexOptions.Compiled);
+            RegexOptions.Multiline | RegexOptions.Compiled
+#if NET45_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+            , TimeSpan.FromSeconds(10));
+#else
+            );
+#endif
 
         /// <summary>
         /// Escapes the given <paramref name="value"/> as being a record port value.

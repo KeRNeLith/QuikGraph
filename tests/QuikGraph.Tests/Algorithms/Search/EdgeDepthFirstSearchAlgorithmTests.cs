@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using NUnit.Framework;
@@ -81,7 +81,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             foreach (TEdge edge in graph.Edges)
             {
                 Assert.IsTrue(dfs.EdgesColors.ContainsKey(edge));
-                Assert.AreEqual(dfs.EdgesColors[edge], GraphColor.Black);
+                Assert.AreEqual(GraphColor.Black, dfs.EdgesColors[edge]);
             }
 
             foreach (TEdge e1 in graph.Edges)

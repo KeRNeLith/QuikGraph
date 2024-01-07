@@ -904,30 +904,32 @@ namespace QuikGraph.Algorithms
         private sealed class DirectedCycleTester<TVertex, TEdge>
             where TEdge : IEdge<TVertex>
         {
-            private bool _isDag = true;
-
             [Pure]
             public bool IsDag([NotNull] IVertexListGraph<TVertex, TEdge> graph)
             {
                 Debug.Assert(graph != null);
 
+                bool isDag = true;
                 var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(graph);
                 try
                 {
                     dfs.BackEdge += DfsBackEdge;
-                    _isDag = true;
                     dfs.Compute();
-                    return _isDag;
+                    return isDag;
                 }
                 finally
                 {
                     dfs.BackEdge -= DfsBackEdge;
                 }
-            }
 
-            private void DfsBackEdge([NotNull] TEdge edge)
-            {
-                _isDag = false;
+                #region Local function
+
+                void DfsBackEdge(TEdge edge)
+                {
+                    isDag = false;
+                }
+
+                #endregion
             }
         }
 
@@ -1242,9 +1244,9 @@ namespace QuikGraph.Algorithms
             if (pairs is null)
                 throw new ArgumentNullException(nameof(pairs));
             SEquatableEdge<TVertex>[] pairsArray = pairs.ToArray();
-            if (pairsArray.Any(pair => !graph.ContainsVertex(pair.Source)))
+            if (Array.Exists(pairsArray, pair => !graph.ContainsVertex(pair.Source)))
                 throw new ArgumentException($"All pairs sources must be in the {nameof(graph)}.", nameof(pairs));
-            if (pairsArray.Any(pair => !graph.ContainsVertex(pair.Target)))
+            if (Array.Exists(pairsArray, pair => !graph.ContainsVertex(pair.Target)))
                 throw new ArgumentException($"All pairs targets must be in the {nameof(graph)}.", nameof(pairs));
 
             var algorithm = new TarjanOfflineLeastCommonAncestorAlgorithm<TVertex, TEdge>(graph);

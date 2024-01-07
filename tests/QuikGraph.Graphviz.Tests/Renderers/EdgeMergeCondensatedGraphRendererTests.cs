@@ -125,7 +125,7 @@ namespace QuikGraph.Graphviz.Tests
             };
 
             var algorithm = new EdgeMergeCondensatedGraphRenderer<int, Edge<int>>(graph);
-            algorithm.Generate(dotEngine, "NotSaved.dot");
+            Assert.DoesNotThrow(() => algorithm.Generate(dotEngine, "NotSaved.dot"));
         }
 
         [Test]
@@ -190,7 +190,7 @@ namespace QuikGraph.Graphviz.Tests
             };
 
             var algorithm = new EdgeMergeCondensatedGraphRenderer<string, Edge<string>>(graph);
-            algorithm.Generate(dotEngine, "NotSaved.dot");
+            Assert.DoesNotThrow(() => algorithm.Generate(dotEngine, "NotSaved.dot"));
         }
     }
 }

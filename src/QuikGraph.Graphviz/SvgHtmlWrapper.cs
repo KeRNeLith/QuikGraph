@@ -82,7 +82,12 @@ namespace QuikGraph.Graphviz
         [NotNull]
         private static readonly Regex SizeRegex = new Regex(
             $@"<\s*svg.*width\s*=\s*""\s*(?<{WidthGroupName}>\d+)\s*(px|)\s*"".*height\s*=\s*""\s*(?<{HeightGroupName}>\d+)\s*(px|)\s*""",
-            RegexOptions.ExplicitCapture | RegexOptions.Multiline | RegexOptions.Compiled);
+            RegexOptions.ExplicitCapture | RegexOptions.Multiline | RegexOptions.Compiled
+#if NET45_OR_GREATER || NETSTANDARD2_0_OR_GREATER
+            , TimeSpan.FromSeconds(10));
+#else
+            );
+#endif
 
         /// <summary>
         /// Parses the size of an SVG.

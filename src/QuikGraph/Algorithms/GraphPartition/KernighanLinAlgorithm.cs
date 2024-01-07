@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using JetBrains.Annotations;
-using System.Linq;
 #if !SUPPORTS_SORTEDSET
 using QuikGraph.Collections;
 #endif
@@ -81,7 +80,7 @@ namespace QuikGraph.Algorithms.GraphPartition
             // Back to swap step with min cut cost
             while (swaps.Count - 1 > minId)
             {
-                SwapPair pair = swaps.Last();
+                SwapPair pair = swaps[swaps.Count - 1];
                 swaps.Remove(pair);
                 SwapVertices(_vertexSetA, pair.Vertex2, _vertexSetB, pair.Vertex1);
             }

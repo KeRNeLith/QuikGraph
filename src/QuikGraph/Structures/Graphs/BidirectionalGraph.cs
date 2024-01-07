@@ -235,10 +235,13 @@ namespace QuikGraph
             if (_vertexOutEdges.TryGetValue(source, out IEdgeList<TVertex, TEdge> outEdges)
                 && outEdges.Count > 0)
             {
-                foreach (TEdge outEdge in outEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target)))
+                foreach (TEdge outEdge in outEdges)
                 {
-                    edge = outEdge;
-                    return true;
+                    if (EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target))
+                    {
+                        edge = outEdge;
+                        return true;
+                    }
                 }
             }
 
@@ -380,7 +383,7 @@ namespace QuikGraph
             if (vertices is null)
                 throw new ArgumentNullException(nameof(vertices));
             TVertex[] verticesArray = vertices.ToArray();
-            if (verticesArray.Any(v => v == null))
+            if (Array.Exists(verticesArray, v => v == null))
                 throw new ArgumentNullException(nameof(vertices), "At least one vertex is null.");
 
             return verticesArray.Count(AddVertex);
@@ -527,7 +530,7 @@ namespace QuikGraph
             if (edges is null)
                 throw new ArgumentNullException(nameof(edges));
             TEdge[] edgesArray = edges.ToArray();
-            if (edgesArray.Any(e => e == null))
+            if (Array.Exists(edgesArray, e => e == null))
                 throw new ArgumentNullException(nameof(edges), "At least one edge is null.");
 
             return edgesArray.Count(AddEdge);
@@ -649,7 +652,7 @@ namespace QuikGraph
             if (edges is null)
                 throw new ArgumentNullException(nameof(edges));
             TEdge[] edgesArray = edges.ToArray();
-            if (edgesArray.Any(e => e == null))
+            if (Array.Exists(edgesArray, e => e == null))
                 throw new ArgumentNullException(nameof(edges), "At least one edge is null.");
 
             return edgesArray.Count(AddVerticesAndEdge);

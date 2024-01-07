@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -85,7 +85,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             foreach (TVertex vertex in graph.Vertices)
             {
                 Assert.IsTrue(dfs.VerticesColors.ContainsKey(vertex));
-                Assert.AreEqual(dfs.VerticesColors[vertex], GraphColor.Black);
+                Assert.AreEqual(GraphColor.Black, dfs.VerticesColors[vertex]);
             }
 
             foreach (TVertex u in graph.Vertices)

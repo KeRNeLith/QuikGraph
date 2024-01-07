@@ -530,7 +530,7 @@ namespace QuikGraph
             if (edges is null)
                 throw new ArgumentNullException(nameof(edges));
             TEdge[] edgesArray = edges.ToArray();
-            if (edgesArray.Any(e => e == null))
+            if (Array.Exists(edgesArray, e => e == null))
                 throw new ArgumentNullException(nameof(edges), "At least one edge is null.");
 
             return edgesArray.Count(AddEdge);

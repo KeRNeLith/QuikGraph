@@ -152,7 +152,7 @@ namespace QuikGraph.Graphviz.Tests
             };
 
             var algorithm = new CondensatedGraphRenderer<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(graph);
-            algorithm.Generate(dotEngine, "NotSaved.dot");
+            Assert.DoesNotThrow(() => algorithm.Generate(dotEngine, "NotSaved.dot"));
         }
 
         [Test]
@@ -205,7 +205,7 @@ namespace QuikGraph.Graphviz.Tests
             };
 
             var algorithm = new CondensatedGraphRenderer<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(graph);
-            algorithm.Generate(dotEngine, "NotSaved.dot");
+            Assert.DoesNotThrow(() => algorithm.Generate(dotEngine, "NotSaved.dot"));
         }
     }
 }

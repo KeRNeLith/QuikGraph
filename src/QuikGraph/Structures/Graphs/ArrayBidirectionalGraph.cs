@@ -120,9 +120,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(edge));
 
             if (_vertexEdges.TryGetValue(edge.Source, out InOutEdges inOutEdges))
-            {
-                return inOutEdges.OutEdges.Any(outEdge => EqualityComparer<TEdge>.Default.Equals(outEdge, edge));
-            }
+                return Array.Exists(inOutEdges.OutEdges, outEdge => EqualityComparer<TEdge>.Default.Equals(outEdge, edge));
 
             return false;
         }
@@ -147,10 +145,13 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(source, out InOutEdges inOutEdges))
             {
-                foreach (TEdge outEdge in inOutEdges.OutEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target)))
+                foreach (TEdge outEdge in inOutEdges.OutEdges)
                 {
-                    edge = outEdge;
-                    return true;
+                    if (EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target))
+                    {
+                        edge = outEdge;
+                        return true;
+                    }
                 }
             }
 

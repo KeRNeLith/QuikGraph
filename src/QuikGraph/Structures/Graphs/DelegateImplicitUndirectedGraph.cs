@@ -116,10 +116,13 @@ namespace QuikGraph
 
             if (TryGetAdjacentEdges(source, out IEnumerable<TEdge> adjacentEdges))
             {
-                foreach (TEdge adjacentEdge in adjacentEdges.Where(adjacentEdge => EdgeEqualityComparer(adjacentEdge, source, target)))
+                foreach (TEdge adjacentEdge in adjacentEdges)
                 {
-                    edge = adjacentEdge;
-                    return true;
+                    if (EdgeEqualityComparer(adjacentEdge, source, target))
+                    {
+                        edge = adjacentEdge;
+                        return true;
+                    }
                 }
             }
 

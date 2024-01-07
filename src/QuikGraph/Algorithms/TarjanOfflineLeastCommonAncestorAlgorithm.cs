@@ -139,9 +139,9 @@ namespace QuikGraph.Algorithms
 
             if (_pairs.Length == 0)
                 throw new ArgumentException("Must have at least one vertex pair.", nameof(pairs));
-            if (_pairs.Any(pair => !VisitedGraph.ContainsVertex(pair.Source)))
+            if (Array.Exists(_pairs, pair => !VisitedGraph.ContainsVertex(pair.Source)))
                 throw new ArgumentException("All pairs sources must be in the graph.", nameof(pairs));
-            if (_pairs.Any(pair => !VisitedGraph.ContainsVertex(pair.Target)))
+            if (Array.Exists(_pairs, pair => !VisitedGraph.ContainsVertex(pair.Target)))
                 throw new ArgumentException("All pairs targets must be in the graph.", nameof(pairs));
         }
 

@@ -232,7 +232,7 @@ namespace QuikGraph.Algorithms.ShortestPath
                 newPath = shortestPathCandidates.Dequeue();
                 isNewPath = true;
                 // Check to see if this candidate path duplicates a previously found path
-                if (shortestPaths.Any(path => newPath.Value.Equals(path)))
+                if (shortestPaths.Exists(path => newPath.Value.Equals(path)))
                 {
                     isNewPath = false;
                     newPath = null;

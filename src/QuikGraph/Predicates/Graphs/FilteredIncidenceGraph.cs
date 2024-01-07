@@ -53,10 +53,13 @@ namespace QuikGraph.Predicates
                 && VertexPredicate(target)
                 && BaseGraph.TryGetEdges(source, target, out IEnumerable<TEdge> unfilteredEdges))
             {
-                foreach (TEdge unfilteredEdge in unfilteredEdges.Where(unfilteredEdge => EdgePredicate(unfilteredEdge)))
+                foreach (TEdge unfilteredEdge in unfilteredEdges)
                 {
-                    edge = unfilteredEdge;
-                    return true;
+                    if (EdgePredicate(unfilteredEdge))
+                    {
+                        edge = unfilteredEdge;
+                        return true;
+                    }
                 }
             }
 

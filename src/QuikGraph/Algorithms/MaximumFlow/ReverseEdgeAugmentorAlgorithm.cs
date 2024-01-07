@@ -86,13 +86,13 @@ namespace QuikGraph.Algorithms.MaximumFlow
         {
             Debug.Assert(edge != null);
 
-            IEnumerable<TEdge> reversedEdges = VisitedGraph
-                .OutEdges(edge.Target)
-                .Where(reversedEdge => EqualityComparer<TVertex>.Default.Equals(reversedEdge.Target, edge.Source));
-            foreach (TEdge reversedEdge in reversedEdges)
+            foreach (TEdge reversedEdge in VisitedGraph.OutEdges(edge.Target))
             {
-                foundReversedEdge = reversedEdge;
-                return true;
+                if (EqualityComparer<TVertex>.Default.Equals(reversedEdge.Target, edge.Source))
+                {
+                    foundReversedEdge = reversedEdge;
+                    return true;
+                }
             }
 
             foundReversedEdge = default(TEdge);
