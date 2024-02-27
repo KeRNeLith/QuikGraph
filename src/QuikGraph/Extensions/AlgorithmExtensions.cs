@@ -952,7 +952,7 @@ namespace QuikGraph.Algorithms
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="edges">Edges of forming the graph to visit.</param>
-        /// <returns>True if the graph contains a cycle, false otherwise.</returns>
+        /// <returns>True if the graph contains no cycle, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="edges"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
         /// </exception>
@@ -975,7 +975,7 @@ namespace QuikGraph.Algorithms
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">Graph to visit.</param>
-        /// <returns>True if the graph contains a cycle, false otherwise.</returns>
+        /// <returns>True if the graph contains no cycle, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         [Pure]
         public static bool IsDirectedAcyclicGraph<TVertex, TEdge>(
@@ -1037,7 +1037,7 @@ namespace QuikGraph.Algorithms
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="edges">Edges of forming the graph to visit.</param>
-        /// <returns>True if the graph contains a cycle, false otherwise.</returns>
+        /// <returns>True if the graph contains no cycle, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="edges"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
         /// </exception>
@@ -1057,7 +1057,7 @@ namespace QuikGraph.Algorithms
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">Graph to visit.</param>
-        /// <returns>True if the graph contains a cycle, false otherwise.</returns>
+        /// <returns>True if the graph contains no cycle, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         [Pure]
         public static bool IsUndirectedAcyclicGraph<TVertex, TEdge>(
