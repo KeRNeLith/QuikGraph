@@ -14,20 +14,21 @@ namespace QuikGraph.Algorithms.ShortestPath
     /// with non negative edge cost.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
-    public class YenShortestPathsAlgorithm<TVertex>
+    /// <typeparam name="TEdge">Edge type.</typeparam>
+    public class YenShortestPathsAlgorithm<TVertex, TEdge> where TEdge : IEdge<TVertex>
     {
         /// <summary>
         /// Class representing a sorted path.
         /// </summary>
-        public struct SortedPath : IEnumerable<EquatableTaggedEdge<TVertex, double>>, IEquatable<SortedPath>
+        public struct SortedPath : IEnumerable<TEdge>, IEquatable<SortedPath>
         {
             [NotNull, ItemNotNull]
-            private readonly List<EquatableTaggedEdge<TVertex, double>> _edges;
+            private readonly List<TEdge> _edges;
 
             /// <summary>
             /// Initializes a new instance of the <see cref="SortedPath"/> struct.
             /// </summary>
-            public SortedPath([NotNull, ItemNotNull] IEnumerable<EquatableTaggedEdge<TVertex, double>> edges)
+            public SortedPath([NotNull, ItemNotNull] IEnumerable<TEdge> edges)
             {
                 _edges = edges.ToList();
             }
@@ -48,7 +49,7 @@ namespace QuikGraph.Algorithms.ShortestPath
 
             [Pure]
             [NotNull]
-            internal EquatableTaggedEdge<TVertex, double> GetEdge(int i)
+            internal TEdge GetEdge(int i)
             {
                 Debug.Assert(i >= 0 && i < _edges.Count);
 
@@ -57,7 +58,7 @@ namespace QuikGraph.Algorithms.ShortestPath
 
             [Pure]
             [NotNull, ItemNotNull]
-            internal EquatableTaggedEdge<TVertex, double>[] GetEdges(int count)
+            internal TEdge[] GetEdges(int count)
             {
                 if (count > _edges.Count)
                 {
@@ -88,7 +89,7 @@ namespace QuikGraph.Algorithms.ShortestPath
             }
 
             /// <inheritdoc />
-            public IEnumerator<EquatableTaggedEdge<TVertex, double>> GetEnumerator()
+            public IEnumerator<TEdge> GetEnumerator()
             {
                 return _edges.GetEnumerator();
             }
@@ -104,7 +105,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         private readonly TVertex _targetVertex;
 
         [NotNull]
-        private readonly Func<EquatableTaggedEdge<TVertex, double>, double> _weights;
+        private readonly Func<TEdge, double> _weights;
 
         [NotNull]
         private readonly Func<IEnumerable<SortedPath>, IEnumerable<SortedPath>> _filter;
@@ -113,10 +114,10 @@ namespace QuikGraph.Algorithms.ShortestPath
         private readonly int _k;
 
         [NotNull]
-        private readonly IMutableVertexAndEdgeListGraph<TVertex, EquatableTaggedEdge<TVertex, double>> _graph;
+        private readonly IMutableVertexAndEdgeListGraph<TVertex, TEdge> _graph;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="YenShortestPathsAlgorithm{TVertex}"/> class.
+        /// Initializes a new instance of the <see cref="YenShortestPathsAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <remarks>
         /// <see cref="T:System.Double"/> for tag type (edge) which comes from Dijkstra’s algorithm, which is used to get one shortest path.
@@ -134,11 +135,11 @@ namespace QuikGraph.Algorithms.ShortestPath
         /// <exception cref="T:System.ArgumentException"><paramref name="target"/> is not part of <paramref name="graph"/>.</exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="k"/> is lower than 1.</exception>
         public YenShortestPathsAlgorithm(
-            [NotNull] AdjacencyGraph<TVertex, EquatableTaggedEdge<TVertex, double>> graph,
+            [NotNull] AdjacencyGraph<TVertex, TEdge> graph,
             [NotNull] TVertex source,
             [NotNull] TVertex target,
             int k,
-            [CanBeNull] Func<EquatableTaggedEdge<TVertex, double>, double> edgeWeights = null,
+            [CanBeNull] Func<TEdge, double> edgeWeights,
             [CanBeNull] Func<IEnumerable<SortedPath>, IEnumerable<SortedPath>> filter = null)
         {
             if (graph is null)
@@ -153,12 +154,14 @@ namespace QuikGraph.Algorithms.ShortestPath
                 throw new ArgumentException("Target must be in the graph", nameof(source));
             if (k < 1)
                 throw new ArgumentOutOfRangeException(nameof(k), "Value must be positive.");
+            if (edgeWeights == null)
+                throw new ArgumentNullException(nameof(edgeWeights));
 
             _sourceVertex = source;
             _targetVertex = target;
             _k = k;
             _graph = graph.Clone();
-            _weights = edgeWeights ?? DefaultGetWeights;
+            _weights = edgeWeights;
             _filter = filter ?? DefaultFilter;
         }
 
@@ -167,12 +170,6 @@ namespace QuikGraph.Algorithms.ShortestPath
         private static IEnumerable<SortedPath> DefaultFilter([NotNull] IEnumerable<SortedPath> paths)
         {
             return paths;
-        }
-
-        [Pure]
-        private static double DefaultGetWeights([NotNull] EquatableTaggedEdge<TVertex, double> edge)
-        {
-            return edge.Tag;
         }
 
         [Pure]
@@ -196,7 +193,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         [Pure]
         [CanBeNull]
         private SortedPath? GetShortestPathInGraph(
-            [NotNull] IVertexListGraph<TVertex, EquatableTaggedEdge<TVertex, double>> graph,
+            [NotNull] IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] TVertex source,
             [NotNull] TVertex target)
         {
@@ -205,8 +202,8 @@ namespace QuikGraph.Algorithms.ShortestPath
             Debug.Assert(target != null);
 
             // Compute distances between the start vertex and other
-            var algorithm = new DijkstraShortestPathAlgorithm<TVertex, EquatableTaggedEdge<TVertex, double>>(graph, _weights);
-            var recorder = new VertexPredecessorRecorderObserver<TVertex, EquatableTaggedEdge<TVertex, double>>();
+            var algorithm = new DijkstraShortestPathAlgorithm<TVertex, TEdge>(graph, _weights);
+            var recorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
 
             using (recorder.Attach(algorithm))
             {
@@ -214,7 +211,7 @@ namespace QuikGraph.Algorithms.ShortestPath
             }
 
             // Get shortest path from start (source) vertex to target
-            return recorder.TryGetPath(target, out IEnumerable<EquatableTaggedEdge<TVertex, double>> path)
+            return recorder.TryGetPath(target, out IEnumerable<TEdge> path)
                 ? new SortedPath(path)
                 : (SortedPath?)null;
         }
@@ -258,12 +255,12 @@ namespace QuikGraph.Algorithms.ShortestPath
                 TVertex spurVertex = previousPath.GetVertex(i);
 
                 // The sequence of nodes from the source to the spur node of the previous k-shortest path
-                EquatableTaggedEdge<TVertex, double>[] rootPath = previousPath.GetEdges(i);
+                TEdge[] rootPath = previousPath.GetEdges(i);
 
                 foreach (SortedPath path in shortestPaths.Where(path => rootPath.SequenceEqual(path.GetEdges(i))))
                 {
                     // Remove the links that are part of the previous shortest paths which share the same root path
-                    EquatableTaggedEdge<TVertex, double> edgeToRemove = path.GetEdge(i);
+                    TEdge edgeToRemove = path.GetEdge(i);
                     _edgesToRestore.Add(edgeToRemove);
                     _graph.RemoveEdge(edgeToRemove);
                 }
@@ -343,10 +340,10 @@ namespace QuikGraph.Algorithms.ShortestPath
         }
 
         [NotNull, ItemNotNull]
-        private readonly List<EquatableTaggedEdge<TVertex, double>> _edgesToRestore =
-            new List<EquatableTaggedEdge<TVertex, double>>();
+        private readonly List<TEdge> _edgesToRestore =
+            new List<TEdge>();
 
-        private void OnGraphEdgeRemoved([NotNull] EquatableTaggedEdge<TVertex, double> edge)
+        private void OnGraphEdgeRemoved([NotNull] TEdge edge)
         {
             _edgesToRestore.Add(edge);
         }
