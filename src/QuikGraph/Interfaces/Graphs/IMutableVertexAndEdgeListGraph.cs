@@ -1,3 +1,6 @@
+﻿using QuikGraph.Algorithms;
+using System.Collections.Generic;
+
 namespace QuikGraph
 {
     /// <summary>
@@ -12,5 +15,25 @@ namespace QuikGraph
         , IVertexAndEdgeListGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+    }
+
+    /// <summary> Extension Methods for <see cref="IMutableVertexAndEdgeListGraph{TVertex,TEdge}"/> </summary>
+    public static class MutableVertexAndEdgeListGraphX
+    {
+        /// <summary> Filters those <paramref name="edges"/> that would not create a cycle in <paramref name="graph"/> </summary>
+        public static IEnumerable<TEdge> EdgesWithoutCycles<TVertex, TEdge>(this IMutableVertexAndEdgeListGraph<TVertex, TEdge> graph
+            , IEnumerable<TEdge> edges) where TEdge : IEdge<TVertex>
+        {
+            foreach (TEdge edge in edges)
+            {
+                graph.AddEdge(edge);
+                if (!graph.IsDirectedAcyclicGraph())
+                {
+                    yield return edge;
+                }
+
+                graph.RemoveEdge(edge);
+            }
+        }
     }
 }

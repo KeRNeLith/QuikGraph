@@ -15,7 +15,7 @@ namespace QuikGraph.Algorithms.RandomWalks
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeightedMarkovEdgeChainBase{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="WeightedMarkovEdgeChainBase{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="edgeWeights">Map that contains edge weights.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>

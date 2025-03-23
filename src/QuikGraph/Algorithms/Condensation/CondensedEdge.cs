@@ -6,12 +6,11 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.Condensation
 {
-    /// <summary>
-    /// An edge connecting two graphs.
-    /// </summary>
+    /// <summary> An edge connecting two graphs(!), not Vertices. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
     /// <typeparam name="TGraph">Graph type.</typeparam>
+    /// <remarks> Used in <see cref="CondensationGraphAlgorithm{TVertex,TEdge,TGraph}"/></remarks>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
@@ -20,7 +19,7 @@ namespace QuikGraph.Algorithms.Condensation
         where TGraph : IMutableVertexAndEdgeSet<TVertex, TEdge>, new()
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CondensedEdge{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="CondensedEdge{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
         /// <param name="source">The source graph.</param>
         /// <param name="target">The target graph.</param>

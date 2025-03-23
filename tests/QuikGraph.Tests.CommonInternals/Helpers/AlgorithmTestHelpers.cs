@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 
@@ -9,10 +9,8 @@ namespace QuikGraph.Tests.Algorithms
     /// </summary>
     internal static class AlgorithmTestHelpers
     {
-        #region Test helpers
-
         public static void AssertAlgorithmState<TGraph>(
-            [NotNull] AlgorithmBase<TGraph> algorithm,
+            [NotNull] this AlgorithmBase<TGraph> algorithm,
             [NotNull] TGraph treatedGraph,
             ComputationState state = ComputationState.NotRunning)
         {
@@ -22,7 +20,5 @@ namespace QuikGraph.Tests.Algorithms
             Assert.IsNotNull(algorithm.SyncRoot);
             Assert.AreEqual(state, algorithm.State);
         }
-
-        #endregion
     }
 }

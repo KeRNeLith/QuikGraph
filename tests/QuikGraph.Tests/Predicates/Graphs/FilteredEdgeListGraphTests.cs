@@ -14,35 +14,23 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Construction()
         {
-            VertexPredicate<int> vertexPredicate = _ => true;
-            EdgePredicate<int, Edge<int>> edgePredicate = _ => true;
+            Func<int, bool> vertexPredicate = _ => true;
+            Func<Edge<int>, bool> edgePredicate = _ => true;
 
             var graph1 = new AdjacencyGraph<int, Edge<int>>();
-            var filteredGraph1 = new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                graph1,
-                vertexPredicate,
-                edgePredicate);
+            var filteredGraph1 = graph1.FilterByEdges(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph1, graph1);
 
             graph1 = new AdjacencyGraph<int, Edge<int>>(false);
-            filteredGraph1 = new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                graph1,
-                vertexPredicate,
-                edgePredicate);
+            filteredGraph1 = graph1.FilterByEdges(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph1, graph1, parallelEdges: false);
 
             var graph2 = new UndirectedGraph<int, Edge<int>>();
-            var filteredGraph2 = new FilteredEdgeListGraph<int, Edge<int>, UndirectedGraph<int, Edge<int>>>(
-                graph2,
-                vertexPredicate,
-                edgePredicate);
+            var filteredGraph2 = graph2.FilterByEdges(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph2, graph2, false);
 
             graph2 = new UndirectedGraph<int, Edge<int>>(false);
-            filteredGraph2 = new FilteredEdgeListGraph<int, Edge<int>, UndirectedGraph<int, Edge<int>>>(
-                graph2,
-                vertexPredicate,
-                edgePredicate);
+            filteredGraph2 = graph2.FilterByEdges(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph2, graph2, false, false);
 
             #region Local function
@@ -72,43 +60,43 @@ namespace QuikGraph.Tests.Predicates
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new AdjacencyGraph<int, Edge<int>>()
+                    .FilterByEdges<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
                     _ => true,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new AdjacencyGraph<int, Edge<int>>()
+                    .FilterByEdges<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredEdgeListGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new AdjacencyGraph<int, Edge<int>>()
+                    .FilterByEdges<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
                     null,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredEdgeListGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredEdgeListGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredEdgeListGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     null,
                     null));
@@ -121,27 +109,17 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Vertices()
         {
-            var wrappedGraph = new AdjacencyGraph<int, Edge<int>>();
-            Vertices_Test(
-                wrappedGraph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                        wrappedGraph,
-                        vertexPredicate,
-                        edgePredicate));
+            var wrappedGraph = new AdjacencyGraph<int, IEdge<int>>();
+            Vertices_Test(wrappedGraph, (vertexPredicate, edgePredicate)
+                => wrappedGraph.FilterByEdges(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void Edges()
         {
-            var wrappedGraph = new AdjacencyGraph<int, Edge<int>>();
-            Edges_Test(
-                wrappedGraph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                        wrappedGraph,
-                        vertexPredicate,
-                        edgePredicate));
+            var wrappedGraph = new AdjacencyGraph<int, IEdge<int>>();
+            Edges_Test(wrappedGraph, (vertexPredicate, edgePredicate)
+                => wrappedGraph.FilterByEdges(vertexPredicate, edgePredicate));
         }
 
         #endregion
@@ -151,21 +129,16 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void ContainsVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            ContainsVertex_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            ContainsVertex_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilterByEdges(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsVertex_Throws()
         {
-            var filteredGraph = new FilteredEdgeListGraph<TestVertex, Edge<TestVertex>, AdjacencyGraph<TestVertex, Edge<TestVertex>>>(
-                new AdjacencyGraph<TestVertex, Edge<TestVertex>>(),
+            var filteredGraph = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>()
+                .FilterByEdges<TestVertex, IEdge<TestVertex>, AdjacencyGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             ContainsVertex_Throws_Test(filteredGraph);
@@ -178,27 +151,17 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void ContainsEdge()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            ContainsEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredEdgeListGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            ContainsEdge_Test(graph, (vertexPredicate, edgePredicate)
+                    => graph.FilterByEdges(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsEdge_EquatableEdge()
         {
             var graph = new AdjacencyGraph<int, EquatableEdge<int>>();
-            ContainsEdge_EquatableEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredEdgeListGraph<int, EquatableEdge<int>, AdjacencyGraph<int, EquatableEdge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            ContainsEdge_EquatableEdge_Test(graph, (vertexPredicate, edgePredicate)
+                    => graph.FilterByEdges(vertexPredicate, edgePredicate));
         }
 
         #endregion

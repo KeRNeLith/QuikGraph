@@ -1,5 +1,16 @@
 # Release notes
 
+## What's new in 3.0.0 2024-08-18
+
+### QuikGraph: allowing for CoVariance
+* using `Edge.Create(source, target)` instead of `new Edge(source, target)`
+* deprecated `TryGet...` Methods in favor of nullable Results: 
+  * `IEnumerable<T>` was made nullable to indicate an unknown Vertex Argument.
+  * `Edge<T>` was made nullable to indicate an unknown Vertex Argument.
+* using `IEdge{T}` instead of `Edge{T}` to be more flexible. 
+* The downside is that structs like `SEdge` will be boxed now, which may reduce Efficiency. 
+
+
 ## What's new in 2.5.0 July 4 2022
 
 ### QuikGraph

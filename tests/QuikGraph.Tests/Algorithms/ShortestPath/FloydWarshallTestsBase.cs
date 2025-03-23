@@ -13,9 +13,9 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
         [Pure]
         [NotNull]
-        protected static AdjacencyGraph<char, Edge<char>> CreateGraph([NotNull] Dictionary<Edge<char>, double> distances)
+        protected static AdjacencyGraph<char, IEdge<char>> CreateGraph([NotNull] Dictionary<IEdge<char>, double> distances)
         {
-            var graph = new AdjacencyGraph<char, Edge<char>>();
+            var graph = new AdjacencyGraph<char, IEdge<char>>();
 
             const string vertices = "ABCDE";
             graph.AddVertexRange(vertices);
@@ -35,7 +35,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
             void AddEdge(char source, char target, double weight)
             {
-                var edge = new Edge<char>(source, target);
+                var edge = Edge.Create(source, target);
                 distances[edge] = weight;
                 graph.AddEdge(edge);
             }

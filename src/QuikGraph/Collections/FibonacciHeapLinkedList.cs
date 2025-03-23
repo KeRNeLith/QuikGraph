@@ -1,4 +1,4 @@
-#if SUPPORTS_SERIALIZATION
+﻿#if SUPPORTS_SERIALIZATION
 using System;
 #endif
 using System.Collections;
@@ -27,7 +27,10 @@ namespace QuikGraph.Collections
         [CanBeNull]
         public FibonacciHeapCell<TPriority, TValue> First { get; private set; }
 
-        internal FibonacciHeapLinkedList()
+        /// <summary>
+        /// 
+        /// </summary>
+        public FibonacciHeapLinkedList()
         {
             First = null;
             _last = null;
@@ -62,7 +65,7 @@ namespace QuikGraph.Collections
         /// Adds the given <paramref name="cell"/> at the end of this cells list.
         /// </summary>
         /// <param name="cell">Cell to add.</param>
-        internal void AddLast([NotNull] FibonacciHeapCell<TPriority, TValue> cell)
+        public void AddLast([NotNull] FibonacciHeapCell<TPriority, TValue> cell)
         {
             Debug.Assert(cell != null);
 
@@ -84,7 +87,7 @@ namespace QuikGraph.Collections
         /// Removes the given <paramref name="cell"/> from this cells list.
         /// </summary>
         /// <param name="cell">Cell to remove.</param>
-        internal void Remove([NotNull] FibonacciHeapCell<TPriority, TValue> cell)
+        public void Remove([NotNull] FibonacciHeapCell<TPriority, TValue> cell)
         {
             Debug.Assert(cell != null);
 

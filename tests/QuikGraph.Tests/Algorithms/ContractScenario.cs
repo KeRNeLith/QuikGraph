@@ -13,7 +13,7 @@ namespace QuikGraph.Tests.Algorithms
         /// and both edges and vertices should be added.
         /// </summary>
         [NotNull, ItemNotNull]
-        public IEnumerable<Edge<TVertex>> EdgesInGraph { get; set; } = new Edge<TVertex>[0];
+        public IEnumerable<IEdge<TVertex>> EdgesInGraph { get; set; } = new Edge<TVertex>[0];
 
         /// <summary>
         /// Vertices not connected to any other vertices.

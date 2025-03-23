@@ -6,12 +6,16 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// Exception raised when trying to use a vertex that is not inside the manipulated graph.
-    /// </summary>
+    /// <summary> Exception raised when trying to use a vertex that is not inside the manipulated graph. </summary>
+    /// <remarks>
+    /// Exceptions are expensive.
+    /// Provide for a regular way to detect this like TryGet or returning a special Value,
+    /// but only if the compiler supports detecting this. 
+    /// </remarks>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
+    //[Obsolete("Rather return null")]
     public class VertexNotFoundException : QuikGraphException
     {
         /// <summary>

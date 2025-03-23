@@ -1,49 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// Equality helpers for graphs.
-    /// </summary>
+    /// <inheritdoc cref="IsEqualTo"/>
     public static class EquateGraphs
     {
-        /// <summary>
-        /// Checks if both graphs <paramref name="g"/> and <paramref name="h"/> content are equal.
+        /// <summary> Checks if both graphs <paramref name="g"/> and <paramref name="h"/> content are equal. </summary>
+        /// <remarks>
         /// Uses the provided <paramref name="vertexEquality"/> and <paramref name="edgeEquality"/>
-        /// comparer to respectively compare vertices and edges.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="g">First graph to compare.</param>
-        /// <param name="h">Second graph to compare.</param>
-        /// <param name="vertexEquality">Vertex equality comparer.</param>
-        /// <param name="edgeEquality">Edge equality comparer.</param>
-        /// <returns>True if both graphs are equal, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexEquality"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeEquality"/> is <see langword="null"/>.</exception>
+        /// comparer or <see cref="EqualityComparer{T}.Default"/> to respectively compare vertices and edges.
+        ///
+        /// O(E²+V²), used only for Unit Tests
+        /// </remarks>
         [Pure]
-        public static bool Equate<TVertex, TEdge>(
-            [CanBeNull] IEdgeListGraph<TVertex, TEdge> g,
+        public static bool IsEqualTo<TVertex, TEdge>(
+            [CanBeNull] this IEdgeListGraph<TVertex, TEdge> g,
             [CanBeNull] IEdgeListGraph<TVertex, TEdge> h,
-            [NotNull] IEqualityComparer<TVertex> vertexEquality,
-            [NotNull] IEqualityComparer<TEdge> edgeEquality)
+            [CanBeNull] IEqualityComparer<TVertex> vertexEquality = null,
+            [CanBeNull] IEqualityComparer<TEdge> edgeEquality = null)
             where TEdge : IEdge<TVertex>
         {
-            if (vertexEquality is null)
-                throw new ArgumentNullException(nameof(vertexEquality));
-            if (edgeEquality is null)
-                throw new ArgumentNullException(nameof(edgeEquality));
-
-            if (g is null)
-                return h is null;
-            if (h is null)
-                return false;
+            if (vertexEquality is null) vertexEquality = EqualityComparer<TVertex>.Default;
+            if (edgeEquality is null) edgeEquality = EqualityComparer<TEdge>.Default;
 
             if (ReferenceEquals(g, h))
                 return true;
+
+            if (g is null || h is null)
+                return false;
 
             if (g.VertexCount != h.VertexCount)
                 return false;
@@ -69,22 +55,5 @@ namespace QuikGraph
             return true;
         }
 
-        /// <summary>
-        /// Checks if both graphs <paramref name="g"/> and <paramref name="h"/> content are equal.
-        /// Uses the default comparer for vertices and edges.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="g">First graph to compare.</param>
-        /// <param name="h">Second graph to compare.</param>
-        /// <returns>True if both graphs are equal, false otherwise.</returns>
-        [Pure]
-        public static bool Equate<TVertex, TEdge>(
-            [CanBeNull] IEdgeListGraph<TVertex, TEdge> g,
-            [CanBeNull] IEdgeListGraph<TVertex, TEdge> h)
-            where TEdge : IEdge<TVertex>
-        {
-            return Equate(g, h, EqualityComparer<TVertex>.Default, EqualityComparer<TEdge>.Default);
-        }
     }
 }

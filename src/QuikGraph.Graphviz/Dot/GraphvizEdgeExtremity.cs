@@ -15,7 +15,7 @@ namespace QuikGraph.Graphviz.Dot
     public class GraphvizEdgeExtremity
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizEdgeExtremity"/> class.
+        /// Initializes a new <see cref="GraphvizEdgeExtremity"/> class.
         /// </summary>
         /// <param name="isHead">Indicates if this edge extremity is the head.</param>
         public GraphvizEdgeExtremity(bool isHead)

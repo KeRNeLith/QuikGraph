@@ -5,6 +5,20 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Predicates
 {
+    /// <summary> Extension Methods to build complex Structures </summary>
+    public static class UndirectedGraph
+    {
+        /// <summary> Filters <paramref name="baseGraph"/> by <paramref name="vertexPredicate"/> and <paramref name="edgePredicate"/> </summary>
+        /// <returns></returns>
+        public static FilteredUndirectedGraph<TVertex, TEdge, TGraph> FilterByUndirected<TVertex, TEdge, TGraph>(
+            this TGraph baseGraph,
+            [NotNull] Func<TVertex, bool> vertexPredicate,
+            [NotNull] Func<TEdge, bool> edgePredicate)
+            where TGraph : IUndirectedGraph<TVertex, TEdge>
+            where TEdge : IEdge<TVertex>
+            => new FilteredUndirectedGraph<TVertex, TEdge, TGraph>(baseGraph, vertexPredicate, edgePredicate);
+    }
+
     /// <summary>
     /// Undirected graph data structure that is filtered with a vertex and an edge
     /// predicate. This means only vertex and edge matching predicates are "accessible".
@@ -19,7 +33,7 @@ namespace QuikGraph.Predicates
         where TGraph : IUndirectedGraph<TVertex, TEdge>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FilteredUndirectedGraph{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="FilteredUndirectedGraph{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
         /// <param name="baseGraph">Graph in which applying predicates.</param>
         /// <param name="vertexPredicate">Predicate to match vertex that should be taken into account.</param>
@@ -29,8 +43,8 @@ namespace QuikGraph.Predicates
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgePredicate"/> is <see langword="null"/>.</exception>
         public FilteredUndirectedGraph(
             [NotNull] TGraph baseGraph,
-            [NotNull] VertexPredicate<TVertex> vertexPredicate,
-            [NotNull] EdgePredicate<TVertex, TEdge> edgePredicate)
+            [NotNull] Func<TVertex, bool> vertexPredicate,
+            [NotNull] Func<TEdge, bool> edgePredicate)
             : base(baseGraph, vertexPredicate, edgePredicate)
         {
         }
@@ -51,7 +65,7 @@ namespace QuikGraph.Predicates
         public IEnumerable<TVertex> Vertices => BaseGraph.Vertices.Where(vertex => VertexPredicate(vertex));
 
         /// <inheritdoc />
-        public bool ContainsVertex(TVertex vertex)
+        public override bool ContainsVertex(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
@@ -96,22 +110,14 @@ namespace QuikGraph.Predicates
                 throw new ArgumentNullException(nameof(vertex));
 
             if (VertexPredicate(vertex))
-                return BaseGraph.AdjacentEdges(vertex).Where(FilterEdge);
-            throw new VertexNotFoundException();
+                return BaseGraph.AdjacentEdges(vertex)?.Where(FilterEdge);
+
+            return null;
         }
 
         /// <inheritdoc />
-        public int AdjacentDegree(TVertex vertex)
-        {
-            return AdjacentEdges(vertex)
-                .Sum(edge => edge.IsSelfEdge() ? 2 : 1);    // Self edge count twice
-        }
-
-        /// <inheritdoc />
-        public bool IsAdjacentEdgesEmpty(TVertex vertex)
-        {
-            return !AdjacentEdges(vertex).Any();
-        }
+        public int? AdjacentDegree(TVertex vertex) => AdjacentEdges(vertex)
+            ?.Sum(edge => edge.IsSelfEdge(AreVerticesEqual) ? 2 : 1); // Self edge count twice
 
         /// <inheritdoc />
         public TEdge AdjacentEdge(TVertex vertex, int index)
@@ -119,9 +125,18 @@ namespace QuikGraph.Predicates
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (VertexPredicate(vertex))
-                return AdjacentEdges(vertex).ElementAt(index);
-            throw new VertexNotFoundException();
+            if (!VertexPredicate(vertex))
+            {
+                return default(TEdge);
+            }
+
+            var adjacentEdges = AdjacentEdges(vertex);
+            if (adjacentEdges == null)
+            {
+                return default(TEdge);
+            }
+
+            return adjacentEdges.ElementAt(index);
         }
 
         /// <inheritdoc />

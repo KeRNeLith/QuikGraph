@@ -10,7 +10,7 @@ namespace QuikGraph.Data
     public sealed class DataRelationEdge : IEdge<DataTable>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataRelationEdge"/> class.
+        /// Initializes a new <see cref="DataRelationEdge"/> class.
         /// </summary>
         /// <param name="relation">Data relation.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="relation"/> is <see langword="null"/>.</exception>

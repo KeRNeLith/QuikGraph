@@ -5,24 +5,32 @@ using QuikGraph.Algorithms.Search;
 
 namespace QuikGraph.Algorithms.TopologicalSort
 {
-    /// <summary>
-    /// Undirected topological sort algorithm.
-    /// </summary>
+    /// <inheritdoc cref="CreateUndirectedTopologicalSortAlgorithm"/>
+    public static class UndirectedTopologicalSortAlgorithm
+    {
+        /// <summary>Creates a new <see cref="UndirectedTopologicalSortAlgorithm{TVertex,TEdge}"/> class.</summary>
+        public static UndirectedTopologicalSortAlgorithm<TVertex, TEdge>
+            CreateUndirectedTopologicalSortAlgorithm<TVertex, TEdge>(
+            [NotNull] this IUndirectedGraph<TVertex, TEdge> visitedGraph,
+            int capacity = -1) where TEdge : IEdge<TVertex>
+            => new UndirectedTopologicalSortAlgorithm<TVertex, TEdge>(visitedGraph, capacity);
+
+    }
+    /// <summary> Undirected topological sort algorithm. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class UndirectedTopologicalSortAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
+    public sealed class UndirectedTopologicalSortAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         [NotNull, ItemNotNull]
         private readonly IList<TVertex> _sortedVertices;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedTopologicalSortAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary>Initializes a new <see cref="UndirectedTopologicalSortAlgorithm{TVertex,TEdge}"/> class.</summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="capacity">Sorted vertices capacity.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public UndirectedTopologicalSortAlgorithm(
+        internal UndirectedTopologicalSortAlgorithm(
             [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
             int capacity = -1)
             : base(visitedGraph)
@@ -44,7 +52,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         private void BackEdge([NotNull] object sender, [NotNull] UndirectedEdgeEventArgs<TVertex, TEdge> args)
         {
             if (!AllowCyclicGraph)
-                throw new NonAcyclicGraphException();
+                throw new CyclicGraphException();
         }
 
         private void OnVertexFinished([NotNull] TVertex vertex)
@@ -70,9 +78,8 @@ namespace QuikGraph.Algorithms.TopologicalSort
             try
             {
                 dfs = new UndirectedDepthFirstSearchAlgorithm<TVertex, TEdge>(
-                    this,
                     VisitedGraph,
-                    new Dictionary<TVertex, GraphColor>(VisitedGraph.VertexCount));
+                    host: this);
                 dfs.BackEdge += BackEdge;
                 dfs.FinishVertex += OnVertexFinished;
 

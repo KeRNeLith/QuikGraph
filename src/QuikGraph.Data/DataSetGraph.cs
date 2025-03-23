@@ -15,7 +15,7 @@ namespace QuikGraph.Data
         public DataSet DataSet { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSetGraph"/> class.
+        /// Initializes a new <see cref="DataSetGraph"/> class.
         /// </summary>
         /// <param name="dataSet">Set of data.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="dataSet"/> is <see langword="null"/>.</exception>

@@ -13,9 +13,7 @@ using static QuikGraph.Tests.QuikGraphUnitTestsHelpers;
 
 namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
 {
-    /// <summary>
-    /// Base class for minimum spanning tree tests.
-    /// </summary>
+    /// <summary> Base class for minimum spanning tree tests. </summary>
     internal abstract class MinimumSpanningTreeTestsBase
     {
         #region Test helpers
@@ -55,7 +53,7 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
         {
             var distances = new Dictionary<TEdge, double>();
             foreach (TEdge edge in graph.Edges)
-                distances[edge] = graph.AdjacentDegree(edge.Source) + 1;
+                distances[edge] = graph.AdjacentDegree(edge.Source) + 1 ?? Double.PositiveInfinity;
 
             TEdge[] prim = graph.MinimumSpanningTreePrim(e => distances[e]).ToArray();
             TEdge[] kruskal = graph.MinimumSpanningTreeKruskal(e => distances[e]).ToArray();
@@ -108,16 +106,17 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
             foreach (TEdge edge in graph.Edges)
                 distances[edge] = edgeWeights(edge);
 
-            var prim = new PrimMinimumSpanningTreeAlgorithm<TVertex, TEdge>(graph, e => distances[e]);
+            var prim = graph.CreatePrimMinimumSpanningTreeAlgorithm(e => distances[e]);
             AssertMinimumSpanningTree(graph, prim);
         }
 
-        protected static void Prim<TVertex, TEdge>([NotNull] IUndirectedGraph<TVertex, TEdge> graph)
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetUndirectedGraphs_All))]
+        public static void Prim<TVertex, TEdge>([NotNull] IUndirectedGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
             var distances = new Dictionary<TEdge, double>();
             foreach (TEdge edge in graph.Edges)
-                distances[edge] = graph.AdjacentDegree(edge.Source) + 1;
+                distances[edge] = graph.AdjacentDegree(edge.Source) + 1 ?? Double.PositiveInfinity;
 
             IEnumerable<TEdge> edges = graph.MinimumSpanningTreePrim(e => distances[e]);
             AssertSpanningTree(graph, edges);
@@ -134,12 +133,12 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
             AssertMinimumSpanningTree(graph, kruskal);
         }
 
-        protected static void Kruskal<TVertex, TEdge>([NotNull] IUndirectedGraph<TVertex, TEdge> graph)
-            where TEdge : IEdge<TVertex>
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetUndirectedGraphs_All))]
+        public static void Kruskal<TVertex, TEdge>([NotNull] IUndirectedGraph<TVertex, TEdge> graph) where TEdge : IEdge<TVertex>
         {
             var distances = new Dictionary<TEdge, double>();
             foreach (TEdge edge in graph.Edges)
-                distances[edge] = graph.AdjacentDegree(edge.Source) + 1;
+                distances[edge] = graph.AdjacentDegree(edge.Source) + 1 ?? Double.PositiveInfinity;
 
             IEnumerable<TEdge> edges = graph.MinimumSpanningTreeKruskal(e => distances[e]);
             AssertSpanningTree(graph, edges);
@@ -150,11 +149,11 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
         [Test]
         public void SimpleComparePrimKruskal()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdge(new Edge<int>(1, 2));
-            graph.AddVerticesAndEdge(new Edge<int>(3, 2));
-            graph.AddVerticesAndEdge(new Edge<int>(3, 4));
-            graph.AddVerticesAndEdge(new Edge<int>(1, 4));
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdge(Edge.Create(1, 2));
+            graph.AddVerticesAndEdge(Edge.Create(3, 2));
+            graph.AddVerticesAndEdge(Edge.Create(3, 4));
+            graph.AddVerticesAndEdge(Edge.Create(1, 4));
 
             double cost = CompareRoot(graph);
             Assert.AreEqual(9, cost);
@@ -165,28 +164,13 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
         {
             int[] vertices = { 1, 2, 3, 4 };
             var graph = vertices.ToDelegateUndirectedGraph(
-                (int vertex, out IEnumerable<EquatableEdge<int>> adjacentEdges) =>
+                vertex => vertex switch
                 {
-                    switch (vertex)
-                    {
-                        case 1:
-                            adjacentEdges = new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(1, 4) };
-                            break;
-                        case 2:
-                            adjacentEdges = new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(3, 1) };
-                            break;
-                        case 3:
-                            adjacentEdges = new[] { new EquatableEdge<int>(3, 2), new EquatableEdge<int>(3, 4) };
-                            break;
-                        case 4:
-                            adjacentEdges = new[] { new EquatableEdge<int>(1, 4), new EquatableEdge<int>(3, 4) };
-                            break;
-                        default:
-                            adjacentEdges = null;
-                            break;
-                    }
-
-                    return adjacentEdges != null;
+                    1 => new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(1, 4) },
+                    2 => new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(3, 1) },
+                    3 => new[] { new EquatableEdge<int>(3, 2), new EquatableEdge<int>(3, 4) },
+                    4 => new[] { new EquatableEdge<int>(1, 4), new EquatableEdge<int>(3, 4) },
+                    _ => (IEnumerable<EquatableEdge<int>>)null
                 });
 
             double cost = CompareRoot(graph);

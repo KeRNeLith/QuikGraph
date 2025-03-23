@@ -7,13 +7,11 @@ namespace QuikGraph.Predicates
     /// <summary>
     /// Predicate that tests if an edge is residual.
     /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class ResidualEdgePredicate<TVertex, TEdge>
-        where TEdge : IEdge<TVertex>
+    public sealed class ResidualEdgePredicate<TEdge>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResidualEdgePredicate{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ResidualEdgePredicate{TEdge}"/> class.
         /// </summary>
         /// <param name="residualCapacities">Residual capacities per edge.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="residualCapacities"/> is <see langword="null"/>.</exception>

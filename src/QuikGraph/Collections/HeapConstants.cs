@@ -1,8 +1,9 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace QuikGraph.Collections
 {
-    internal static class HeapConstants
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+    public static class HeapConstants
     {
         [NotNull]
         public const string Consistent = "Is_Consistent";

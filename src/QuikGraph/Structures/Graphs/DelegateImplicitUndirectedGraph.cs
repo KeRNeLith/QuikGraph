@@ -13,8 +13,17 @@ namespace QuikGraph
     public class DelegateImplicitUndirectedGraph<TVertex, TEdge> : IImplicitUndirectedGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateImplicitUndirectedGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="DelegateImplicitUndirectedGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="tryGetAdjacentEdges">Getter of adjacent edges.</param>
         /// <param name="allowParallelEdges">
@@ -24,10 +33,10 @@ namespace QuikGraph
         /// </param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetAdjacentEdges"/> is <see langword="null"/>.</exception>
         public DelegateImplicitUndirectedGraph(
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges,
             bool allowParallelEdges = true)
         {
-            _tryGetAdjacencyEdges = tryGetAdjacentEdges ?? throw new ArgumentNullException(nameof(tryGetAdjacentEdges));
+            _getAdjacencyEdges = tryGetAdjacentEdges ?? throw new ArgumentNullException(nameof(tryGetAdjacentEdges));
             AllowParallelEdges = allowParallelEdges;
         }
 
@@ -39,7 +48,7 @@ namespace QuikGraph
         /// Getter of adjacent edges.
         /// </summary>
         [NotNull]
-        private readonly TryFunc<TVertex, IEnumerable<TEdge>> _tryGetAdjacencyEdges;
+        private readonly Func<TVertex, IEnumerable<TEdge>> _getAdjacencyEdges;
 
         #region IGraph<TVertex,TEdge>
 
@@ -59,7 +68,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _tryGetAdjacencyEdges(vertex, out _);
+            return _getAdjacencyEdges(vertex) != null;
         }
 
         /// <inheritdoc />
@@ -73,39 +82,32 @@ namespace QuikGraph
         #region IImplicitUndirectedGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public int AdjacentDegree(TVertex vertex)
-        {
-            return AdjacentEdges(vertex).Count();
-        }
-
-        /// <inheritdoc />
-        public bool IsAdjacentEdgesEmpty(TVertex vertex)
-        {
-            return !AdjacentEdges(vertex).Any();
-        }
+        public int? AdjacentDegree(TVertex vertex) => AdjacentEdges(vertex)?.Count();
 
         [Pure]
-        [NotNull, ItemNotNull]
+        [ItemNotNull]
+        [CanBeNull]
         internal virtual IEnumerable<TEdge> AdjacentEdgesInternal([NotNull] TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_tryGetAdjacencyEdges(vertex, out IEnumerable<TEdge> adjacentEdges))
-                return adjacentEdges;
-            throw new VertexNotFoundException();
+            return _getAdjacencyEdges(vertex);
         }
 
         /// <inheritdoc />
-        public IEnumerable<TEdge> AdjacentEdges(TVertex vertex)
-        {
-            return AdjacentEdgesInternal(vertex);
-        }
+        public IEnumerable<TEdge> AdjacentEdges(TVertex vertex) => AdjacentEdgesInternal(vertex);
 
-        /// <inheritdoc />
+        /// <inheritdoc />[CanBeNull]
         public TEdge AdjacentEdge(TVertex vertex, int index)
         {
-            return AdjacentEdges(vertex).ElementAt(index);
+            var adjacentEdges = AdjacentEdges(vertex);
+            if (adjacentEdges == null)
+            {
+                return default(TEdge);
+            }
+
+            return adjacentEdges.ElementAt(index);
         }
 
         /// <inheritdoc />
@@ -114,7 +116,8 @@ namespace QuikGraph
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            if (TryGetAdjacentEdges(source, out IEnumerable<TEdge> adjacentEdges))
+            var adjacentEdges = AdjacentEdges(source);
+            if (adjacentEdges != null)
             {
                 foreach (TEdge adjacentEdge in adjacentEdges.Where(adjacentEdge => EdgeEqualityComparer(adjacentEdge, source, target)))
                 {
@@ -128,39 +131,10 @@ namespace QuikGraph
         }
 
         [Pure]
-        internal virtual bool TryGetAdjacentEdgesInternal([NotNull] TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (vertex == null)
-                throw new ArgumentNullException(nameof(vertex));
-
-            return _tryGetAdjacencyEdges(vertex, out edges);
-        }
-
-        /// <summary>
-        /// Tries to get adjacent edges of the given <paramref name="vertex"/>.
-        /// </summary>
-        /// <param name="vertex">The vertex.</param>
-        /// <param name="edges">Edges found, otherwise <see langword="null"/>.</param>
-        /// <returns>True if <paramref name="vertex"/> was found or/and edges were found, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [ContractAnnotation("=> true, edges:notnull;=> false, edges:null")]
-        public bool TryGetAdjacentEdges([NotNull] TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            return TryGetAdjacentEdgesInternal(vertex, out edges);
-        }
-
-        [Pure]
-        internal virtual bool ContainsEdgeInternal([NotNull] TVertex source, [NotNull] TVertex target)
-        {
-            return TryGetEdge(source, target, out _);
-        }
+        internal virtual bool ContainsEdgeInternal([NotNull] TVertex source, [NotNull] TVertex target) => TryGetEdge(source, target, out _);
 
         /// <inheritdoc />
-        public bool ContainsEdge(TVertex source, TVertex target)
-        {
-            return ContainsEdgeInternal(source, target);
-        }
+        public bool ContainsEdge(TVertex source, TVertex target) => ContainsEdgeInternal(source, target);
 
         #endregion
     }

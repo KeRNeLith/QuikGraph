@@ -6,7 +6,7 @@ using NUnit.Framework;
 using QuikGraph.Algorithms.Observers;
 using QuikGraph.Algorithms.Search;
 using QuikGraph.Collections;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.Search
 {
@@ -27,7 +27,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             var distances = new Dictionary<TVertex, int>();
             TVertex currentVertex = default;
             int currentDistance = 0;
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<TVertex, TEdge>(graph);
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
 
             algorithm.InitializeVertex += vertex =>
             {
@@ -129,7 +129,7 @@ namespace QuikGraph.Tests.Algorithms.Search
             {
                 Assert.AreEqual(GraphColor.Black, algorithm.VerticesColors[args.Target]);
 
-                foreach (TEdge edge in algorithm.VisitedGraph.AdjacentEdges(args.Target))
+                foreach (var edge in algorithm.VisitedGraph.AdjacentEdges(args.Target))
                     Assert.IsFalse(algorithm.VerticesColors[edge.Target] == GraphColor.White);
             };
 
@@ -159,16 +159,19 @@ namespace QuikGraph.Tests.Algorithms.Search
             // All white vertices should be unreachable from the source.
             foreach (TVertex vertex in graph.Vertices)
             {
-                if (algorithm.VerticesColors[vertex] == GraphColor.White)
+                if (algorithm.VerticesColors[vertex] != GraphColor.White)
                 {
-                    // Check !IsReachable(sourceVertex, vertex, graph);
-                    if (recorder.TryGetPath(vertex, out IEnumerable<TEdge> path))
+                    continue;
+                }
+
+                // Check !IsReachable(sourceVertex, vertex, graph);
+                var path = recorder.GetPath(vertex);
+                if (path != null)
+                {
+                    foreach (TEdge edge in path)
                     {
-                        foreach (TEdge edge in path)
-                        {
-                            Assert.AreNotEqual(sourceVertex, edge.Source);
-                            Assert.AreNotEqual(sourceVertex, edge.Target);
-                        }
+                        Assert.AreNotEqual(sourceVertex, edge.Source);
+                        Assert.AreNotEqual(sourceVertex, edge.Target);
                     }
                 }
             }
@@ -187,16 +190,16 @@ namespace QuikGraph.Tests.Algorithms.Search
         [Test]
         public void Constructor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
             AssertAlgorithmProperties(algorithm, graph);
 
             var verticesColors = new Dictionary<int, GraphColor>();
             var queue = new BinaryQueue<int, double>(_ => 1.0);
-            algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph, queue, verticesColors);
+            algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, verticesColors);
             AssertAlgorithmProperties(algorithm, graph, verticesColors);
 
-            algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, graph, queue, verticesColors);
+            algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, verticesColors, null);
             AssertAlgorithmProperties(algorithm, graph, verticesColors);
 
             #region Local function
@@ -207,7 +210,7 @@ namespace QuikGraph.Tests.Algorithms.Search
                 IDictionary<TVertex, GraphColor> vColors = null)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 if (vColors is null)
                     CollectionAssert.IsEmpty(algo.VerticesColors);
                 else
@@ -222,42 +225,36 @@ namespace QuikGraph.Tests.Algorithms.Search
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            UndirectedGraph<int, IEdge<int>> graph = new (), nullGraph = null;
             var verticesColors = new Dictionary<int, GraphColor>();
             var queue = new BinaryQueue<int, double>(_ => 1.0);
 
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm());
 
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, queue, verticesColors));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, verticesColors));
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(null, verticesColors);
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, null);
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph, null, verticesColors));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(null, verticesColors));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph, queue, null));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, null));
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(null, null);
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, verticesColors));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, queue, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph, null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, null));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(null, null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, queue, verticesColors));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, verticesColors, null));
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(null, verticesColors, null);
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, null, null);
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, graph, null, verticesColors));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(null, verticesColors, null));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, graph, queue, null));
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(queue, null, null));
+            _ = graph.CreateUndirectedBreadthFirstSearchAlgorithm(null, null, null);
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, null, verticesColors));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, queue, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, graph, null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(null, null, null, null)); 
+                () => nullGraph.CreateUndirectedBreadthFirstSearchAlgorithm(null, null, null)); 
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -267,58 +264,58 @@ namespace QuikGraph.Tests.Algorithms.Search
         [Test]
         public void TryGetRootVertex()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
             TryGetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
             SetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex_Throws()
         {
-            var graph = new UndirectedGraph<TestVertex, Edge<TestVertex>>();
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<TestVertex, Edge<TestVertex>>(graph);
-            SetRootVertex_Throws_Test(algorithm);
+            var graph = new UndirectedGraph<TestVertex, IEdge<TestVertex>>();
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
+            SetRootVertex_Null_Should_Throw_ArgumentNullException(algorithm);
         }
 
         [Test]
         public void ClearRootVertex()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
-            ClearRootVertex_Test(algorithm);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
+            ClearRootVertex_RaisesVertexChanged_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithoutRoot_Throws()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            var graph = new UndirectedGraph<int, IEdge<int>>();
             ComputeWithoutRoot_Throws_Test(
-                () => new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph));
+                () => graph.CreateUndirectedBreadthFirstSearchAlgorithm());
         }
 
         [Test]
         public void ComputeWithRoot()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            var graph = new UndirectedGraph<int, IEdge<int>>();
             graph.AddVertex(0);
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
             ComputeWithRoot_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithRoot_Throws()
         {
-            var graph = new UndirectedGraph<TestVertex, Edge<TestVertex>>();
-            ComputeWithRoot_Throws_Test(
-                () => new UndirectedBreadthFirstSearchAlgorithm<TestVertex, Edge<TestVertex>>(graph));
+            var graph = new UndirectedGraph<TestVertex, IEdge<TestVertex>>();
+            ComputeWithUnknownRootOrNull_Throws_Test(
+                () => graph.CreateUndirectedBreadthFirstSearchAlgorithm());
         }
 
         #endregion
@@ -326,13 +323,13 @@ namespace QuikGraph.Tests.Algorithms.Search
         [Test]
         public void GetVertexColor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdge(new Edge<int>(1, 2));
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdge(Edge.Create(1, 2));
 
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<int, Edge<int>>(graph);
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
             // Algorithm not run
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(1));
+            Assert.IsNull(algorithm.GetVertexColor(1));
 
             algorithm.Compute(1);
 
@@ -340,27 +337,23 @@ namespace QuikGraph.Tests.Algorithms.Search
             Assert.AreEqual(GraphColor.Black, algorithm.GetVertexColor(2));
         }
 
-        [Test]
-        [Category(TestCategories.LongRunning)]
-        public void UndirectedBreadthFirstSearch()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetUndirectedGraphs_SlowTests), new object[] { 10 })]
+        public void UndirectedBreadthFirstSearch(UndirectedGraph<string, IEdge<string>> graph)
         {
-            foreach (UndirectedGraph<string, Edge<string>> graph in TestGraphFactory.GetUndirectedGraphs_SlowTests(10))
-            {
-                foreach (string vertex in graph.Vertices)
-                    RunBFSAndCheck(graph, vertex);
-            }
+            foreach (string vertex in graph.Vertices)
+                RunBFSAndCheck(graph, vertex);
         }
 
         [Pure]
         [NotNull]
-        public static UndirectedBreadthFirstSearchAlgorithm<T, Edge<T>> CreateAlgorithmAndMaybeDoComputation<T>(
+        public static UndirectedBreadthFirstSearchAlgorithm<T, IEdge<T>> CreateAlgorithmAndMaybeDoComputation<T>(
             [NotNull] ContractScenario<T> scenario)
         {
-            var graph = new UndirectedGraph<T, Edge<T>>();
-            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<T>(e.Source, e.Target)));
+            var graph = new UndirectedGraph<T, IEdge<T>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(Edge.Create));
             graph.AddVertexRange(scenario.SingleVerticesInGraph);
 
-            var algorithm = new UndirectedBreadthFirstSearchAlgorithm<T, Edge<T>>(graph);
+            var algorithm = graph.CreateUndirectedBreadthFirstSearchAlgorithm();
 
             if (scenario.DoComputation)
                 algorithm.Compute(scenario.Root);

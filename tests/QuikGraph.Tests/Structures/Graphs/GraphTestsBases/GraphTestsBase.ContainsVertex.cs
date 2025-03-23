@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using JetBrains.Annotations;
 using NUnit.Framework;
 
@@ -61,7 +61,7 @@ namespace QuikGraph.Tests.Structures
         }
 
         protected static void ContainsVertex_OnlyEdges_Test(
-            [NotNull] EdgeListGraph<TestVertex, Edge<TestVertex>> graph)
+            [NotNull] EdgeListGraph<TestVertex, IEdge<TestVertex>> graph)
         {
             var vertex1 = new TestVertex("1");
             var toVertex1 = new TestVertex("target 1");
@@ -74,14 +74,14 @@ namespace QuikGraph.Tests.Structures
             Assert.IsFalse(graph.ContainsVertex(vertex2));
             Assert.IsFalse(graph.ContainsVertex(otherVertex1));
 
-            graph.AddEdge(new Edge<TestVertex>(vertex1, toVertex1));
+            graph.AddEdge(Edge.Create(vertex1, toVertex1));
             Assert.IsTrue(graph.ContainsVertex(vertex1));
             Assert.IsFalse(graph.ContainsVertex(otherVertex1));
 
-            graph.AddEdge(new Edge<TestVertex>(vertex2, toVertex2));
+            graph.AddEdge(Edge.Create(vertex2, toVertex2));
             Assert.IsTrue(graph.ContainsVertex(vertex2));
 
-            graph.AddEdge(new Edge<TestVertex>(otherVertex1, toOtherVertex1));
+            graph.AddEdge(Edge.Create(otherVertex1, toOtherVertex1));
             Assert.IsTrue(graph.ContainsVertex(vertex1));
             Assert.IsTrue(graph.ContainsVertex(otherVertex1));
         }
@@ -139,7 +139,7 @@ namespace QuikGraph.Tests.Structures
         }
 
         protected static void ContainsVertex_EquatableVertex_OnlyEdges_Test(
-            [NotNull] EdgeListGraph<EquatableTestVertex, Edge<EquatableTestVertex>> graph)
+            [NotNull] EdgeListGraph<EquatableTestVertex, IEdge<EquatableTestVertex>> graph)
         {
             var vertex1 = new EquatableTestVertex("1");
             var toVertex1 = new EquatableTestVertex("target 1");
@@ -152,14 +152,14 @@ namespace QuikGraph.Tests.Structures
             Assert.IsFalse(graph.ContainsVertex(vertex2));
             Assert.IsFalse(graph.ContainsVertex(otherVertex1));
 
-            graph.AddEdge(new Edge<EquatableTestVertex>(vertex1, toVertex1));
+            graph.AddEdge(Edge.Create(vertex1, toVertex1));
             Assert.IsTrue(graph.ContainsVertex(vertex1));
             Assert.IsTrue(graph.ContainsVertex(otherVertex1));
 
-            graph.AddEdge(new Edge<EquatableTestVertex>(vertex2, toVertex2));
+            graph.AddEdge(Edge.Create(vertex2, toVertex2));
             Assert.IsTrue(graph.ContainsVertex(vertex2));
 
-            graph.AddEdge(new Edge<EquatableTestVertex>(otherVertex1, toOtherVertex1));
+            graph.AddEdge(Edge.Create(otherVertex1, toOtherVertex1));
             Assert.IsTrue(graph.ContainsVertex(vertex1));
             Assert.IsTrue(graph.ContainsVertex(otherVertex1));
         }

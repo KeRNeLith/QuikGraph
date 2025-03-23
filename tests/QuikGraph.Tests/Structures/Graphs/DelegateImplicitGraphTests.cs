@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 
 namespace QuikGraph.Tests.Structures
@@ -12,12 +12,12 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void Construction()
         {
-            var graph = new DelegateImplicitGraph<int, Edge<int>>(
-                GetEmptyGetter<int, Edge<int>>());
+            var graph = new DelegateImplicitGraph<int, IEdge<int>>(
+                EmptyGetter<int, IEdge<int>>());
             AssertGraphProperties(graph);
 
-            graph = new DelegateImplicitGraph<int, Edge<int>>(
-                GetEmptyGetter<int, Edge<int>>(),
+            graph = new DelegateImplicitGraph<int, IEdge<int>>(
+                EmptyGetter<int, IEdge<int>>(),
                 false);
             AssertGraphProperties(graph, false);
 
@@ -40,7 +40,7 @@ namespace QuikGraph.Tests.Structures
         {
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => new DelegateImplicitGraph<int, Edge<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => new DelegateImplicitGraph<int, IEdge<int>>(null));
         }
 
         #region Contains Vertex
@@ -48,16 +48,16 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void ContainsVertex()
         {
-            var data = new GraphData<int, Edge<int>>();
-            var graph = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
             ContainsVertex_Test(data, graph);
         }
 
         [Test]
         public void ContainsVertex_Throws()
         {
-            var graph = new DelegateImplicitGraph<TestVertex, Edge<TestVertex>>(
-                GetEmptyGetter<TestVertex, Edge<TestVertex>>());
+            var graph = new DelegateImplicitGraph<TestVertex, IEdge<TestVertex>>(
+                EmptyGetter<TestVertex, IEdge<TestVertex>>());
             ContainsVertex_Throws_Test(graph);
         }
 
@@ -68,40 +68,40 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void OutEdge()
         {
-            var data = new GraphData<int, Edge<int>>();
-            var graph = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
             OutEdge_Test(data, graph);
         }
 
         [Test]
         public void OutEdge_Throws()
         {
-            var graph1 = new DelegateImplicitGraph<TestVertex, Edge<TestVertex>>(
-                GetEmptyGetter<TestVertex, Edge<TestVertex>>());
+            var graph1 = new DelegateImplicitGraph<TestVertex, IEdge<TestVertex>>(
+                EmptyGetter<TestVertex, IEdge<TestVertex>>());
             OutEdge_NullThrows_Test(graph1);
 
-            var data = new GraphData<int, Edge<int>>();
-            var graph2 = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph2 = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
             OutEdge_Throws_Test(data, graph2);
         }
 
         [Test]
         public void OutEdges()
         {
-            var data = new GraphData<int, Edge<int>>();
-            var graph = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
             OutEdges_Test(data, graph);
         }
 
         [Test]
         public void OutEdges_Throws()
         {
-            var data = new GraphData<int, Edge<int>>();
-            var graph1 = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph1 = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
             OutEdges_Throws_Test(data, graph1);
 
             var graph2 = new DelegateImplicitGraph<EquatableTestVertex, Edge<EquatableTestVertex>>(
-                GetEmptyGetter<EquatableTestVertex, Edge<EquatableTestVertex>>());
+                EmptyGetter<EquatableTestVertex, Edge<EquatableTestVertex>>());
             OutEdges_NullThrows_Test(graph2);
         }
 
@@ -110,19 +110,19 @@ namespace QuikGraph.Tests.Structures
         #region Try Get Edges
 
         [Test]
-        public void TryGetOutEdges()
+        public void GetOutEdges()
         {
-            var data = new GraphData<int, Edge<int>>();
-            var graph = new DelegateImplicitGraph<int, Edge<int>>(data.TryGetEdges);
-            TryGetOutEdges_Test(data, graph);
+            var data = new GraphData<int, IEdge<int>>();
+            var graph = new DelegateImplicitGraph<int, IEdge<int>>(data.GetEdges);
+            GetOutEdges_Test(data, graph);
         }
 
         [Test]
-        public void TryGetOutEdges_Throws()
+        public void GetOutEdges_Throws()
         {
-            var graph = new DelegateImplicitGraph<TestVertex, Edge<TestVertex>>(
-                GetEmptyGetter<TestVertex, Edge<TestVertex>>());
-            TryGetOutEdges_Throws_Test(graph);
+            var graph = new DelegateImplicitGraph<TestVertex, IEdge<TestVertex>>(
+                EmptyGetter<TestVertex, IEdge<TestVertex>>());
+            GetOutEdges_Throws_Test(graph);
         }
 
         #endregion

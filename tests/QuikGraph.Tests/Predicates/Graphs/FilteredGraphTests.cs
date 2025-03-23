@@ -13,32 +13,32 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Construction()
         {
-            VertexPredicate<int> vertexPredicate = _ => true;
-            EdgePredicate<int, Edge<int>> edgePredicate = _ => true;
+            Func<int, bool> vertexPredicate = _ => true;
+            Func<IEdge<int>, bool> edgePredicate = _ => true;
 
-            var graph1 = new AdjacencyGraph<int, Edge<int>>();
-            var filteredGraph1 = new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+            var graph1 = new AdjacencyGraph<int, IEdge<int>>();
+            var filteredGraph1 = new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                 graph1,
                 vertexPredicate,
                 edgePredicate);
             AssertGraphProperties(filteredGraph1, graph1);
 
-            graph1 = new AdjacencyGraph<int, Edge<int>>(false);
-            filteredGraph1 = new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+            graph1 = new AdjacencyGraph<int, IEdge<int>>(false);
+            filteredGraph1 = new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                 graph1,
                 vertexPredicate,
                 edgePredicate);
             AssertGraphProperties(filteredGraph1, graph1, parallelEdges: false);
 
-            var graph2 = new UndirectedGraph<int, Edge<int>>();
-            var filteredGraph2 = new FilteredGraph<int, Edge<int>, UndirectedGraph<int, Edge<int>>>(
+            var graph2 = new UndirectedGraph<int, IEdge<int>>();
+            var filteredGraph2 = new FilteredGraph<int, IEdge<int>, UndirectedGraph<int, IEdge<int>>>(
                 graph2,
                 vertexPredicate,
                 edgePredicate);
             AssertGraphProperties(filteredGraph2, graph2, false);
 
-            graph2 = new UndirectedGraph<int, Edge<int>>(false);
-            filteredGraph2 = new FilteredGraph<int, Edge<int>, UndirectedGraph<int, Edge<int>>>(
+            graph2 = new UndirectedGraph<int, IEdge<int>>(false);
+            filteredGraph2 = new FilteredGraph<int, IEdge<int>, UndirectedGraph<int, IEdge<int>>>(
                 graph2,
                 vertexPredicate,
                 edgePredicate);
@@ -70,43 +70,43 @@ namespace QuikGraph.Tests.Predicates
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
+                    new AdjacencyGraph<int, IEdge<int>>(),
                     _ => true,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
+                    new AdjacencyGraph<int, IEdge<int>>(),
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
-                    new AdjacencyGraph<int, Edge<int>>(),
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
+                    new AdjacencyGraph<int, IEdge<int>>(),
                     null,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredGraph<int, Edge<int>, AdjacencyGraph<int, Edge<int>>>(
+                () => new FilteredGraph<int, IEdge<int>, AdjacencyGraph<int, IEdge<int>>>(
                     null,
                     null,
                     null));

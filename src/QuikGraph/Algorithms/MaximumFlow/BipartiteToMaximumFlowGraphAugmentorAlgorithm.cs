@@ -5,6 +5,32 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.MaximumFlow
 {
+    /// <inheritdoc cref="CreateBipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/>
+    public static class BipartiteToMaximumFlowGraphAugmentorAlgorithm
+    {
+        /// <summary> Creates a <inheritdoc cref="BipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/> </summary>
+        public static BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge> CreateBipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> sourceToVertices,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> verticesToSink,
+            [NotNull] VertexFactory<TVertex> vertexFactory,
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory, [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>(visitedGraph, sourceToVertices, verticesToSink, vertexFactory, edgeFactory, host);
+
+        /// <summary> Creates a <inheritdoc cref="BipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/> </summary>
+        public static BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge> ComputeBipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> sourceToVertices,
+            [NotNull, ItemNotNull] IEnumerable<TVertex> verticesToSink,
+            [NotNull] VertexFactory<TVertex> vertexFactory,
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory, [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+        {
+            var algorithm = visitedGraph.CreateBipartiteToMaximumFlowGraphAugmentorAlgorithm(sourceToVertices, verticesToSink, vertexFactory, edgeFactory, host);
+            algorithm.Compute();
+            return algorithm;
+        }
+    }
+
     /// <summary>
     /// This algorithm modifies a bipartite graph into a related graph, where each vertex in
     /// one partition is connected to a newly added "SuperSource" and each vertex in the other
@@ -14,55 +40,29 @@ namespace QuikGraph.Algorithms.MaximumFlow
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
-    internal sealed class BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>
+    public sealed class BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>
         : GraphAugmentorAlgorithmBase<TVertex, TEdge, IMutableVertexAndEdgeSet<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="BipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="sourceToVertices">Vertices to which creating augmented edge from super source.</param>
         /// <param name="verticesToSink">Vertices from which creating augmented edge to super sink.</param>
         /// <param name="vertexFactory">Vertex factory method.</param>
         /// <param name="edgeFactory">Edge factory method.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="sourceToVertices"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="verticesToSink"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        public BipartiteToMaximumFlowGraphAugmentorAlgorithm(
-            [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
-            [NotNull, ItemNotNull] IEnumerable<TVertex> sourceToVertices,
-            [NotNull, ItemNotNull] IEnumerable<TVertex> verticesToSink,
-            [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-            : this(null, visitedGraph, sourceToVertices, verticesToSink, vertexFactory, edgeFactory)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BipartiteToMaximumFlowGraphAugmentorAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="sourceToVertices">Vertices to which creating augmented edge from super source.</param>
-        /// <param name="verticesToSink">Vertices from which creating augmented edge to super sink.</param>
-        /// <param name="vertexFactory">Vertex factory method.</param>
-        /// <param name="edgeFactory">Edge factory method.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="sourceToVertices"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="verticesToSink"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
         public BipartiteToMaximumFlowGraphAugmentorAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
             [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
-            [NotNull, ItemNotNull] IEnumerable<TVertex> sourceToVertices,
-            [NotNull, ItemNotNull] IEnumerable<TVertex> verticesToSink,
+            [NotNull] [ItemNotNull] IEnumerable<TVertex> sourceToVertices,
+            [NotNull] [ItemNotNull] IEnumerable<TVertex> verticesToSink,
             [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-            : base(host, visitedGraph, vertexFactory, edgeFactory)
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory, [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, vertexFactory, edgeFactory, host)
         {
             SourceToVertices = sourceToVertices ?? throw new ArgumentNullException(nameof(sourceToVertices));
             VerticesToSink = verticesToSink ?? throw new ArgumentNullException(nameof(verticesToSink));

@@ -16,7 +16,7 @@ namespace QuikGraph.Algorithms.Observers
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedVertexDistanceRecorderObserver{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="UndirectedVertexDistanceRecorderObserver{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
@@ -26,7 +26,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedVertexDistanceRecorderObserver{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="UndirectedVertexDistanceRecorderObserver{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>

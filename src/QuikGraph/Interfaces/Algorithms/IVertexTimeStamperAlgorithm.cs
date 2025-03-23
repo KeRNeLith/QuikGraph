@@ -1,8 +1,6 @@
-namespace QuikGraph.Algorithms
+﻿namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// An algorithm that exposes events to compute timing with vertices treatment.
-    /// </summary>
+    /// <summary> An algorithm that exposes events to compute timing with vertices treatment. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     public interface IVertexTimeStamperAlgorithm<out TVertex>
     {

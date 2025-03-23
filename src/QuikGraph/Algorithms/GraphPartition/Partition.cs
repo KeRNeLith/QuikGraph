@@ -31,7 +31,7 @@ namespace QuikGraph.Algorithms.GraphPartition
         public double CutCost { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Partition{TVertex}"/> class.
+        /// Initializes a new <see cref="Partition{TVertex}"/> class.
         /// </summary>
         /// <param name="vertexSetA">First partition vertex set.</param>
         /// <param name="vertexSetB">Second partition vertex set.</param>

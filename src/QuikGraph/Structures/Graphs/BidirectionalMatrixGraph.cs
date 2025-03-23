@@ -21,10 +21,19 @@ namespace QuikGraph
 #if SUPPORTS_CLONEABLE
         , ICloneable
 #endif
-        where TEdge : class, IEdge<int>
+        where TEdge : IEdge<int>
     {
+        /// <inheritdoc />
+        public Func<int, int, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<int>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<int, int, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="BidirectionalMatrixGraph{TEdge}"/> class.
+        /// Initializes a new <see cref="BidirectionalMatrixGraph{TEdge}"/> class.
         /// </summary>
         /// <param name="vertexCount">Number of vertices.</param>
         /// <exception cref="T:System.ArgumentException"><paramref name="vertexCount"/> is is negative or equal to 0.</exception>
@@ -41,16 +50,10 @@ namespace QuikGraph
         #region Helpers
 
         [Pure]
-        private bool IsInGraph(int vertex)
-        {
-            return vertex >= 0 && vertex < VertexCount;
-        }
+        private bool IsInGraph(int vertex) => vertex >= 0 && vertex < VertexCount;
 
         [Pure]
-        private bool AreInGraph(int source, int target)
-        {
-            return IsInGraph(source) && IsInGraph(target);
-        }
+        private bool AreInGraph(int source, int target) => IsInGraph(source) && IsInGraph(target);
 
         // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
         private void AssertIsInGraph(int vertex)
@@ -105,8 +108,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public int EdgeCount { get; private set; }
 
-        [NotNull]
-        private readonly TEdge[,] _edges;
+        [NotNull] [ItemCanBeNull] private readonly TEdge[,] _edges;
 
         /// <inheritdoc />
         public IEnumerable<TEdge> Edges
@@ -161,20 +163,22 @@ namespace QuikGraph
             return false;
         }
 
+        /// <summary> Returns an empty Edge-Set </summary>
+        public IEnumerable<TEdge> Empty => Edge.Empty<TEdge>();
+
         /// <inheritdoc />
-        public bool TryGetEdges(int source, int target, out IEnumerable<TEdge> edges)
+        public IEnumerable<TEdge> GetEdges(int source, int target)
         {
-            if (AreInGraph(source, target))
+            if (!AreInGraph(source, target))
             {
-                TEdge edge = _edges[source, target];
-                edges = edge is null
-                    ? Enumerable.Empty<TEdge>()
-                    : new[] { edge };
-                return true;
+                return Empty;
             }
 
-            edges = null;
-            return false;
+            var edge = _edges[source, target];
+            var edges = edge == null
+                ? Enumerable.Empty<TEdge>()
+                : new[] { edge };
+            return edges;
         }
 
         #endregion
@@ -182,23 +186,11 @@ namespace QuikGraph
         #region IImplicitGraph<int,TEdge>
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(int vertex)
+        public int? OutDegree(int vertex)
         {
-            AssertIsInGraph(vertex);
-
-            for (int j = 0; j < VertexCount; ++j)
-            {
-                if (_edges[vertex, j] != null)
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public int OutDegree(int vertex)
-        {
-            AssertIsInGraph(vertex);
+            //AssertIsInGraph(vertex);
+            if (!IsInGraph(vertex))
+                return null;
 
             int count = 0;
             for (int j = 0; j < VertexCount; ++j)
@@ -215,27 +207,20 @@ namespace QuikGraph
         /// <inheritdoc />
         public IEnumerable<TEdge> OutEdges(int vertex)
         {
-            AssertIsInGraph(vertex);
+            //AssertIsInGraph(vertex);
+            if (!IsInGraph(vertex))
+                return null;
 
-            for (int j = 0; j < VertexCount; ++j)
+            return _OutEdges();
+            IEnumerable<TEdge> _OutEdges()
             {
-                TEdge edge = _edges[vertex, j];
-                if (edge != null)
-                    yield return edge;
+                for (int j = 0; j < VertexCount; ++j)
+                {
+                    TEdge edge = _edges[vertex, j];
+                    if (edge != null)
+                        yield return edge;
+                }
             }
-        }
-
-        /// <inheritdoc />
-        public bool TryGetOutEdges(int vertex, out IEnumerable<TEdge> edges)
-        {
-            if (IsInGraph(vertex))
-            {
-                edges = OutEdges(vertex);
-                return true;
-            }
-
-            edges = null;
-            return false;
         }
 
         /// <inheritdoc />
@@ -263,23 +248,13 @@ namespace QuikGraph
         #region IBidirectionalGraph<int,TEdge>
 
         /// <inheritdoc />
-        public bool IsInEdgesEmpty(int vertex)
+        public int? InDegree(int vertex)
         {
-            AssertIsInGraph(vertex);
-
-            for (int i = 0; i < VertexCount; ++i)
+            //AssertIsInGraph(vertex);
+            if (!IsInGraph(vertex))
             {
-                if (_edges[i, vertex] != null)
-                    return false;
+                return null;
             }
-
-            return true;
-        }
-
-        /// <inheritdoc />
-        public int InDegree(int vertex)
-        {
-            AssertIsInGraph(vertex);
 
             int count = 0;
             for (int i = 0; i < VertexCount; ++i)
@@ -296,27 +271,21 @@ namespace QuikGraph
         /// <inheritdoc />
         public IEnumerable<TEdge> InEdges(int vertex)
         {
-            AssertIsInGraph(vertex);
-
-            for (int i = 0; i < VertexCount; ++i)
+            if (!IsInGraph(vertex))
             {
-                TEdge edge = _edges[i, vertex];
-                if (edge != null)
-                    yield return edge;
-            }
-        }
-
-        /// <inheritdoc />
-        public bool TryGetInEdges(int vertex, out IEnumerable<TEdge> edges)
-        {
-            if (IsInGraph(vertex))
-            {
-                edges = InEdges(vertex);
-                return true;
+                return null;
             }
 
-            edges = null;
-            return false;
+            return InEdges();
+
+            IEnumerable<TEdge> InEdges() {
+                for (int i = 0; i < VertexCount; ++i)
+                {
+                    TEdge edge = _edges[i, vertex];
+                    if (edge != null)
+                        yield return edge;
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -340,10 +309,7 @@ namespace QuikGraph
         }
 
         /// <inheritdoc />
-        public int Degree(int vertex)
-        {
-            return InDegree(vertex) + OutDegree(vertex);
-        }
+        public int? Degree(int vertex) => InDegree(vertex) + OutDegree(vertex);
 
         #endregion
 
@@ -358,7 +324,7 @@ namespace QuikGraph
                 for (int j = 0; j < VertexCount; ++j)
                 {
                     TEdge edge = _edges[i, j];
-                    _edges[i, j] = null;
+                    _edges[i, j] = default(TEdge);
 
                     if (edge != null)
                     {
@@ -380,7 +346,7 @@ namespace QuikGraph
         /// <param name="predicate">Edge predicate.</param>
         /// <returns>Number of edges removed.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
-        public int RemoveInEdgeIf(int vertex, [NotNull, InstantHandle] EdgePredicate<int, TEdge> predicate)
+        public int RemoveInEdgeIf(int vertex, [NotNull, InstantHandle] Func<TEdge, bool> predicate)
         {
             if (predicate is null)
                 throw new ArgumentNullException(nameof(predicate));
@@ -453,7 +419,7 @@ namespace QuikGraph
         /// <param name="predicate">Predicate to remove edges.</param>
         /// <returns>The number of removed edges.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
-        public int RemoveOutEdgeIf(int vertex, [NotNull, InstantHandle] EdgePredicate<int, TEdge> predicate)
+        public int RemoveOutEdgeIf(int vertex, [NotNull, InstantHandle] Func<TEdge, bool> predicate)
         {
             if (predicate is null)
                 throw new ArgumentNullException(nameof(predicate));
@@ -513,7 +479,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(edge));
             AssertAreInGraph(edge.Source, edge.Target);
 
-            if (_edges[edge.Source, edge.Target] is null)
+            if (_edges[edge.Source, edge.Target] == null)
             {
                 _edges[edge.Source, edge.Target] = edge;
                 ++EdgeCount;
@@ -523,6 +489,9 @@ namespace QuikGraph
 
             throw new ParallelEdgeNotAllowedException();
         }
+
+        /// <inheritdoc />
+        public int AddEdgeRange(params TEdge[] edges) => AddEdgeRange(edges.AsEnumerable());
 
         /// <inheritdoc />
         public int AddEdgeRange(IEnumerable<TEdge> edges)
@@ -558,7 +527,7 @@ namespace QuikGraph
             Debug.Assert(edge != null);
             Debug.Assert(_edges[edge.Source, edge.Target] != null);
 
-            _edges[edge.Source, edge.Target] = null;
+            _edges[edge.Source, edge.Target] = default(TEdge);
             --EdgeCount;
             Debug.Assert(EdgeCount >= 0);
             OnEdgeRemoved(edge);
@@ -572,7 +541,7 @@ namespace QuikGraph
             if (!AreInGraph(edge.Source, edge.Target))
                 return false;
             TEdge edgeToRemove = _edges[edge.Source, edge.Target];
-            if (edgeToRemove is null)
+            if (edgeToRemove == null)
                 return false;
 
             RemoveEdgeInternal(edgeToRemove);
@@ -598,7 +567,7 @@ namespace QuikGraph
         /// <see cref="RemoveEdgeIf"/> is not implemented for this kind of graph.
         /// </summary>
         /// <exception cref="T:System.NotSupportedException">This method is not supported.</exception>
-        public int RemoveEdgeIf(EdgePredicate<int, TEdge> predicate)
+        public int RemoveEdgeIf(Func<TEdge, bool> predicate)
         {
             throw new NotSupportedException();
         }

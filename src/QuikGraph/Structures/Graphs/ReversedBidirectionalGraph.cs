@@ -6,12 +6,17 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// Mutable reversed bidirectional graph data structure.
-    /// </summary>
+    /// <inheritdoc cref="CreateReversedBidirectionalGraph{TVertex, TEdge}"/>
+    public static class ReversedBidirectionalGraph
+    {
+        /// <summary> Creates a new <see cref="ReversedBidirectionalGraph{TVertex,TEdge}"/> class. </summary>
+        public static ReversedBidirectionalGraph<TVertex, TEdge> CreateReversedBidirectionalGraph<TVertex, TEdge>
+            ([NotNull] this IBidirectionalGraph<TVertex, TEdge> originalGraph) where TEdge : IEdge<TVertex>
+            => new ReversedBidirectionalGraph<TVertex, TEdge>(originalGraph);
+    }
+
+    /// <summary> Mutable reversed bidirectional <see cref="OriginalGraph"/>. </summary>
     /// <remarks>It is mutable via the original graph.</remarks>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type</typeparam>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
@@ -19,19 +24,24 @@ namespace QuikGraph
     public sealed class ReversedBidirectionalGraph<TVertex, TEdge> : IBidirectionalGraph<TVertex, SReversedEdge<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ReversedBidirectionalGraph{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
+        /// <summary> Initializes a new <see cref="ReversedBidirectionalGraph{TVertex,TEdge}"/> class. </summary>
         /// <param name="originalGraph">Original graph to reverse.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="originalGraph"/> is <see langword="null"/>.</exception>
-        public ReversedBidirectionalGraph([NotNull] IBidirectionalGraph<TVertex, TEdge> originalGraph)
+        internal ReversedBidirectionalGraph([NotNull] IBidirectionalGraph<TVertex, TEdge> originalGraph)
         {
             OriginalGraph = originalGraph ?? throw new ArgumentNullException(nameof(originalGraph));
         }
 
-        /// <summary>
-        /// Original graph.
-        /// </summary>
+        /// <summary> Wrapped original graph. </summary>
         [NotNull]
         public IBidirectionalGraph<TVertex, TEdge> OriginalGraph { get; }
 
@@ -57,10 +67,7 @@ namespace QuikGraph
         public IEnumerable<TVertex> Vertices => OriginalGraph.Vertices;
 
         /// <inheritdoc />
-        public bool ContainsVertex(TVertex vertex)
-        {
-            return OriginalGraph.ContainsVertex(vertex);
-        }
+        public bool ContainsVertex(TVertex vertex) => OriginalGraph.ContainsVertex(vertex);
 
         #endregion
 
@@ -87,10 +94,7 @@ namespace QuikGraph
         #region IIncidenceGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool ContainsEdge(TVertex source, TVertex target)
-        {
-            return OriginalGraph.ContainsEdge(target, source);
-        }
+        public bool ContainsEdge(TVertex source, TVertex target) => OriginalGraph.ContainsEdge(target, source);
 
         /// <inheritdoc />
         public bool TryGetEdge(TVertex source, TVertex target, out SReversedEdge<TVertex, TEdge> edge)
@@ -105,18 +109,25 @@ namespace QuikGraph
             return false;
         }
 
+
+        /// <summary> Returns an empty Edge-Set </summary>
+        public IEnumerable<SReversedEdge<TVertex, TEdge>> Empty => Edge.Empty<SReversedEdge<TVertex, TEdge>>();
+
         /// <inheritdoc />
-        public bool TryGetEdges(TVertex source, TVertex target, out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
+        public IEnumerable<SReversedEdge<TVertex, TEdge>> GetEdges(TVertex source, TVertex target)
         {
-            if (OriginalGraph.TryGetEdges(target, source, out IEnumerable<TEdge> originalEdges)
-                && ContainsVertex(source))
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            if (!ContainsVertex(source))
             {
-                edges = originalEdges.Select(edge => new SReversedEdge<TVertex, TEdge>(edge));
-                return true;
+                return Empty;
             }
 
-            edges = null;
-            return false;
+            var originalEdges = OriginalGraph.GetEdges(target, source);
+            var edges = originalEdges?.Select(edge => new SReversedEdge<TVertex, TEdge>(edge));
+            return edges;
+
         }
 
         #endregion
@@ -124,42 +135,15 @@ namespace QuikGraph
         #region IImplicitGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(TVertex vertex)
-        {
-            return OriginalGraph.IsInEdgesEmpty(vertex);
-        }
-
-        /// <inheritdoc />
-        public int OutDegree(TVertex vertex)
-        {
-            return OriginalGraph.InDegree(vertex);
-        }
+        public int? OutDegree(TVertex vertex) => OriginalGraph.InDegree(vertex);
 
         /// <inheritdoc />
         public IEnumerable<SReversedEdge<TVertex, TEdge>> OutEdges(TVertex vertex)
-        {
-            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(OriginalGraph.InEdges(vertex));
-        }
-
-        /// <inheritdoc />
-        public bool TryGetOutEdges(TVertex vertex, out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
-        {
-            if (OriginalGraph.TryGetInEdges(vertex, out IEnumerable<TEdge> inEdges))
-            {
-                edges = EdgeExtensions.ReverseEdges<TVertex, TEdge>(inEdges);
-                return true;
-            }
-
-            edges = null;
-            return false;
-        }
+            => OriginalGraph.InEdges(vertex)?.ReverseEdges<TVertex, TEdge>();
 
         /// <inheritdoc />
         public SReversedEdge<TVertex, TEdge> OutEdge(TVertex vertex, int index)
-        {
-            return new SReversedEdge<TVertex, TEdge>(
-                OriginalGraph.InEdge(vertex, index));
-        }
+            => new SReversedEdge<TVertex, TEdge>(OriginalGraph.InEdge(vertex, index));
 
         #endregion
 
@@ -167,47 +151,17 @@ namespace QuikGraph
 
         /// <inheritdoc />
         public IEnumerable<SReversedEdge<TVertex, TEdge>> InEdges(TVertex vertex)
-        {
-            return EdgeExtensions.ReverseEdges<TVertex, TEdge>(OriginalGraph.OutEdges(vertex));
-        }
+            => OriginalGraph.OutEdges(vertex)?.ReverseEdges<TVertex, TEdge>();
 
         /// <inheritdoc />
         public SReversedEdge<TVertex, TEdge> InEdge(TVertex vertex, int index)
-        {
-            return new SReversedEdge<TVertex, TEdge>(
-                OriginalGraph.OutEdge(vertex, index));
-        }
+            => new SReversedEdge<TVertex, TEdge>(OriginalGraph.OutEdge(vertex, index));
 
         /// <inheritdoc />
-        public bool IsInEdgesEmpty(TVertex vertex)
-        {
-            return OriginalGraph.IsOutEdgesEmpty(vertex);
-        }
+        public int? InDegree(TVertex vertex) => OriginalGraph.OutDegree(vertex);
 
         /// <inheritdoc />
-        public int InDegree(TVertex vertex)
-        {
-            return OriginalGraph.OutDegree(vertex);
-        }
-
-        /// <inheritdoc />
-        public bool TryGetInEdges(TVertex vertex, out IEnumerable<SReversedEdge<TVertex, TEdge>> edges)
-        {
-            if (OriginalGraph.TryGetOutEdges(vertex, out IEnumerable<TEdge> outEdges))
-            {
-                edges = EdgeExtensions.ReverseEdges<TVertex, TEdge>(outEdges);
-                return true;
-            }
-
-            edges = null;
-            return false;
-        }
-
-        /// <inheritdoc />
-        public int Degree(TVertex vertex)
-        {
-            return OriginalGraph.Degree(vertex);
-        }
+        public int? Degree(TVertex vertex) => OriginalGraph.Degree(vertex);
 
         #endregion
     }

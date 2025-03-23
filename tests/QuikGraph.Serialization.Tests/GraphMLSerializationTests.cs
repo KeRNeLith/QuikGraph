@@ -26,9 +26,10 @@ namespace QuikGraph.Serialization.Tests
     {
         #region Test helpers
 
+        /// <summary> Verifies that the deserialized and serialized graphMl is equal to the original <paramref name="graph"/> . </summary>
         [Pure]
         [NotNull]
-        private static TGraph VerifySerialization<TGraph>(
+        private static TGraph VerifyDoubleSerialization<TGraph>(
             [NotNull] TGraph graph,
             [NotNull, InstantHandle] Func<TGraph, string> serializeGraph,
             [NotNull, InstantHandle] Func<string, TGraph> deserializeGraph)
@@ -101,14 +102,14 @@ namespace QuikGraph.Serialization.Tests
 
             graph.AddEdge(edge1);
 
-            EquatableTestGraph serializedGraph = VerifySerialization(
+            EquatableTestGraph serializedGraph = VerifyDoubleSerialization(
                 graph,
                 g =>
                 {
                     using (var writer = new StringWriter())
                     {
                         var settings = new XmlWriterSettings { Indent = true };
-                        using (XmlWriter xmlWriter = XmlWriter.Create(writer, settings))
+                        using (var xmlWriter = XmlWriter.Create(writer, settings))
                         {
                             var serializer = new GraphMLSerializer<EquatableTestVertex, EquatableTestEdge, EquatableTestGraph>
                             {
@@ -142,7 +143,7 @@ namespace QuikGraph.Serialization.Tests
                             DtdProcessing = DtdProcessing.Ignore
                         };
 
-                        using (XmlReader xmlReader = XmlReader.Create(reader, settings))
+                        using (var xmlReader = XmlReader.Create(reader, settings))
                         {
 #else
                         var xmlReader = new XmlTextReader(reader);
@@ -161,10 +162,7 @@ namespace QuikGraph.Serialization.Tests
                     }
                 });
 
-            Assert.IsTrue(
-                EquateGraphs.Equate(
-                    graph,
-                    serializedGraph));
+            Assert.IsTrue(graph.IsEqualTo(serializedGraph));
         }
 
         #region Serialization
@@ -225,7 +223,7 @@ namespace QuikGraph.Serialization.Tests
                     vertex => vertex.ID,
                     edge => edge.ID));
 
-            using (XmlWriter writer = XmlWriter.Create(WriteThrowsTestFilePath))
+            using (var writer = XmlWriter.Create(WriteThrowsTestFilePath))
             {
                 Assert.Throws<ArgumentNullException>(
                     () => ((AdjacencyGraph<TestVertex, TestEdge>)null).SerializeToGraphML<TestVertex, TestEdge, AdjacencyGraph<TestVertex, TestEdge>>(writer));
@@ -311,13 +309,13 @@ namespace QuikGraph.Serialization.Tests
         {
             foreach (string graphMLFilePath in TestGraphFactory.GetGraphMLFilePaths())
             {
-                var graph = new AdjacencyGraph<string, Edge<string>>();
+                var graph = new AdjacencyGraph<string, IEdge<string>>();
                 using (var reader = new StreamReader(graphMLFilePath))
                 {
                     graph.DeserializeFromGraphML(
                         reader,
                         id => id,
-                        (source, target, _) => new Edge<string>(source, target));
+                        (source, target, _) => Edge.Create(source, target));
                 }
 
                 var vertices = new Dictionary<string, string>();
@@ -333,7 +331,7 @@ namespace QuikGraph.Serialization.Tests
                     ValidationFlags = XmlSchemaValidationFlags.ReportValidationWarnings
                 };
 
-                using (XmlReader reader = XmlReader.Create(graphMLFilePath, settings))
+                using (var reader = XmlReader.Create(graphMLFilePath, settings))
                 {
 #else
                 using (var reader = new XmlTextReader(graphMLFilePath))
@@ -366,32 +364,32 @@ namespace QuikGraph.Serialization.Tests
             // ReSharper disable AssignNullToNotNullAttribute
             // Filepath
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).DeserializeFromGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).DeserializeFromGraphML(
                     GetGraphFilePath(TestGraphFileName),
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
-            var graph = new AdjacencyGraph<string, Edge<string>>();
+            var graph = new AdjacencyGraph<string, IEdge<string>>();
             Assert.Throws<ArgumentException>(
                 () => graph.DeserializeFromGraphML(
                     (string)null,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             Assert.Throws<ArgumentException>(
                 () => graph.DeserializeFromGraphML(
                     "",
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             Assert.Throws<ArgumentNullException>(
-                () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                     GetGraphFilePath(TestGraphFileName),
                     null,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             Assert.Throws<ArgumentNullException>(
-                () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                     GetGraphFilePath(TestGraphFileName),
                     id => id,
                     null));
@@ -401,24 +399,24 @@ namespace QuikGraph.Serialization.Tests
                 () => graph.DeserializeFromGraphML(
                     (TextReader)null,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             using (var reader = new StreamReader(GetGraphFilePath(TestGraphFileName)))
             {
                 Assert.Throws<ArgumentNullException>(
-                    () => ((AdjacencyGraph<string, Edge<string>>)null).DeserializeFromGraphML(
+                    () => ((AdjacencyGraph<string, IEdge<string>>)null).DeserializeFromGraphML(
                         reader,
                         id => id,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         null,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         id => id,
                         null));
@@ -429,24 +427,24 @@ namespace QuikGraph.Serialization.Tests
                 () => graph.DeserializeFromGraphML(
                     (XmlReader)null,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             using (var reader = XmlReader.Create(GetGraphFilePath(TestGraphFileName)))
             {
                 Assert.Throws<ArgumentNullException>(
-                    () => ((AdjacencyGraph<string, Edge<string>>)null).DeserializeFromGraphML(
+                    () => ((AdjacencyGraph<string, IEdge<string>>)null).DeserializeFromGraphML(
                         reader,
                         id => id,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         null,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         id => id,
                         null));
@@ -589,7 +587,7 @@ namespace QuikGraph.Serialization.Tests
             using (var writer = new StringWriter())
             {
                 var settings = new XmlWriterSettings { Indent = true };
-                using (XmlWriter xmlWriter = XmlWriter.Create(writer, settings))
+                using (var xmlWriter = XmlWriter.Create(writer, settings))
                 {
                     graph.SerializeToGraphML<TestVertex, TestEdge, TestGraph>(xmlWriter);
                 }
@@ -605,7 +603,7 @@ namespace QuikGraph.Serialization.Tests
             using (var writer = new StringWriter())
             {
                 var settings = new XmlWriterSettings { Indent = true };
-                using (XmlWriter xmlWriter = XmlWriter.Create(writer, settings))
+                using (var xmlWriter = XmlWriter.Create(writer, settings))
                 {
                     graph.SerializeToGraphML<TestVertex, TestEdge, TestGraph>(
                         xmlWriter,
@@ -638,7 +636,7 @@ namespace QuikGraph.Serialization.Tests
             [NotNull] TestGraph graph,
             [NotNull, InstantHandle] Func<TestGraph, string> serializeGraph)
         {
-            return VerifySerialization(graph, serializeGraph, DeserializeGraph);
+            return VerifyDoubleSerialization(graph, serializeGraph, DeserializeGraph);
         }
 
         #endregion
@@ -851,31 +849,31 @@ namespace QuikGraph.Serialization.Tests
         public void DeserializeAndValidateFromGraphML_Throws()
         {
             // ReSharper disable AssignNullToNotNullAttribute
-            var graph = new AdjacencyGraph<string, Edge<string>>();
+            var graph = new AdjacencyGraph<string, IEdge<string>>();
 
             // Text reader
             Assert.Throws<ArgumentNullException>(
                 () => graph.DeserializeAndValidateFromGraphML(
                     null,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target)));
+                    (source, target, _) => Edge.Create(source, target)));
 
             using (var reader = new StreamReader(GetGraphFilePath(TestGraphFileName)))
             {
                 Assert.Throws<ArgumentNullException>(
-                    () => ((AdjacencyGraph<string, Edge<string>>)null).DeserializeAndValidateFromGraphML(
+                    () => ((AdjacencyGraph<string, IEdge<string>>)null).DeserializeAndValidateFromGraphML(
                         reader,
                         id => id,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeAndValidateFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeAndValidateFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         null,
-                        (source, target, _) => new Edge<string>(source, target)));
+                        (source, target, _) => Edge.Create(source, target)));
 
                 Assert.Throws<ArgumentNullException>(
-                    () => graph.DeserializeAndValidateFromGraphML<string, Edge<string>, AdjacencyGraph<string, Edge<string>>>(
+                    () => graph.DeserializeAndValidateFromGraphML<string, IEdge<string>, AdjacencyGraph<string, IEdge<string>>>(
                         reader,
                         id => id,
                         null));
@@ -945,7 +943,7 @@ namespace QuikGraph.Serialization.Tests
             using (var stream = new MemoryStream())
             {
                 // Serialize
-                using (XmlWriter writer = XmlWriter.Create(stream))
+                using (var writer = XmlWriter.Create(stream))
                 {
                     graph.SerializeToGraphML(
                         writer,
@@ -956,7 +954,7 @@ namespace QuikGraph.Serialization.Tests
                 stream.Position = 0;
 
                 // Deserialize
-                using (XmlReader reader = XmlReader.Create(stream))
+                using (var reader = XmlReader.Create(stream))
                 {
                     TOutGraph deserializedGraph = deserialize(reader);
                     Assert.IsNotNull(deserializedGraph);
@@ -1109,12 +1107,12 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph1 =
                 SerializeDeserialize_Simple<AdjacencyGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayAdjacencyGraph<int, EquatableEdge<int>>(graph);
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph2 =
                 SerializeDeserialize_Simple<ArrayAdjacencyGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(arrayGraph, deserializedGraph2));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationAdjacencyGraphComplexNotHeterogeneousTestCases))]
@@ -1122,12 +1120,12 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph1 =
                 SerializeDeserialize_Complex<AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
                 SerializeDeserialize_Complex<ArrayAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(arrayGraph, deserializedGraph2));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationAdjacencyGraphTestCases))]
@@ -1136,7 +1134,7 @@ namespace QuikGraph.Serialization.Tests
             var bidirectionalAdapterGraph = new BidirectionalAdapterGraph<int, EquatableEdge<int>>(graph);
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_Simple<BidirectionalAdapterGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(bidirectionalAdapterGraph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationAdjacencyGraphComplexNotHeterogeneousTestCases))]
@@ -1145,7 +1143,7 @@ namespace QuikGraph.Serialization.Tests
             var bidirectionalAdapterGraph = new BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
                 SerializeDeserialize_Complex<BidirectionalAdapterGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(bidirectionalAdapterGraph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationClusteredAdjacencyGraphTestCases))]
@@ -1153,7 +1151,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_Simple<ClusteredAdjacencyGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationClusteredAdjacencyGraphComplexNotHeterogeneousTestCases))]
@@ -1161,7 +1159,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
                 SerializeDeserialize_Complex<ClusteredAdjacencyGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationCompressedGraphTestCases))]
@@ -1169,7 +1167,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, SEquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_SEdge_Simple<CompressedSparseRowGraph<int>, AdjacencyGraph<int, SEquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationCompressedGraphComplexNotHeterogeneousTestCases))]
@@ -1177,7 +1175,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<EquatableTestVertex, SEquatableEdge<EquatableTestVertex>> deserializedGraph =
                 SerializeDeserialize_SEdge_Complex<CompressedSparseRowGraph<EquatableTestVertex>, AdjacencyGraph<EquatableTestVertex, SEquatableEdge<EquatableTestVertex>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationBidirectionalGraphTestCases))]
@@ -1185,18 +1183,18 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_Simple<BidirectionalGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
 
             var arrayGraph = new ArrayBidirectionalGraph<int, EquatableEdge<int>>(graph);
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph2 =
                 SerializeDeserialize_Simple<ArrayBidirectionalGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(arrayGraph, deserializedGraph2));
 
-            var reversedGraph = new ReversedBidirectionalGraph<int, EquatableEdge<int>>(graph);
+            var reversedGraph = graph.CreateReversedBidirectionalGraph();
             BidirectionalGraph<int, EquatableEdge<int>> deserializedGraph3 =
                 SerializeDeserialize_Reversed_Simple<ReversedBidirectionalGraph<int, EquatableEdge<int>>, BidirectionalGraph<int, EquatableEdge<int>>>(reversedGraph);
             Assert.IsTrue(
-                EquateGraphs.Equate(
+                EquateGraphs.IsEqualTo(
                     graph,
                     deserializedGraph3,
                     EqualityComparer<int>.Default,
@@ -1209,7 +1207,7 @@ namespace QuikGraph.Serialization.Tests
             var undirectedBidirectionalGraph = new UndirectedBidirectionalGraph<int, EquatableEdge<int>>(graph);
             UndirectedGraph<int, EquatableEdge<int>> deserializedGraph4 =
                 SerializeDeserialize_Simple<UndirectedBidirectionalGraph<int, EquatableEdge<int>>, UndirectedGraph<int, EquatableEdge<int>>>(undirectedBidirectionalGraph);
-            Assert.IsTrue(EquateGraphs.Equate(undirectedBidirectionalGraph, deserializedGraph4));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(undirectedBidirectionalGraph, deserializedGraph4));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationBidirectionalGraphComplexNotHeterogeneousTestCases))]
@@ -1217,18 +1215,18 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
                 SerializeDeserialize_Complex<BidirectionalGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
 
             var arrayGraph = new ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
                 SerializeDeserialize_Complex<ArrayBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(arrayGraph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(arrayGraph, deserializedGraph2));
 
-            var reversedGraph = new ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
+            var reversedGraph = graph.CreateReversedBidirectionalGraph();
             BidirectionalGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph3 =
                 SerializeDeserialize_Reversed_Complex<ReversedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>, BidirectionalGraph<EquatableTestVertex, EquatableTestEdge>>(reversedGraph);
             Assert.IsTrue(
-                EquateGraphs.Equate(
+                EquateGraphs.IsEqualTo(
                     graph,
                     deserializedGraph3,
                     EqualityComparer<EquatableTestVertex>.Default,
@@ -1240,7 +1238,7 @@ namespace QuikGraph.Serialization.Tests
             var undirectedBidirectionalGraph = new UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             UndirectedGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph4 =
                 SerializeDeserialize_Complex<UndirectedBidirectionalGraph<EquatableTestVertex, EquatableTestEdge>, UndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(undirectedBidirectionalGraph);
-            Assert.IsTrue(EquateGraphs.Equate(undirectedBidirectionalGraph, deserializedGraph4));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(undirectedBidirectionalGraph, deserializedGraph4));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationBidirectionalMatrixGraphTestCases))]
@@ -1248,7 +1246,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_Simple<BidirectionalMatrixGraph<EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationUndirectedGraphTestCases))]
@@ -1256,12 +1254,12 @@ namespace QuikGraph.Serialization.Tests
         {
             UndirectedGraph<int, EquatableEdge<int>> deserializedGraph1 =
                 SerializeDeserialize_Simple<UndirectedGraph<int, EquatableEdge<int>>, UndirectedGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayUndirectedGraph<int, EquatableEdge<int>>(graph);
             UndirectedGraph<int, EquatableEdge<int>> deserializedGraph2 =
                 SerializeDeserialize_Simple<ArrayUndirectedGraph<int, EquatableEdge<int>>, UndirectedGraph<int, EquatableEdge<int>>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph2));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationUndirectedGraphComplexNotHeterogeneousTestCases))]
@@ -1269,12 +1267,12 @@ namespace QuikGraph.Serialization.Tests
         {
             UndirectedGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph1 =
                 SerializeDeserialize_Complex<UndirectedGraph<EquatableTestVertex, EquatableTestEdge>, UndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph1));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph1));
 
             var arrayGraph = new ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge>(graph);
             UndirectedGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph2 =
                 SerializeDeserialize_Complex<ArrayUndirectedGraph<EquatableTestVertex, EquatableTestEdge>, UndirectedGraph<EquatableTestVertex, EquatableTestEdge>>(arrayGraph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph2));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph2));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationEdgeListGraphTestCases))]
@@ -1282,7 +1280,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<int, EquatableEdge<int>> deserializedGraph =
                 SerializeDeserialize_Simple<EdgeListGraph<int, EquatableEdge<int>>, AdjacencyGraph<int, EquatableEdge<int>>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         [TestCaseSource(typeof(SerializationTestCaseSources), nameof(SerializationEdgeListGraphComplexNotHeterogeneousTestCases))]
@@ -1290,7 +1288,7 @@ namespace QuikGraph.Serialization.Tests
         {
             AdjacencyGraph<EquatableTestVertex, EquatableTestEdge> deserializedGraph =
                 SerializeDeserialize_Complex<EdgeListGraph<EquatableTestVertex, EquatableTestEdge>, AdjacencyGraph<EquatableTestVertex, EquatableTestEdge>>(graph);
-            Assert.IsTrue(EquateGraphs.Equate(graph, deserializedGraph));
+            Assert.IsTrue(EquateGraphs.IsEqualTo(graph, deserializedGraph));
         }
 
         #endregion

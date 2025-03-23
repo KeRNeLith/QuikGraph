@@ -17,7 +17,7 @@ namespace QuikGraph.Data
         public DataSet DataSet { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSetGraphPopulatorAlgorithm"/> class.
+        /// Initializes a new <see cref="DataSetGraphPopulatorAlgorithm"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to fill from <paramref name="dataSet"/>.</param>
         /// <param name="dataSet"><see cref="T:System.Data.DataSet"/> to use to fill <paramref name="visitedGraph"/>.</param>

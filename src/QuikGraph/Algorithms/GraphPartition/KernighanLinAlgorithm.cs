@@ -9,13 +9,21 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.GraphPartition
 {
-    /// <summary>
-    /// Algorithm that separate a graph into two disjoint subsets A and B of equal (or nearly equal) in size,
+    /// <inheritdoc cref="CreateKernighanLinAlgorithm"/>
+    public static class KernighanLinAlgorithm
+    {
+        /// <summary> Creates a new <see cref="KernighanLinAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static KernighanLinAlgorithm<TVertex, TEdge> CreateKernighanLinAlgorithm<TVertex, TEdge>(
+            [NotNull] this IUndirectedGraph<TVertex, TEdge> visitedGraph,
+            int nbIterations) where TEdge : IUndirectedEdge<TVertex>, ITagged<double>
+            => new KernighanLinAlgorithm<TVertex, TEdge>(visitedGraph, nbIterations);
+    }
+
+    /// <summary> Separates a graph into two disjoint subsets A and B of equal (or nearly equal) size,
     /// in a way that minimizes the sum of the weights of the subset of edges that cross from A to B.
     /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class KernighanLinAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
+    public sealed class KernighanLinAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IUndirectedEdge<TVertex>, ITagged<double>
     {
         private readonly int _nbIterations;
@@ -27,13 +35,11 @@ namespace QuikGraph.Algorithms.GraphPartition
         private SortedSet<TVertex> _unSwappedSetA;
         private SortedSet<TVertex> _unSwappedSetB;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="KernighanLinAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="KernighanLinAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="nbIterations">Number of iterations to perform.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public KernighanLinAlgorithm(
+        internal KernighanLinAlgorithm(
             [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
             int nbIterations)
             : base(visitedGraph)
@@ -215,8 +221,8 @@ namespace QuikGraph.Algorithms.GraphPartition
         {
             foreach (TEdge edge in VisitedGraph.AdjacentEdges(vertexFromA))
             {
-                if (EqualityComparer<TVertex>.Default.Equals(edge.Target, vertexFromB)
-                    || EqualityComparer<TVertex>.Default.Equals(edge.Source, vertexFromB))
+                if (VisitedGraph.AreVerticesEqual(edge.Target, vertexFromB)
+                    || VisitedGraph.AreVerticesEqual(edge.Source, vertexFromB))
                 {
                     foundEdge = edge;
                     return true;

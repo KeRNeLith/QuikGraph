@@ -24,15 +24,15 @@ namespace QuikGraph.Algorithms
         private bool _hasTargetVertex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RootedSearchAlgorithmBase{TVertex,TGraph}"/> class.
+        /// Initializes a new <see cref="RootedSearchAlgorithmBase{TVertex,TGraph}"/> class.
         /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <param name="visitedGraph">Graph to visit.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         protected RootedSearchAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] TGraph visitedGraph)
-            : base(host, visitedGraph)
+            [NotNull] TGraph visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
         }
 
@@ -55,9 +55,7 @@ namespace QuikGraph.Algorithms
             return false;
         }
 
-        /// <summary>
-        /// Sets the target vertex.
-        /// </summary>
+        /// <summary> Sets the target vertex.</summary>
         /// <param name="target">Target vertex.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="target"/> is <see langword="null"/>.</exception>
         public void SetTargetVertex([NotNull] TVertex target)
@@ -65,7 +63,7 @@ namespace QuikGraph.Algorithms
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            bool changed = !_hasTargetVertex || !EqualityComparer<TVertex>.Default.Equals(_target, target);
+            bool changed = !_hasTargetVertex || !VisitedGraph.AreVerticesEqual(_target, target);
             _target = target;
             _hasTargetVertex = true;
 

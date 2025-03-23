@@ -1,16 +1,11 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Represents an algorithm to run on a graph.
-    /// </summary>
-    /// <typeparam name="TGraph">Graph type.</typeparam>
+    /// <summary> An algorithm to run on the <see cref="VisitedGraph"/>. </summary>
     public interface IAlgorithm<out TGraph> : IComputation
     {
-        /// <summary>
-        /// Gets the graph to visit with this algorithm.
-        /// </summary>
+        /// <summary> The graph to visit/transform with this algorithm. </summary>
         [NotNull]
         TGraph VisitedGraph { get; }
     }

@@ -21,6 +21,15 @@ namespace QuikGraph.Algorithms.Exploration
         where TVertex : ICloneable
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         [NotNull]
         private readonly VertexEdgeDictionary<TVertex, TEdge> _verticesEdgesCache =
             new VertexEdgeDictionary<TVertex, TEdge>();
@@ -132,14 +141,14 @@ namespace QuikGraph.Algorithms.Exploration
         }
 
         [NotNull]
-        private VertexPredicate<TVertex> _vertexPredicate = vertex => true;
+        private Func<TVertex, bool> _vertexPredicate = vertex => true;
 
         /// <summary>
         /// Predicate that a vertex must match to be the successor (target) of an edge.
         /// </summary>
         /// <exception cref="T:System.ArgumentNullException">Set value is <see langword="null"/>.</exception>
         [NotNull]
-        public VertexPredicate<TVertex> SuccessorVertexPredicate
+        public Func<TVertex, bool> SuccessorVertexPredicate
         {
             get => _vertexPredicate;
             set
@@ -150,14 +159,14 @@ namespace QuikGraph.Algorithms.Exploration
         }
 
         [NotNull]
-        private EdgePredicate<TVertex, TEdge> _edgePredicate = edge => true;
+        private Func<TEdge, bool> _edgePredicate = edge => true;
 
         /// <summary>
         /// Predicate that an edge must match to be the successor of a source vertex.
         /// </summary>
         /// <exception cref="T:System.ArgumentNullException">Set value is <see langword="null"/>.</exception>
         [NotNull]
-        public EdgePredicate<TVertex, TEdge> SuccessorEdgePredicate
+        public Func<TEdge, bool> SuccessorEdgePredicate
         {
             get => _edgePredicate;
             set
@@ -190,24 +199,7 @@ namespace QuikGraph.Algorithms.Exploration
         #region IImplicitGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(TVertex vertex)
-        {
-            return OutDegree(vertex) == 0;
-        }
-
-        /// <inheritdoc />
-        public int OutDegree(TVertex vertex)
-        {
-            return OutEdges(vertex).Count();
-        }
-
-        /// <inheritdoc />
-        public IEnumerable<TEdge> OutEdges(TVertex vertex)
-        {
-            if (TryGetOutEdges(vertex, out IEnumerable<TEdge> outEdges))
-                return outEdges;
-            throw new VertexNotFoundException();
-        }
+        public int? OutDegree(TVertex vertex) => OutEdges(vertex)?.Count();
 
         private void AddToNotProcessedCacheIfNecessary(
             [NotNull] TVertex vertex,
@@ -235,11 +227,11 @@ namespace QuikGraph.Algorithms.Exploration
 
         [Pure]
         [CanBeNull, ItemNotNull]
-        private IEdgeList<TVertex, TEdge> ExploreFactoriesForVertex([NotNull] TVertex vertex)
+        private IEdgeList<TEdge> ExploreFactoriesForVertex([NotNull] TVertex vertex)
         {
             Debug.Assert(vertex != null);
 
-            IEdgeList<TVertex, TEdge> edges = null;
+            IEdgeList<TEdge> edges = null;
             foreach (ITransitionFactory<TVertex, TEdge> transitionFactory in _transitionFactories)
             {
                 if (!transitionFactory.IsValid(vertex))
@@ -247,7 +239,7 @@ namespace QuikGraph.Algorithms.Exploration
 
                 if (edges is null)
                 {
-                    edges = new EdgeList<TVertex, TEdge>();
+                    edges = new EdgeList<TEdge>();
                 }
 
                 foreach (TEdge edge in transitionFactory.Apply(vertex).Where(edge => SuccessorVertexPredicate(edge.Target)))
@@ -265,43 +257,52 @@ namespace QuikGraph.Algorithms.Exploration
         }
 
         /// <inheritdoc />
-        public bool TryGetOutEdges(TVertex vertex, out IEnumerable<TEdge> edges)
+        public IEnumerable<TEdge> OutEdges(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
             bool wasNotProcessed = _verticesNotProcessedCache.Remove(vertex);
 
-            if (!_verticesEdgesCache.TryGetValue(vertex, out IEdgeList<TVertex, TEdge> edgeList))
+            if (_verticesEdgesCache.TryGetValue(vertex, out IEdgeList<TEdge> edgeList))
             {
-                edgeList = ExploreFactoriesForVertex(vertex);
-
-                if (edgeList is null)
-                {
-                    // Vertex has no out edges
-                    if (wasNotProcessed)
-                    {
-                        edgeList = new EdgeList<TVertex, TEdge>();
-                    }
-                    else
-                    {
-                        edges = null;
-                        return false;
-                    }
-                }
-
-                _verticesEdgesCache[vertex] = edgeList;
+                return edgeList; //.AsEnumerable();
+                //return Empty;
             }
 
-            edges = edgeList.AsEnumerable();
-            return true;
+            edgeList = ExploreFactoriesForVertex(vertex);
+
+            if (edgeList is null)
+            {
+                if (!wasNotProcessed)
+                {
+                    return null;
+                    //return Empty;
+                }
+
+                // Vertex has no out edges
+                edgeList = new EdgeList<TEdge>();
+            }
+
+            _verticesEdgesCache[vertex] = edgeList;
+
+            return edgeList;//.AsEnumerable();
         }
+
+        /// <summary> Returns an empty Edge-Set </summary>
+        public IEnumerable<TEdge> Empty => Edge.Empty<TEdge>();
 
         /// <inheritdoc />
         public TEdge OutEdge(TVertex vertex, int index)
         {
             int i = 0;
-            foreach (TEdge edge in OutEdges(vertex))
+            IEnumerable<TEdge> outEdges = OutEdges(vertex);
+            if (outEdges is null)
+            {
+                return default(TEdge);
+            }
+
+            foreach (TEdge edge in outEdges)
             {
                 if (i++ == index)
                     return edge;

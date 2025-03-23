@@ -6,12 +6,23 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.MaximumFlow
 {
-    /// <summary>
-    /// Algorithm that computes a the graph balancing by finding vertices
-    /// causing surplus or deficits.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <inheritdoc cref="CreateGraphBalancerAlgorithm"/>
+    public static class GraphBalancerAlgorithm
+    {
+        /// <summary>Creates a new <see cref="GraphBalancerAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static GraphBalancerAlgorithm<TVertex, TEdge>
+            CreateGraphBalancerAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableBidirectionalGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] TVertex source,
+            [NotNull] TVertex sink,
+            [NotNull] VertexFactory<TVertex> vertexFactory,
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory,
+            [CanBeNull] IDictionary<TEdge, double> capacities = null)
+            where TEdge : IEdge<TVertex>
+            => new GraphBalancerAlgorithm<TVertex, TEdge>(visitedGraph,source,sink,vertexFactory,edgeFactory, capacities);
+
+    }
+    /// <summary> computes a the graph balancing by finding vertices causing surplus or deficits. </summary>
     public sealed class GraphBalancerAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
@@ -19,55 +30,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         private readonly Dictionary<TEdge, int> _preFlow = new Dictionary<TEdge, int>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphBalancerAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="source">Flow source vertex.</param>
-        /// <param name="sink">Flow sink vertex.</param>
-        /// <param name="vertexFactory">Vertex factory method.</param>
-        /// <param name="edgeFactory">Edge factory method.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="sink"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentException"><paramref name="visitedGraph"/> does not contain <paramref name="source"/> vertex.</exception>
-        /// <exception cref="T:System.ArgumentException"><paramref name="visitedGraph"/> does not contain <paramref name="sink"/> vertex.</exception>
-        public GraphBalancerAlgorithm(
-            [NotNull] IMutableBidirectionalGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] TVertex source,
-            [NotNull] TVertex sink,
-            [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-        {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
-            if (sink == null)
-                throw new ArgumentNullException(nameof(sink));
-
-            VisitedGraph = visitedGraph ?? throw new ArgumentNullException(nameof(visitedGraph));
-            VertexFactory = vertexFactory ?? throw new ArgumentNullException(nameof(vertexFactory));
-            EdgeFactory = edgeFactory ?? throw new ArgumentNullException(nameof(edgeFactory));
-
-            if (!VisitedGraph.ContainsVertex(source))
-                throw new ArgumentException("Source must be in the graph", nameof(source));
-            if (!VisitedGraph.ContainsVertex(sink))
-                throw new ArgumentException("Sink must be in the graph", nameof(sink));
-            Source = source;
-            Sink = sink;
-
-            foreach (TEdge edge in VisitedGraph.Edges)
-            {
-                // Setting capacities = u(e) = +infinity
-                Capacities.Add(edge, double.MaxValue);
-
-                // Setting preflow = l(e) = 1
-                _preFlow.Add(edge, 1);
-            }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GraphBalancerAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="GraphBalancerAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="source">Flow source vertex.</param>
@@ -83,13 +46,13 @@ namespace QuikGraph.Algorithms.MaximumFlow
         /// <exception cref="T:System.ArgumentNullException"><paramref name="capacities"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="visitedGraph"/> does not contain <paramref name="source"/> vertex.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="visitedGraph"/> does not contain <paramref name="sink"/> vertex.</exception>
-        public GraphBalancerAlgorithm(
+        internal GraphBalancerAlgorithm(
             [NotNull] IMutableBidirectionalGraph<TVertex, TEdge> visitedGraph,
             [NotNull] TVertex source,
             [NotNull] TVertex sink,
             [NotNull] VertexFactory<TVertex> vertexFactory,
             [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory,
-            [NotNull] IDictionary<TEdge, double> capacities)
+            [CanBeNull] IDictionary<TEdge, double> capacities = null)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -99,7 +62,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
             VisitedGraph = visitedGraph ?? throw new ArgumentNullException(nameof(visitedGraph));
             VertexFactory = vertexFactory ?? throw new ArgumentNullException(nameof(vertexFactory));
             EdgeFactory = edgeFactory ?? throw new ArgumentNullException(nameof(edgeFactory));
-            Capacities = capacities ?? throw new ArgumentNullException(nameof(capacities));
+            Capacities = capacities ?? new Dictionary<TEdge, double>();
 
             if (!VisitedGraph.ContainsVertex(source))
                 throw new ArgumentException("Source must be in the graph", nameof(source));
@@ -111,6 +74,9 @@ namespace QuikGraph.Algorithms.MaximumFlow
             // Setting preflow = l(e) = 1
             foreach (TEdge edge in VisitedGraph.Edges)
             {
+                if (capacities is null) // Setting capacities = u(e) = +infinity
+                    Capacities.Add(edge, double.MaxValue);
+
                 _preFlow.Add(edge, 1);
             }
         }
@@ -375,10 +341,10 @@ namespace QuikGraph.Algorithms.MaximumFlow
 
             bool IsSourceOrSink(TVertex v)
             {
-                return EqualityComparer<TVertex>.Default.Equals(v, BalancingSource)
-                       || EqualityComparer<TVertex>.Default.Equals(v, BalancingSink)
-                       || EqualityComparer<TVertex>.Default.Equals(v, Source)
-                       || EqualityComparer<TVertex>.Default.Equals(v, Sink);
+                return VisitedGraph.AreVerticesEqual(v, BalancingSource)
+                       || VisitedGraph.AreVerticesEqual(v, BalancingSink)
+                       || VisitedGraph.AreVerticesEqual(v, Source)
+                       || VisitedGraph.AreVerticesEqual(v, Sink);
             }
 
             #endregion

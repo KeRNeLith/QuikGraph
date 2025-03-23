@@ -6,7 +6,7 @@ using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.Observers;
 using QuikGraph.Algorithms.ShortestPath;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 using static QuikGraph.Tests.QuikGraphUnitTestsHelpers;
 
 namespace QuikGraph.Tests.Algorithms.ShortestPath
@@ -26,11 +26,9 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         {
             var distances = new Dictionary<TEdge, double>(graph.EdgeCount);
             foreach (TEdge edge in graph.Edges)
-                distances[edge] = graph.OutDegree(edge.Source) + 1;
+                distances[edge] = graph.OutDegree(edge.Source) + 1 ?? Double.PositiveInfinity;
 
-            var algorithm = new DijkstraShortestPathAlgorithm<TVertex, TEdge>(
-                graph,
-                e => distances[e]);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(e => distances[e]);
 
             algorithm.InitializeVertex += vertex =>
             {
@@ -81,16 +79,16 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void Constructor()
         {
-            Func<Edge<int>, double> Weights = _ => 1.0;
+            Func<IEdge<int>, double> Weights = _ => 1.0;
 
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, Weights);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(Weights);
             AssertAlgorithmProperties(algorithm, graph, Weights);
 
-            algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, Weights, DistanceRelaxers.CriticalDistance);
+            algorithm = graph.CreateDijkstraShortestPathAlgorithm(Weights, DistanceRelaxers.CriticalDistance);
             AssertAlgorithmProperties(algorithm, graph, Weights, DistanceRelaxers.CriticalDistance);
 
-            algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, graph, Weights, DistanceRelaxers.CriticalDistance);
+            algorithm = graph.CreateDijkstraShortestPathAlgorithm(Weights, DistanceRelaxers.CriticalDistance, null);
             AssertAlgorithmProperties(algorithm, graph, Weights, DistanceRelaxers.CriticalDistance);
 
             #region Local function
@@ -102,7 +100,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
                 IDistanceRelaxer relaxer = null)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 Assert.IsNull(algo.VerticesColors);
                 if (eWeights is null)
                     Assert.IsNotNull(algo.Weights);
@@ -123,46 +121,29 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            AdjacencyGraph<int, IEdge<int>> graph = new (), nullGraph = null;
 
-            Func<Edge<int>, double> Weights = _ => 1.0;
+            Func<IEdge<int>, double> Weights = _ => 1.0;
 
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, Weights));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(Weights));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateDijkstraShortestPathAlgorithm(null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(null));
 
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, Weights, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, null, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, Weights, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, Weights, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(Weights, DistanceRelaxers.CriticalDistance));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateDijkstraShortestPathAlgorithm(null, DistanceRelaxers.CriticalDistance));
+            _ = graph.CreateDijkstraShortestPathAlgorithm(Weights, null);
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(null, DistanceRelaxers.CriticalDistance));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(Weights, null));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateDijkstraShortestPathAlgorithm(null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(null, null));
 
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, Weights, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, graph, null, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, graph, Weights, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, null, DistanceRelaxers.CriticalDistance));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, Weights, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, graph, null, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(Weights, DistanceRelaxers.CriticalDistance, null));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateDijkstraShortestPathAlgorithm(null, DistanceRelaxers.CriticalDistance, null));
+            _ = graph.CreateDijkstraShortestPathAlgorithm(Weights, null, null);
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(null, DistanceRelaxers.CriticalDistance, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(Weights, null, null));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateDijkstraShortestPathAlgorithm(null, null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateDijkstraShortestPathAlgorithm(null, null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -172,59 +153,59 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void TryGetRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
             TryGetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
             SetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex_Throws()
         {
-            var graph = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
-            var algorithm = new DijkstraShortestPathAlgorithm<TestVertex, Edge<TestVertex>>(graph, _ => 1.0);
-            SetRootVertex_Throws_Test(algorithm);
+            var graph = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
+            SetRootVertex_Null_Should_Throw_ArgumentNullException(algorithm);
         }
 
         [Test]
         public void ClearRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0);
-            ClearRootVertex_Test(algorithm);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
+            ClearRootVertex_RaisesVertexChanged_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithoutRoot_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            ComputeWithoutRoot_NoThrows_Test(
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            ComputeWithoutRoot_ShouldNotThrow_Test(
                 graph,
-                () => new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0));
+                () => graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0));
         }
 
         [Test]
         public void ComputeWithRoot()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             graph.AddVertex(0);
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
             ComputeWithRoot_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithRoot_Throws()
         {
-            var graph = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
-            ComputeWithRoot_Throws_Test(
-                () => new DijkstraShortestPathAlgorithm<TestVertex, Edge<TestVertex>>(graph, _ => 1.0));
+            var graph = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
+            ComputeWithUnknownRootOrNull_Throws_Test(
+                () => graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0));
         }
 
         #endregion
@@ -232,42 +213,37 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void GetVertexColor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdge(new Edge<int>(1, 2));
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdge(Edge.Create(1, 2));
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1.0);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1.0);
             algorithm.Compute(1);
 
             Assert.AreEqual(GraphColor.Black, algorithm.GetVertexColor(1));
             Assert.AreEqual(GraphColor.Black, algorithm.GetVertexColor(2));
         }
 
-        [Test]
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_SlowTests), new object[] { -1 })]
         [Category(TestCategories.LongRunning)]
-        public void Dijkstra()
+        public void Dijkstra(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_SlowTests())
-            {
-                foreach (string root in graph.Vertices)
-                    RunDijkstraAndCheck(graph, root);
-            }
+            foreach (string root in graph.Vertices)
+                RunDijkstraAndCheck(graph, root);
         }
 
         [Test]
         public void Dijkstra_Throws()
         {
-            var edge12 = new Edge<int>(1, 2);
-            var edge23 = new Edge<int>(2, 3);
-            var edge34 = new Edge<int>(3, 4);
+            var edge12 = Edge.Create(1, 2);
+            var edge23 = Edge.Create(2, 3);
+            var edge34 = Edge.Create(3, 4);
 
-            var negativeWeightGraph = new AdjacencyGraph<int, Edge<int>>();
-            negativeWeightGraph.AddVerticesAndEdgeRange(new[]
-            {
+            var negativeWeightGraph = new AdjacencyGraph<int, IEdge<int>>();
+            negativeWeightGraph.AddVerticesAndEdgeRange(
                 edge12, edge23, edge34
-            });
+            );
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(
-                negativeWeightGraph,
+            var algorithm = negativeWeightGraph.CreateDijkstraShortestPathAlgorithm(
                 e =>
                 {
                     if (e == edge12)
@@ -284,7 +260,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void DijkstraSimpleGraph()
         {
-            var graph = new AdjacencyGraph<string, Edge<string>>(true);
+            var graph = new AdjacencyGraph<string, IEdge<string>>(true);
 
             // Add some vertices to the graph
             graph.AddVertex("A");
@@ -295,11 +271,11 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
             // Create the edges
             // ReSharper disable InconsistentNaming
-            var a_b = new Edge<string>("A", "B");
-            var a_c = new Edge<string>("A", "C");
-            var b_e = new Edge<string>("B", "E");
-            var c_d = new Edge<string>("C", "D");
-            var d_e = new Edge<string>("D", "E");
+            var a_b = Edge.Create("A", "B");
+            var a_c = Edge.Create("A", "C");
+            var b_e = Edge.Create("B", "E");
+            var c_d = Edge.Create("C", "D");
+            var d_e = Edge.Create("D", "E");
             // ReSharper restore InconsistentNaming
 
             // Add edges to the graph
@@ -310,7 +286,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             graph.AddEdge(b_e);
 
             // Define some weights to the edges
-            var weight = new Dictionary<Edge<string>, double>(graph.EdgeCount)
+            var weight = new Dictionary<IEdge<string>, double>(graph.EdgeCount)
             {
                 [a_b] = 30,
                 [a_c] = 30,
@@ -319,10 +295,10 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
                 [d_e] = 4
             };
 
-            var algorithm = new DijkstraShortestPathAlgorithm<string, Edge<string>>(graph, e => weight[e]);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(e => weight[e]);
 
             // Attach a Vertex Predecessor Recorder Observer to give us the paths
-            var predecessorObserver = new VertexPredecessorRecorderObserver<string, Edge<string>>();
+            var predecessorObserver = new VertexPredecessorRecorderObserver<string, IEdge<string>>();
             using (predecessorObserver.Attach(algorithm))
                 // Run the algorithm with A set to be the source
                 algorithm.Compute("A");
@@ -333,8 +309,8 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void DijkstraSimpleGraph2()
         {
-            var graph = new AdjacencyGraph<char, Edge<char>>();
-            var distances = new Dictionary<Edge<char>, double>();
+            var graph = new AdjacencyGraph<char, IEdge<char>>();
+            var distances = new Dictionary<IEdge<char>, double>();
 
             graph.AddVertexRange("ABCDE");
             AddEdge('A', 'C', 1);
@@ -347,8 +323,8 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             AddEdge('E', 'A', 1);
             AddEdge('E', 'B', 1);
 
-            var algorithm = new DijkstraShortestPathAlgorithm<char, Edge<char>>(graph, AlgorithmExtensions.GetIndexer(distances));
-            var predecessors = new VertexPredecessorRecorderObserver<char, Edge<char>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(AlgorithmExtensions.GetIndexer(distances));
+            var predecessors = new VertexPredecessorRecorderObserver<char, IEdge<char>>();
             using (predecessors.Attach(algorithm))
                 algorithm.Compute('A');
 
@@ -362,7 +338,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
             void AddEdge(char source, char target, double weight)
             {
-                var edge = new Edge<char>(source, target);
+                var edge = Edge.Create(source, target);
                 distances[edge] = weight;
                 graph.AddEdge(edge);
             }
@@ -370,11 +346,12 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             #endregion
         }
 
+        /// <summary> This Test is very slow (18.2s) </summary>
         [Test]
         [Category(TestCategories.CISkip)]
         public void DijkstraRepro12359()
         {
-            AdjacencyGraph<string, Edge<string>> graph = TestGraphFactory.LoadGraph(GetGraphFilePath("repro12359.graphml"));
+            var graph = TestGraphFactory.LoadGraph(GetGraphFilePath("repro12359.graphml"));
             int cut = 0;
             foreach (string root in graph.Vertices)
             {
@@ -387,15 +364,15 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void LineGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>(true);
+            var graph = new AdjacencyGraph<int, IEdge<int>>(true);
             graph.AddVertex(1);
             graph.AddVertex(2);
             graph.AddVertex(3);
 
-            graph.AddEdge(new Edge<int>(1, 2));
-            graph.AddEdge(new Edge<int>(2, 3));
+            graph.AddEdge(Edge.Create(1, 2));
+            graph.AddEdge(Edge.Create(2, 3));
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1);
             algorithm.Compute(1);
 
             Assert.AreEqual(0d, algorithm.GetDistance(1));
@@ -406,25 +383,25 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void PredecessorsLineGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>(true);
+            var graph = new AdjacencyGraph<int, IEdge<int>>(true);
             graph.AddVertex(1);
             graph.AddVertex(2);
             graph.AddVertex(3);
 
-            var e12 = new Edge<int>(1, 2); graph.AddEdge(e12);
-            var e23 = new Edge<int>(2, 3); graph.AddEdge(e23);
+            var e12 = Edge.Create(1, 2); graph.AddEdge(e12);
+            var e23 = Edge.Create(2, 3); graph.AddEdge(e23);
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1);
-            var vis = new VertexPredecessorRecorderObserver<int, Edge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1);
+            var vis = new VertexPredecessorRecorderObserver<int, IEdge<int>>();
             using (vis.Attach(algorithm))
                 algorithm.Compute(1);
 
-            Assert.IsTrue(vis.TryGetPath(2, out IEnumerable<Edge<int>> path));
-            Edge<int>[] pathArray = path.ToArray();
+            var path = vis.GetPath(2);
+            IEdge<int>[] pathArray = path.ToArray();
             Assert.AreEqual(1, pathArray.Length);
             Assert.AreEqual(e12, pathArray[0]);
 
-            Assert.IsTrue(vis.TryGetPath(3, out path));
+            path = vis.GetPath(3);
             pathArray = path.ToArray();
             Assert.AreEqual(2, pathArray.Length);
             Assert.AreEqual(e12, pathArray[0]);
@@ -434,16 +411,16 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void DoubleLineGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>(true);
+            var graph = new AdjacencyGraph<int, IEdge<int>>(true);
             graph.AddVertex(1);
             graph.AddVertex(2);
             graph.AddVertex(3);
 
-            var e12 = new Edge<int>(1, 2); graph.AddEdge(e12);
-            var e23 = new Edge<int>(2, 3); graph.AddEdge(e23);
-            var e13 = new Edge<int>(1, 3); graph.AddEdge(e13);
+            var e12 = Edge.Create(1, 2); graph.AddEdge(e12);
+            var e23 = Edge.Create(2, 3); graph.AddEdge(e23);
+            var e13 = Edge.Create(1, 3); graph.AddEdge(e13);
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1);
             algorithm.Compute(1);
 
             Assert.AreEqual(0.0, algorithm.GetDistance(1));
@@ -454,51 +431,51 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
         [Test]
         public void PredecessorsDoubleLineGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>(true);
+            var graph = new AdjacencyGraph<int, IEdge<int>>(true);
             graph.AddVertex(1);
             graph.AddVertex(2);
             graph.AddVertex(3);
 
-            var e12 = new Edge<int>(1, 2); graph.AddEdge(e12);
-            var e23 = new Edge<int>(2, 3); graph.AddEdge(e23);
-            var e13 = new Edge<int>(1, 3); graph.AddEdge(e13);
+            var e12 = Edge.Create(1, 2); graph.AddEdge(e12);
+            var e23 = Edge.Create(2, 3); graph.AddEdge(e23);
+            var e13 = Edge.Create(1, 3); graph.AddEdge(e13);
 
-            var algorithm = new DijkstraShortestPathAlgorithm<int, Edge<int>>(graph, _ => 1);
-            var vis = new VertexPredecessorRecorderObserver<int, Edge<int>>();
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(_ => 1);
+            var vis = new VertexPredecessorRecorderObserver<int, IEdge<int>>();
             using (vis.Attach(algorithm))
                 algorithm.Compute(1);
 
-            Assert.IsTrue(vis.TryGetPath(2, out IEnumerable<Edge<int>> path));
-            Edge<int>[] pathArray = path.ToArray();
+            var path = vis.GetPath(2);
+            IEdge<int>[] pathArray = path.ToArray();
             Assert.AreEqual(1, pathArray.Length);
             Assert.AreEqual(e12, pathArray[0]);
 
-            Assert.IsTrue(vis.TryGetPath(3, out path));
+            path = vis.GetPath(3);
             pathArray = path.ToArray();
             Assert.AreEqual(1, pathArray.Length);
             Assert.AreEqual(e13, pathArray[0]);
         }
 
         [Test]
-        [Category(TestCategories.Verbose)]
+        [Category(TestCategories.VerboseTest)]
         public void Scenario()
         {
             Assert.DoesNotThrow(() =>
             {
-                AdjacencyGraph<string, Edge<string>> graph = CreateGraph(out Dictionary<Edge<string>, double> edgeCosts);
+                var graph = CreateGraph(out var edgeCosts);
 
                 // Run Dijkstra on this graph
-                var dijkstra = new DijkstraShortestPathAlgorithm<string, Edge<string>>(graph, e => edgeCosts[e]);
+                var dijkstra = graph.CreateDijkstraShortestPathAlgorithm(e => edgeCosts[e]);
 
                 // Attach a Vertex Predecessor Recorder Observer to give us the paths
-                var predecessorObserver = new VertexPredecessorRecorderObserver<string, Edge<string>>();
+                var predecessorObserver = new VertexPredecessorRecorderObserver<string, IEdge<string>>();
                 using (predecessorObserver.Attach(dijkstra))
                 {
                     // Run the algorithm with A as source
                     dijkstra.Compute("A");
                 }
 
-                foreach (KeyValuePair<string, Edge<string>> pair in predecessorObserver.VerticesPredecessors)
+                foreach (KeyValuePair<string, IEdge<string>> pair in predecessorObserver.VerticesPredecessors)
                 {
                     Console.WriteLine($"If you want to get to {pair.Key} you have to enter through the in edge {pair.Value}.");
                 }
@@ -515,9 +492,9 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
             #region Local function
 
-            AdjacencyGraph<string, Edge<string>> CreateGraph(out Dictionary<Edge<string>, double> costs)
+            AdjacencyGraph<string, IEdge<string>> CreateGraph(out Dictionary<IEdge<string>, double> costs)
             {
-                var g = new AdjacencyGraph<string, Edge<string>>(true);
+                var g = new AdjacencyGraph<string, IEdge<string>>(true);
 
                 // Add some vertices to the graph
                 g.AddVertex("A");
@@ -533,29 +510,29 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
                 // Create the edges
                 // ReSharper disable InconsistentNaming
-                var a_b = new Edge<string>("A", "B");
-                var a_d = new Edge<string>("A", "D");
-                var b_a = new Edge<string>("B", "A");
-                var b_c = new Edge<string>("B", "C");
-                var b_e = new Edge<string>("B", "E");
-                var c_b = new Edge<string>("C", "B");
-                var c_f = new Edge<string>("C", "F");
-                var c_j = new Edge<string>("C", "J");
-                var d_e = new Edge<string>("D", "E");
-                var d_g = new Edge<string>("D", "G");
-                var e_d = new Edge<string>("E", "D");
-                var e_f = new Edge<string>("E", "F");
-                var e_h = new Edge<string>("E", "H");
-                var f_i = new Edge<string>("F", "I");
-                var f_j = new Edge<string>("F", "J");
-                var g_d = new Edge<string>("G", "D");
-                var g_h = new Edge<string>("G", "H");
-                var h_g = new Edge<string>("H", "G");
-                var h_i = new Edge<string>("H", "I");
-                var i_f = new Edge<string>("I", "F");
-                var i_j = new Edge<string>("I", "J");
-                var i_h = new Edge<string>("I", "H");
-                var j_f = new Edge<string>("J", "F");
+                var a_b = Edge.Create("A", "B");
+                var a_d = Edge.Create("A", "D");
+                var b_a = Edge.Create("B", "A");
+                var b_c = Edge.Create("B", "C");
+                var b_e = Edge.Create("B", "E");
+                var c_b = Edge.Create("C", "B");
+                var c_f = Edge.Create("C", "F");
+                var c_j = Edge.Create("C", "J");
+                var d_e = Edge.Create("D", "E");
+                var d_g = Edge.Create("D", "G");
+                var e_d = Edge.Create("E", "D");
+                var e_f = Edge.Create("E", "F");
+                var e_h = Edge.Create("E", "H");
+                var f_i = Edge.Create("F", "I");
+                var f_j = Edge.Create("F", "J");
+                var g_d = Edge.Create("G", "D");
+                var g_h = Edge.Create("G", "H");
+                var h_g = Edge.Create("H", "G");
+                var h_i = Edge.Create("H", "I");
+                var i_f = Edge.Create("I", "F");
+                var i_j = Edge.Create("I", "J");
+                var i_h = Edge.Create("I", "H");
+                var j_f = Edge.Create("J", "F");
                 // ReSharper restore InconsistentNaming
 
                 // Add the edges
@@ -584,7 +561,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
                 g.AddEdge(j_f);
 
                 // Define some weights to the edges
-                costs = new Dictionary<Edge<string>, double>(g.EdgeCount)
+                costs = new Dictionary<IEdge<string>, double>(g.EdgeCount)
                 {
                     [a_b] = 4,
                     [a_d] = 1,
@@ -619,15 +596,15 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
         [Pure]
         [NotNull]
-        public static DijkstraShortestPathAlgorithm<T, Edge<T>> CreateAlgorithmAndMaybeDoComputation<T>(
+        public static DijkstraShortestPathAlgorithm<T, IEdge<T>> CreateAlgorithmAndMaybeDoComputation<T>(
             [NotNull] ContractScenario<T> scenario)
         {
-            var graph = new AdjacencyGraph<T, Edge<T>>();
-            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(e => new Edge<T>(e.Source, e.Target)));
+            var graph = new AdjacencyGraph<T, IEdge<T>>();
+            graph.AddVerticesAndEdgeRange(scenario.EdgesInGraph.Select(Edge.Create));
             graph.AddVertexRange(scenario.SingleVerticesInGraph);
 
-            double Weights(Edge<T> e) => 1.0;
-            var algorithm = new DijkstraShortestPathAlgorithm<T, Edge<T>>(graph, Weights);
+            double Weights(IEdge<T> e) => 1.0;
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(Weights);
 
             if (scenario.DoComputation)
                 algorithm.Compute(scenario.Root);

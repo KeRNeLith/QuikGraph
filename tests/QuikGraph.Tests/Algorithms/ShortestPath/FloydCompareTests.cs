@@ -26,6 +26,7 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             Assert.AreEqual(target, edges[edges.Length - 1].Target);
         }
 
+        /// <summary> Compares the <paramref name="shortestPathAlgorithmFactory"/> Results with the <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> </summary>
         private static void CompareAlgorithms<TVertex, TEdge, TGraph>(
             [NotNull] AdjacencyGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> getDistances,
@@ -34,48 +35,51 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
             where TGraph : IVertexSet<TVertex>
         {
             // Compute all paths
-            var algorithm = new FloydWarshallAllShortestPathAlgorithm<TVertex, TEdge>(graph, getDistances);
+            var algorithm = graph.CreateFloydWarshallAllShortestPathAlgorithm(getDistances);
             algorithm.Compute();
 
             TVertex[] vertices = graph.Vertices.ToArray();
             foreach (TVertex source in vertices)
             {
-                ShortestPathAlgorithmBase<TVertex, TEdge, TGraph> otherAlgorithm = shortestPathAlgorithmFactory(graph, getDistances);
+                var otherAlgorithm = shortestPathAlgorithmFactory(graph, getDistances);
                 var predecessors = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
                 using (predecessors.Attach(otherAlgorithm))
                     otherAlgorithm.Compute(source);
 
-                TryFunc<TVertex, IEnumerable<TEdge>> otherPaths = predecessors.TryGetPath;
+                Func<TVertex, List<TEdge>> otherPaths = predecessors.GetPath;
                 foreach (TVertex target in vertices)
                 {
                     if (source.Equals(target))
                         continue;
 
-                    bool pathExists = algorithm.TryGetPath(source, target, out IEnumerable<TEdge> floydPath);
-                    Assert.AreEqual(pathExists, otherPaths(target, out IEnumerable<TEdge> otherPath));
+                    IEnumerable<TEdge> floydPath = algorithm.GetPath(source, target);
+                    List<TEdge> otherPath = otherPaths(target);
+                    Assert.AreEqual(floydPath == null, otherPath == null);
 
-                    if (pathExists)
+                    if (floydPath == null)
                     {
-                        TEdge[] floydEdges = floydPath.ToArray();
-                        CheckPath(source, target, floydEdges);
+                        continue;
+                    }
 
-                        TEdge[] otherEdges = otherPath.ToArray();
-                        CheckPath(source, target, otherEdges);
+                    TEdge[] floydEdges = floydPath.ToArray();
+                    CheckPath(source, target, floydEdges);
 
-                        // All distances are usually 1 in this test, so it should at least
-                        // be the same number
-                        if (otherEdges.Length != floydEdges.Length)
-                        {
-                            Assert.Fail("Path do not have the same length.");
-                        }
+                    TEdge[] otherEdges = otherPath.ToArray();
+                    CheckPath(source, target, otherEdges);
 
-                        // Check path length are the same
-                        double floydLength = floydEdges.Sum(getDistances);
-                        double otherLength = otherEdges.Sum(getDistances);
-                        if (Math.Abs(floydLength - otherLength) > double.Epsilon)
-                        {
-                            Assert.Fail("Path do not have the same length.");
-                        }
+                    // All distances are usually 1 in this test,
+                    // so it should at least be the same number
+                    if (otherEdges.Length != floydEdges.Length)
+                    {
+                        Assert.Fail("Path do not have the same length.");
+                    }
+
+                    // Check path length are the same
+                    double floydLength = floydEdges.Sum(getDistances);
+                    double otherLength = otherEdges.Sum(getDistances);
+                    if (Math.Abs(floydLength - otherLength) > double.Epsilon)
+                    {
+                        Assert.Fail("Path do not have the same length.");
                     }
                 }
             }
@@ -83,28 +87,29 @@ namespace QuikGraph.Tests.Algorithms.ShortestPath
 
         #endregion
 
-        [Test]
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_SlowTests), new object[] { -1 })]
         [Category(TestCategories.LongRunning)]
-        public void FloydVsBellmannGraphML()
+        public void FloydVsBellmannGraphML(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_SlowTests())
-                CompareAlgorithms(graph, _ => 1.0, (g, d) => new BellmanFordShortestPathAlgorithm<string, Edge<string>>(g, d));
+            CompareAlgorithms(graph, _ => 1.0, (g, d)
+                => g.CreateBellmanFordShortestPathAlgorithm(d));
         }
 
         [Test]
         public void FloydVsDijkstra()
         {
-            var distances = new Dictionary<Edge<char>, double>();
-            AdjacencyGraph<char, Edge<char>> graph = CreateGraph(distances);
-            CompareAlgorithms(graph, e => distances[e], (g, d) => new DijkstraShortestPathAlgorithm<char, Edge<char>>(g, d));
+            var distances = new Dictionary<IEdge<char>, double>();
+            var graph = CreateGraph(distances);
+            CompareAlgorithms(graph, e => distances[e], (g, d)
+                => g.CreateDijkstraShortestPathAlgorithm(d));
         }
 
-        [Test]
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_SlowTests), new object[] { -1 })]
         [Category(TestCategories.LongRunning)]
-        public void FloydVsDijkstraGraphML()
+        public void FloydVsDijkstraGraphML(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_SlowTests())
-                CompareAlgorithms(graph, _ => 1, (g, d) => new DijkstraShortestPathAlgorithm<string, Edge<string>>(g, d));
+            CompareAlgorithms(graph, _ => 1, (g, d)
+                => g.CreateDijkstraShortestPathAlgorithm(d));
         }
     }
 }

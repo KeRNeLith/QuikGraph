@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using NUnit.Framework;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+using QuikGraph.Tests.Algorithms;
+
 
 namespace QuikGraph.MSAGL.Tests
 {
@@ -38,21 +39,21 @@ namespace QuikGraph.MSAGL.Tests
         public void Constructor()
         {
             var formatProvider = new NullVertexTestFormatProvider();
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph);
             AssertPopulatorProperties(populator, graph);
 
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, formatProvider: formatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, formatProvider: formatProvider);
             AssertPopulatorProperties(populator, graph, provider: formatProvider);
             
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, "Format {0}");
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, "Format {0}");
             AssertPopulatorProperties(populator, graph, "Format {0}");
 
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, "Format2 {0}", formatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, "Format2 {0}", formatProvider);
             AssertPopulatorProperties(populator, graph, "Format2 {0}",formatProvider);
 
-            var undirectedGraph = new UndirectedGraph<int, Edge<int>>();
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(undirectedGraph);
+            var undirectedGraph = new UndirectedGraph<int, IEdge<int>>();
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(undirectedGraph);
             AssertPopulatorProperties(populator, undirectedGraph);
 
             #region Local function
@@ -64,7 +65,7 @@ namespace QuikGraph.MSAGL.Tests
                 IFormatProvider provider = null)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(p, g);
+                p.AssertAlgorithmState(g);
                 Assert.IsNull(p.MsaglGraph);
                 Assert.AreEqual(f ?? "{0}", p.Format);
                 if (provider is null)
@@ -86,19 +87,19 @@ namespace QuikGraph.MSAGL.Tests
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new MsaglToStringGraphPopulator<int, Edge<int>>(null));
+                () => new MsaglToStringGraphPopulator<int, IEdge<int>>(null));
         }
 
         [Test]
         public void Compute()
         {
-            Compute_Test(graph => new MsaglToStringGraphPopulator<int, Edge<int>>(graph));
+            Compute_Test(graph => new MsaglToStringGraphPopulator<int, IEdge<int>>(graph));
         }
 
         [Test]
         public void Handlers()
         {
-            Handlers_Test(graph => new MsaglToStringGraphPopulator<int, Edge<int>>(graph));
+            Handlers_Test(graph => new MsaglToStringGraphPopulator<int, IEdge<int>>(graph));
         }
 
         [Test]
@@ -106,16 +107,15 @@ namespace QuikGraph.MSAGL.Tests
         {
             var nullFormatProvider = new NullVertexTestFormatProvider();
             var formatProvider = new VertexTestFormatProvider();
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3)
-            });
-            graph.AddVertexRange(new[] { 5, 6 });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3)
+            );
+            graph.AddVertexRange( 5, 6 );
 
             // No special format
-            var populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph);
+            var populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph);
             populator.Compute();
 
             // Check vertices has been well formatted
@@ -124,7 +124,7 @@ namespace QuikGraph.MSAGL.Tests
 
 
             // No special format (2)
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, formatProvider: nullFormatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, formatProvider: nullFormatProvider);
             populator.Compute();
 
             // Check vertices has been well formatted
@@ -134,7 +134,7 @@ namespace QuikGraph.MSAGL.Tests
 
 
             // With special format
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, "MyTestFormat {0} Vertex");
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, "MyTestFormat {0} Vertex");
             populator.Compute();
 
             // Check vertices has been well formatted
@@ -143,7 +143,7 @@ namespace QuikGraph.MSAGL.Tests
 
 
             // With special format (2)
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, "MyTestFormat {0} Vertex", nullFormatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, "MyTestFormat {0} Vertex", nullFormatProvider);
             populator.Compute();
 
             // Check vertices has been well formatted
@@ -152,7 +152,7 @@ namespace QuikGraph.MSAGL.Tests
 
 
             // With special format (3)
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, formatProvider: formatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, formatProvider: formatProvider);
             populator.Compute();
 
             // Check vertices has been well formatted
@@ -161,7 +161,7 @@ namespace QuikGraph.MSAGL.Tests
 
 
             // With special format (4)
-            populator = new MsaglToStringGraphPopulator<int, Edge<int>>(graph, "MyTestFormat {0} Vertex", formatProvider);
+            populator = new MsaglToStringGraphPopulator<int, IEdge<int>>(graph, "MyTestFormat {0} Vertex", formatProvider);
             populator.Compute();
 
             // Check vertices has been well formatted

@@ -16,7 +16,7 @@ namespace QuikGraph
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateVertexAndEdgeListGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="DelegateVertexAndEdgeListGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="vertices">Graph vertices.</param>
         /// <param name="tryGetOutEdges">Getter of out-edges.</param>
@@ -29,7 +29,7 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetOutEdges"/> is <see langword="null"/>.</exception>
         public DelegateVertexAndEdgeListGraph(
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
             bool allowParallelEdges = true)
             : base(tryGetOutEdges, allowParallelEdges)
         {
@@ -61,7 +61,7 @@ namespace QuikGraph
             {
                 if (VertexCount == 0)
                     return true; // No vertex => must be empty 
-                return _vertices.All(vertex => !OutEdges(vertex).Any());
+                return _vertices.All(vertex => !OutEdges(vertex)?.Any() ?? true);
             }
         }
 
@@ -71,17 +71,20 @@ namespace QuikGraph
         /// <inheritdoc />
         public virtual IEnumerable<TEdge> Edges =>
             _vertices.SelectMany(
-                vertex => OutEdges(vertex).Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Source, vertex)));
+                vertex => OutEdges(vertex)?.Where(outEdge => AreVerticesEqual(outEdge.Source, vertex)));
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)
         {
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
+            var outEdges = OutEdges(edge.Source);
+            if (outEdges == null)
+            {
+                return false;
+            }
 
-            if (TryGetOutEdges(edge.Source, out IEnumerable<TEdge> outEdges))
-                return outEdges.Any(outEdge => EqualityComparer<TEdge>.Default.Equals(outEdge, edge));
-            return false;
+            return outEdges.Any(outEdge => EqualityComparer<TEdge>.Default.Equals(outEdge, edge));
         }
 
         #endregion
@@ -98,7 +101,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _vertices.Any(v => EqualityComparer<TVertex>.Default.Equals(vertex, v));
+            return _vertices.Any(v => AreVerticesEqual(vertex, v));
         }
 
         #endregion
@@ -107,7 +110,7 @@ namespace QuikGraph
 
         private bool FilterEdges([NotNull] TEdge edge, [NotNull] TVertex vertex)
         {
-            return IsInGraph(edge, vertex) && EqualityComparer<TVertex>.Default.Equals(edge.Source, vertex);
+            return IsInGraph(edge, vertex) && AreVerticesEqual(edge.Source, vertex);
         }
 
         /// <summary>
@@ -122,7 +125,7 @@ namespace QuikGraph
             Debug.Assert(edge != null);
             Debug.Assert(vertex != null);
 
-            return ContainsVertexInternal(edge.GetOtherVertex(vertex));
+            return ContainsVertexInternal(edge.GetOtherVertex(vertex, AreVerticesEqual));
         }
 
         // Should override parent implementation since the provided delegate
@@ -144,28 +147,9 @@ namespace QuikGraph
         internal override IEnumerable<TEdge> OutEdgesInternal(TVertex vertex)
         {
             if (!ContainsVertexInternal(vertex))
-                throw new VertexNotFoundException();
-            return base.OutEdgesInternal(vertex).Where(outEdge => FilterEdges(outEdge, vertex));
-        }
+                return null;
 
-        /// <inheritdoc />
-        internal override bool TryGetOutEdgesInternal(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (!ContainsVertexInternal(vertex))
-            {
-                edges = null;
-                return false;
-            }
-
-            // Ignore return because "vertex" exists in the graph
-            // so it should always return true.
-            base.TryGetOutEdgesInternal(vertex, out IEnumerable<TEdge> unfilteredOutEdges);
-
-            edges = unfilteredOutEdges is null
-                ? Enumerable.Empty<TEdge>()
-                : unfilteredOutEdges.Where(outEdge => FilterEdges(outEdge, vertex));
-
-            return true;
+            return base.OutEdgesInternal(vertex)?.Where(outEdge => FilterEdges(outEdge, vertex));
         }
 
         #endregion

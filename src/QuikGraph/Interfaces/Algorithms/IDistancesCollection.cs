@@ -3,15 +3,15 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Represents an object that stores information about distances between vertices.
-    /// </summary>
+    /// <summary> stores distances from a fixed Vertex to other vertices. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
+    /// <remarks>
+    /// Same semantics as <see cref="IReadOnlyDictionary{TVertex, Double}"/>,
+    /// but better Method Names: <see cref="GetDistance"/> instead of see cref="IReadOnlyDictionary{TVertex, Double}.GetValue(TVertex, out Double)"/>
+    /// </remarks>
     public interface IDistancesCollection<TVertex>
     {
-        /// <summary>
-        /// Tries to get the distance associated to the given <paramref name="vertex"/>.
-        /// </summary>
+        /// <summary> Tries to get the distance associated to the given <paramref name="vertex"/>. </summary>
         /// <param name="vertex">The vertex.</param>
         /// <param name="distance">Associated distance.</param>
         /// <returns>True if the distance was found, false otherwise.</returns>
@@ -29,9 +29,7 @@ namespace QuikGraph.Algorithms
         [Pure]
         double GetDistance([NotNull] TVertex vertex);
 
-        /// <summary>
-        /// Gets the distances for all vertices currently known.
-        /// </summary>
+        /// <summary> Gets the distances for all currently known vertices. </summary>
         /// <returns>The <see cref="T:System.Collections.Generic.KeyValuePair{Vertex,Distance}"/> for the known vertices.</returns>
         [Pure]
         [NotNull]

@@ -87,7 +87,7 @@ namespace QuikGraph.Serialization.Tests
                     using (var writer = new StringWriter())
                     {
                         var settings = new XmlWriterSettings { Indent = true };
-                        using (XmlWriter xmlWriter = XmlWriter.Create(writer, settings))
+                        using (var xmlWriter = XmlWriter.Create(writer, settings))
                         {
                             graph.WriteXml(xmlWriter);
                         }
@@ -232,7 +232,7 @@ namespace QuikGraph.Serialization.Tests
                 () => ((DirectedGraph)null).WriteXml(""));
 
             // XML writer
-            using (XmlWriter writer = XmlWriter.Create(WriteThrowsTestFilePath))
+            using (var writer = XmlWriter.Create(WriteThrowsTestFilePath))
             {
                 Assert.Throws<ArgumentNullException>(
                     () => ((DirectedGraph)null).WriteXml(writer));
@@ -266,142 +266,122 @@ namespace QuikGraph.Serialization.Tests
             // ReSharper restore AssignNullToNotNullAttribute
         }
 
-        [Test]
-        public void ToDirectedGraphML()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public void ToDirectedGraphML(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-            {
-                DirectedGraph directedGraph = graph.ToDirectedGraphML();
-                Assert.IsNotNull(graph);
+            DirectedGraph directedGraph = graph.ToDirectedGraphML();
+            Assert.IsNotNull(graph);
 
-                AssertGraphContentEquivalent(graph, directedGraph);
-            }
+            AssertGraphContentEquivalent(graph, directedGraph);
         }
 
-        [Test]
-        public void ToDirectedGraphML_WithIdentity()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public void ToDirectedGraphML_WithIdentity(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-            {
-                int i = 0;
-                DirectedGraph directedGraph = graph.ToDirectedGraphML(
-                    vertex => vertex,
-                    _ => (++i).ToString());
-                Assert.IsNotNull(graph);
+            int i = 0;
+            DirectedGraph directedGraph = graph.ToDirectedGraphML(
+                vertex => vertex,
+                _ => (++i).ToString());
+            Assert.IsNotNull(graph);
 
-                AssertGraphContentEquivalent(graph, directedGraph);
-            }
+            AssertGraphContentEquivalent(graph, directedGraph);
         }
 
-        [Test]
-        public void ToDirectedGraphML_WithColors()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public void ToDirectedGraphML_WithColors(AdjacencyGraph<string, IEdge<string>> graph)
         {
             var random = new Random(123456);
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-            {
-                Dictionary<string, GraphColor> verticesColors = graph.Vertices.ToDictionary(
+            var verticesColors = graph.Vertices.ToDictionary(
                     vertex => vertex,
                     _ => (GraphColor)random.Next(0, 3));
 
-                DirectedGraph directedGraph = graph.ToDirectedGraphML(
-                    vertex =>
-                    {
-                        Assert.IsNotNull(vertex);
-                        return verticesColors[vertex];
-                    });
-                Assert.IsNotNull(graph);
-
-                AssertGraphContentEquivalent(graph, directedGraph);
-
-                foreach (DirectedGraphNode node in directedGraph.Nodes)
+            DirectedGraph directedGraph = graph.ToDirectedGraphML(
+                vertex =>
                 {
-                    Assert.AreEqual(
-                        ColorToStringColor(verticesColors[node.Id]),
-                        node.Background);
-                }
-            }
+                    Assert.IsNotNull(vertex);
+                    return verticesColors[vertex];
+                });
+            Assert.IsNotNull(graph);
 
-            #region Local function
+            AssertGraphContentEquivalent(graph, directedGraph);
+
+            foreach (DirectedGraphNode node in directedGraph.Nodes)
+            {
+                Assert.AreEqual(
+                    ColorToStringColor(verticesColors[node.Id]),
+                    node.Background);
+            }
 
             string ColorToStringColor(GraphColor color)
             {
                 switch (color)
                 {
-                    case GraphColor.Black:
-                        return "Black";
-                    case GraphColor.Gray:
-                        return "LightGray";
-                    case GraphColor.White:
-                        return "White";
-                    default:
-                        Assert.Fail("Unknown color.");
+                    case GraphColor.Black: return "Black";
+                    case GraphColor.Gray: return "LightGray";
+                    case GraphColor.White: return "White";
+                    default: Assert.Fail("Unknown color.");
                         return string.Empty;
                 }
             }
-
-            #endregion
         }
 
-        [Test]
-        public void ToDirectedGraphML_WithFormat()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public void ToDirectedGraphML_WithFormat(AdjacencyGraph<string, IEdge<string>> graph)
         {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-            {
-                int formattedNodes = 0;
-                int formattedEdges = 0;
-                // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
-                DirectedGraph directedGraph = graph.ToDirectedGraphML(
-                    graph.GetVertexIdentity(),
-                    graph.GetEdgeIdentity(),
-                    (vertex, node) =>
-                    {
-                        Assert.IsNotNull(vertex);
-                        Assert.IsNotNull(node);
-                        ++formattedNodes;
-                    },
-                    (edge, link) =>
-                    {
-                        Assert.IsNotNull(edge);
-                        Assert.IsNotNull(link);
-                        ++formattedEdges;
-                    });
-                // ReSharper restore ParameterOnlyUsedForPreconditionCheck.Local
-                Assert.IsNotNull(graph);
+            int formattedNodes = 0;
+            int formattedEdges = 0;
+            // ReSharper disable ParameterOnlyUsedForPreconditionCheck.Local
+            DirectedGraph directedGraph = graph.ToDirectedGraphML(
+                graph.GetVertexIdentity(),
+                graph.GetEdgeIdentity(),
+                (vertex, node) =>
+                {
+                    Assert.IsNotNull(vertex);
+                    Assert.IsNotNull(node);
+                    ++formattedNodes;
+                },
+                (edge, link) =>
+                {
+                    Assert.IsNotNull(edge);
+                    Assert.IsNotNull(link);
+                    ++formattedEdges;
+                });
+            // ReSharper restore ParameterOnlyUsedForPreconditionCheck.Local
+            Assert.IsNotNull(graph);
 
-                Assert.AreEqual(graph.VertexCount, formattedNodes);
-                Assert.AreEqual(graph.EdgeCount, formattedEdges);
-                AssertGraphContentEquivalent(graph, directedGraph);
-            }
+            Assert.AreEqual(graph.VertexCount, formattedNodes);
+            Assert.AreEqual(graph.EdgeCount, formattedEdges);
+            AssertGraphContentEquivalent(graph, directedGraph);
         }
 
         [Test]
         public void ToDirectedGraphML_Throws()
         {
-            var graph = new AdjacencyGraph<string, Edge<string>>();
+            var graph = new AdjacencyGraph<string, IEdge<string>>();
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML());
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML());
 
 
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(_ => GraphColor.Black));
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(_ => GraphColor.Black));
             Assert.Throws<ArgumentNullException>(
                 () => graph.ToDirectedGraphML(null));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(null));
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(null));
 
 
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     vertex => vertex,
                     edge => $"{edge.Source}_{edge.Target}"));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     null,
                     edge => $"{edge.Source}_{edge.Target}"));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     vertex => vertex,
                     null));
             Assert.Throws<ArgumentNullException>(
@@ -409,23 +389,23 @@ namespace QuikGraph.Serialization.Tests
                     null,
                     null));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     null,
                     null));
 
 
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     vertex => vertex,
                     edge => $"{edge.Source}_{edge.Target}",
                     null, null));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     null,
                     edge => $"{edge.Source}_{edge.Target}",
                     null, null));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     vertex => vertex,
                     null,
                     null, null));
@@ -435,7 +415,7 @@ namespace QuikGraph.Serialization.Tests
                     null,
                     null, null));
             Assert.Throws<ArgumentNullException>(
-                () => ((AdjacencyGraph<string, Edge<string>>)null).ToDirectedGraphML(
+                () => ((AdjacencyGraph<string, IEdge<string>>)null).ToDirectedGraphML(
                     null,
                     null,
                     null, null));

@@ -12,7 +12,7 @@ namespace QuikGraph.MSAGL
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MsaglToStringGraphPopulator{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="MsaglToStringGraphPopulator{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to convert to MSAGL graph.</param>
         /// <param name="formatProvider">Graph format provider.</param>

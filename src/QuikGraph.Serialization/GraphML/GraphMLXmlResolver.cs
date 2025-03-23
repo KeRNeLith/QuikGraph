@@ -17,7 +17,7 @@ namespace QuikGraph.Serialization
         private readonly XmlResolver _baseResolver;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphMLXmlResolver"/> class.
+        /// Initializes a new <see cref="GraphMLXmlResolver"/> class.
         /// </summary>
         public GraphMLXmlResolver()
             : this(new XmlUrlResolver())
@@ -25,7 +25,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphMLXmlResolver"/> class.
+        /// Initializes a new <see cref="GraphMLXmlResolver"/> class.
         /// </summary>
         /// <param name="baseResolver">Base XML resolver.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="baseResolver"/> is <see langword="null"/>.</exception>

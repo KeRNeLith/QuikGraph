@@ -11,8 +11,8 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
     internal abstract class GraphAugmentorAlgorithmTestsBase
     {
         protected static void CreateAndSetSuperSource_Test<TGraph>(
-            [NotNull] GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph> algorithm)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>
+            [NotNull] GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph> algorithm)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>
         {
             bool added = false;
             const int superSource = 1;
@@ -28,8 +28,8 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
         }
 
         protected static void CreateAndSetSuperSink_Test<TGraph>(
-            [NotNull] GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph> algorithm)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>
+            [NotNull] GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph> algorithm)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>
         {
             bool added = false;
             const int superSink = 2;
@@ -47,17 +47,17 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
         protected static void RunAugmentation_Test<TGraph>(
             [NotNull, InstantHandle]
             Func<
-                IMutableVertexAndEdgeSet<int, Edge<int>>,
-                GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph>
+                IMutableVertexAndEdgeSet<int, IEdge<int>>,
+                GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph>
             > createAlgorithm,
-            [CanBeNull, InstantHandle] Action<IMutableVertexAndEdgeSet<int, Edge<int>>> setupGraph = null)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>
+            [CanBeNull, InstantHandle] Action<IMutableVertexAndEdgeSet<int, IEdge<int>>> setupGraph = null)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             int vertexCount = graph.VertexCount;
             // Single run
-            GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph> algorithm = createAlgorithm(graph);
+            GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph> algorithm = createAlgorithm(graph);
             Assert.IsFalse(algorithm.Augmented);
             Assert.IsNotNull(algorithm.AugmentedEdges);
             Assert.AreEqual(vertexCount, algorithm.VisitedGraph.VertexCount);
@@ -69,7 +69,7 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.AreEqual(vertexCount + 2, algorithm.VisitedGraph.VertexCount);
 
             // Multiple runs
-            graph = new AdjacencyGraph<int, Edge<int>>();
+            graph = new AdjacencyGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             algorithm = createAlgorithm(graph);
             Assert.IsFalse(algorithm.Augmented);
@@ -95,7 +95,7 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.AreEqual(vertexCount + 2, algorithm.VisitedGraph.VertexCount);
 
             // Disposed algorithm
-            graph = new AdjacencyGraph<int, Edge<int>>();
+            graph = new AdjacencyGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             using (algorithm = createAlgorithm(graph))
             {
@@ -115,17 +115,17 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
         protected static void RunAugmentation_Test<TGraph>(
             [NotNull, InstantHandle]
             Func<
-                IMutableBidirectionalGraph<int, Edge<int>>,
-                GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph>
+                IMutableBidirectionalGraph<int, IEdge<int>>,
+                GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph>
             > createAlgorithm,
-            [CanBeNull, InstantHandle] Action<IMutableBidirectionalGraph<int, Edge<int>>> setupGraph = null)
-            where TGraph : IMutableBidirectionalGraph<int, Edge<int>>
+            [CanBeNull, InstantHandle] Action<IMutableBidirectionalGraph<int, IEdge<int>>> setupGraph = null)
+            where TGraph : IMutableBidirectionalGraph<int, IEdge<int>>
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             int vertexCount = graph.VertexCount;
             // Single run
-            GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph> algorithm = createAlgorithm(graph);
+            GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph> algorithm = createAlgorithm(graph);
             Assert.IsFalse(algorithm.Augmented);
             Assert.IsNotNull(algorithm.AugmentedEdges);
             Assert.AreEqual(vertexCount, algorithm.VisitedGraph.VertexCount);
@@ -137,7 +137,7 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.AreEqual(vertexCount + 2, algorithm.VisitedGraph.VertexCount);
 
             // Multiple runs
-            graph = new BidirectionalGraph<int, Edge<int>>();
+            graph = new BidirectionalGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             algorithm = createAlgorithm(graph);
             Assert.IsFalse(algorithm.Augmented);
@@ -163,7 +163,7 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
             Assert.AreEqual(vertexCount + 2, algorithm.VisitedGraph.VertexCount);
 
             // Disposed algorithm
-            graph = new BidirectionalGraph<int, Edge<int>>();
+            graph = new BidirectionalGraph<int, IEdge<int>>();
             setupGraph?.Invoke(graph);
             using (algorithm = createAlgorithm(graph))
             {
@@ -181,8 +181,8 @@ namespace QuikGraph.Tests.Algorithms.MaximumFlow
         }
 
         protected static void RunAugmentation_Throws_Test<TGraph>(
-            [NotNull, InstantHandle] GraphAugmentorAlgorithmBase<int, Edge<int>, TGraph> algorithm)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>
+            [NotNull, InstantHandle] GraphAugmentorAlgorithmBase<int, IEdge<int>, TGraph> algorithm)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>
         {
             // Multiple runs without clean
             Assert.DoesNotThrow(algorithm.Compute);

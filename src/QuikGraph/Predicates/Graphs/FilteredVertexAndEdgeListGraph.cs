@@ -19,7 +19,7 @@ namespace QuikGraph.Predicates
         where TGraph : IVertexAndEdgeListGraph<TVertex, TEdge>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="FilteredVertexAndEdgeListGraph{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="FilteredVertexAndEdgeListGraph{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
         /// <param name="baseGraph">Graph in which applying predicates.</param>
         /// <param name="vertexPredicate">Predicate to match vertex that should be taken into account.</param>
@@ -29,8 +29,8 @@ namespace QuikGraph.Predicates
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgePredicate"/> is <see langword="null"/>.</exception>
         public FilteredVertexAndEdgeListGraph(
             [NotNull] TGraph baseGraph,
-            [NotNull] VertexPredicate<TVertex> vertexPredicate,
-            [NotNull] EdgePredicate<TVertex, TEdge> edgePredicate)
+            [NotNull] Func<TVertex, bool> vertexPredicate,
+            [NotNull] Func<TEdge, bool> edgePredicate)
             : base(baseGraph, vertexPredicate, edgePredicate)
         {
         }

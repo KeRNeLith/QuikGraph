@@ -5,18 +5,39 @@ using QuikGraph.Algorithms.MaximumFlow;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Algorithm that computes a maximum bipartite matching in a graph, meaning
-    /// the maximum number of edges not sharing any vertex.
+    /// <inheritdoc cref="MaximumBipartiteMatchingAlgorithm{TVertex, TEdge}"/>
+    public static class MaximumBipartiteMatchingAlgorithm
+    {
+        /// <inheritdoc cref="MaximumBipartiteMatchingAlgorithm{TVertex, TEdge}"/>
+        public static MaximumBipartiteMatchingAlgorithm<TVertex, TEdge> ComputeMaximumBipartiteMatching<TVertex, TEdge>(
+            this IMutableVertexAndEdgeListGraph<TVertex, TEdge> graph, TVertex[] vertexSetA, TVertex[] vertexSetB, VertexFactory<TVertex> vertexFactory, EdgeFactory<TVertex, TEdge> edgeFactory) where TEdge : IEdge<TVertex>
+        {
+            MaximumBipartiteMatchingAlgorithm<TVertex, TEdge> maxMatch = CreateMaximumBipartiteMatching(graph, vertexSetA, vertexSetB, vertexFactory, edgeFactory);
+
+            maxMatch.Compute();
+            return maxMatch;
+        }
+
+        /// <inheritdoc cref="MaximumBipartiteMatchingAlgorithm{TVertex, TEdge}"/>
+        public static MaximumBipartiteMatchingAlgorithm<TVertex, TEdge> CreateMaximumBipartiteMatching<TVertex, TEdge>(
+            this IMutableVertexAndEdgeListGraph<TVertex, TEdge> graph, TVertex[] vertexSetA, TVertex[] vertexSetB, VertexFactory<TVertex> vertexFactory, EdgeFactory<TVertex, TEdge> edgeFactory) where TEdge : IEdge<TVertex>
+        {
+            return new MaximumBipartiteMatchingAlgorithm<TVertex, TEdge>(
+                graph,
+                vertexSetA,
+                vertexSetB,
+                vertexFactory,
+                edgeFactory);
+        }
+    }
+
+    /// <summary> Computes a maximum bipartite matching in a graph,
+    /// i.e. the maximum number of edges not sharing any vertex.
     /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
     public sealed class MaximumBipartiteMatchingAlgorithm<TVertex, TEdge> : AlgorithmBase<IMutableVertexAndEdgeListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MaximumBipartiteMatchingAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="MaximumBipartiteMatchingAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="sourceToVertices">Vertices to which creating augmented edge from super source.</param>
         /// <param name="verticesToSink">Vertices from which creating augmented edge to super sink.</param>
@@ -27,7 +48,7 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentNullException"><paramref name="verticesToSink"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        public MaximumBipartiteMatchingAlgorithm(
+        internal MaximumBipartiteMatchingAlgorithm(
             [NotNull] IMutableVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             [NotNull, ItemNotNull] IEnumerable<TVertex> sourceToVertices,
             [NotNull, ItemNotNull] IEnumerable<TVertex> verticesToSink,
@@ -96,32 +117,22 @@ namespace QuikGraph.Algorithms
                 ThrowIfCancellationRequested();
 
                 // Augmenting the graph
-                augmentor = new BipartiteToMaximumFlowGraphAugmentorAlgorithm<TVertex, TEdge>(
-                    this,
-                    VisitedGraph,
+                augmentor = VisitedGraph.ComputeBipartiteToMaximumFlowGraphAugmentorAlgorithm(
                     SourceToVertices,
                     VerticesToSink,
                     VertexFactory,
-                    EdgeFactory);
-                augmentor.Compute();
+                    EdgeFactory, this);
 
                 ThrowIfCancellationRequested();
 
                 // Adding reverse edges
-                reverser = new ReversedEdgeAugmentorAlgorithm<TVertex, TEdge>(
-                    VisitedGraph,
-                    EdgeFactory);
+                reverser = VisitedGraph.CreateReversedEdgeAugmentorAlgorithm(EdgeFactory);
                 reverser.AddReversedEdges();
 
                 ThrowIfCancellationRequested();
 
                 // Compute maximum flow
-                var flow = new EdmondsKarpMaximumFlowAlgorithm<TVertex, TEdge>(
-                    this,
-                    VisitedGraph,
-                    edge => 1.0,
-                    EdgeFactory,
-                    reverser);
+                var flow = VisitedGraph.CreateEdmondsKarpMaximumFlowAlgorithm(edge => 1.0, EdgeFactory, reverser, this);
 
                 flow.Compute(augmentor.SuperSource, augmentor.SuperSink);
 
@@ -131,10 +142,10 @@ namespace QuikGraph.Algorithms
                 {
                     if (Math.Abs(flow.ResidualCapacities[edge]) < float.Epsilon)
                     {
-                        if (EqualityComparer<TVertex>.Default.Equals(edge.Source, augmentor.SuperSource)
-                            || EqualityComparer<TVertex>.Default.Equals(edge.Source, augmentor.SuperSink)
-                            || EqualityComparer<TVertex>.Default.Equals(edge.Target, augmentor.SuperSource)
-                            || EqualityComparer<TVertex>.Default.Equals(edge.Target, augmentor.SuperSink))
+                        if (VisitedGraph.AreVerticesEqual(edge.Source, augmentor.SuperSource)
+                            || VisitedGraph.AreVerticesEqual(edge.Source, augmentor.SuperSink)
+                            || VisitedGraph.AreVerticesEqual(edge.Target, augmentor.SuperSource)
+                            || VisitedGraph.AreVerticesEqual(edge.Target, augmentor.SuperSink))
                         {
                             // Skip all edges that connect to SuperSource or SuperSink
                             continue;

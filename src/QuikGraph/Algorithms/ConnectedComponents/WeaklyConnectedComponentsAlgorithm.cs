@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using JetBrains.Annotations;
@@ -11,6 +10,21 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.ConnectedComponents
 {
+    /// <inheritdoc cref="ComputeWeaklyConnectedComponents"/>
+    public static class WeaklyConnectedComponentsAlgorithm
+    {
+        /// <summary> Computes the <see cref="WeaklyConnectedComponentsAlgorithm{TVertex,TEdge}"/> </summary>
+        public static WeaklyConnectedComponentsAlgorithm<TVertex, TEdge> ComputeWeaklyConnectedComponents<TVertex, TEdge>([NotNull] this IVertexListGraph<TVertex, TEdge> visitedGraph
+            , [CanBeNull] IDictionary<TVertex, int> collectComponents = null, [CanBeNull] IAlgorithmComponent host = null)
+            where TEdge : IEdge<TVertex>
+        {
+            var algorithm = new WeaklyConnectedComponentsAlgorithm<TVertex, TEdge>(visitedGraph, collectComponents, host);
+            algorithm.Compute();
+            return algorithm;
+        }
+    }
+
+
     /// <summary>
     /// Algorithm that computes weakly connected components of a graph.
     /// </summary>
@@ -32,45 +46,18 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         private int _currentComponent;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="WeaklyConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public WeaklyConnectedComponentsAlgorithm(
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph)
-            : this(visitedGraph, new Dictionary<TVertex, int>())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WeaklyConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="WeaklyConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="components">Graph components.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
-        public WeaklyConnectedComponentsAlgorithm(
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TVertex, int> components)
-            : this(null, visitedGraph, components)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WeaklyConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="components">Graph components.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
-        public WeaklyConnectedComponentsAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TVertex, int> components)
-            : base(host, visitedGraph)
+        internal WeaklyConnectedComponentsAlgorithm([NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IDictionary<TVertex, int> components = null, [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
-            Components = components ?? throw new ArgumentNullException(nameof(components));
+            ComponentIndex = components ?? new Dictionary<TVertex, int>(visitedGraph.VertexCount);
         }
 
         [ItemNotNull]
@@ -90,9 +77,9 @@ namespace QuikGraph.Algorithms.ConnectedComponents
                     _graphs[i] = new BidirectionalGraph<TVertex, TEdge>();
                 }
 
-                foreach (TVertex componentName in Components.Keys)
+                foreach (TVertex componentName in ComponentIndex.Keys)
                 {
-                    _graphs[Components[componentName]].AddVertex(componentName);
+                    _graphs[ComponentIndex[componentName]].AddVertex(componentName);
                 }
 
                 foreach (TVertex vertex in VisitedGraph.Vertices)
@@ -100,9 +87,9 @@ namespace QuikGraph.Algorithms.ConnectedComponents
                     foreach (TEdge edge in VisitedGraph.OutEdges(vertex))
                     {
 
-                        if (Components[vertex] == Components[edge.Target])
+                        if (ComponentIndex[vertex] == ComponentIndex[edge.Target])
                         {
-                            _graphs[Components[vertex]].AddEdge(edge);
+                            _graphs[ComponentIndex[vertex]].AddEdge(edge);
                         }
                     }
                 }
@@ -119,7 +106,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             ComponentCount = 0;
             _currentComponent = 0;
             _componentEquivalences.Clear();
-            Components.Clear();
+            ComponentIndex.Clear();
         }
 
         /// <inheritdoc />
@@ -129,7 +116,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             if (VisitedGraph.IsVerticesEmpty)
                 return;
 
-            var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(VisitedGraph);
+            var dfs = VisitedGraph.CreateDepthFirstSearchAlgorithm();
             try
             {
                 dfs.StartVertex += OnStartVertex;
@@ -169,18 +156,18 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             Debug.Assert(ComponentCount >= 0 && ComponentCount <= VisitedGraph.VertexCount);
             Debug.Assert(
                 VisitedGraph.Vertices.All(
-                    vertex => Components[vertex] >= 0 && Components[vertex] < ComponentCount));
+                    vertex => ComponentIndex[vertex] >= 0 && ComponentIndex[vertex] < ComponentCount));
         }
 
         private void MergeEquivalentComponents()
         {
             foreach (TVertex vertex in VisitedGraph.Vertices)
             {
-                int component = Components[vertex];
+                int component = ComponentIndex[vertex];
                 int equivalent = GetComponentEquivalence(component);
                 if (component != equivalent)
                 {
-                    Components[vertex] = equivalent;
+                    ComponentIndex[vertex] = equivalent;
                 }
             }
         }
@@ -189,7 +176,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         {
             // Extract unique component indexes (sorted)
             var components = new SortedSet<int>();
-            foreach (int componentNumber in Components.Values)
+            foreach (int componentNumber in ComponentIndex.Values)
             {
                 components.Add(componentNumber);
             }
@@ -210,10 +197,10 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             // Apply the reduction of component indexes
             foreach (TVertex vertex in VisitedGraph.Vertices)
             {
-                int component = Components[vertex];
+                int component = ComponentIndex[vertex];
                 if (_componentEquivalences.TryGetValue(component, out int newComponentValue))
                 {
-                    Components[vertex] = newComponentValue;
+                    ComponentIndex[vertex] = newComponentValue;
                 }
             }
         }
@@ -226,7 +213,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         public int ComponentCount { get; private set; }
 
         /// <inheritdoc />
-        public IDictionary<TVertex, int> Components { get; }
+        public IDictionary<TVertex, int> ComponentIndex { get; }
 
         #endregion
 
@@ -236,19 +223,19 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             _currentComponent = _componentEquivalences.Count;
             _componentEquivalences.Add(_currentComponent, _currentComponent);
             ++ComponentCount;
-            Components.Add(vertex, _currentComponent);
+            ComponentIndex.Add(vertex, _currentComponent);
         }
 
         private void OnEdgeDiscovered([NotNull] TEdge edge)
         {
             // New edge, we store with the current component number
-            Components.Add(edge.Target, _currentComponent);
+            ComponentIndex.Add(edge.Target, _currentComponent);
         }
 
         private void OnForwardOrCrossEdge([NotNull] TEdge edge)
         {
             // We have touched another tree, updating count and current component
-            int otherComponent = GetComponentEquivalence(Components[edge.Target]);
+            int otherComponent = GetComponentEquivalence(ComponentIndex[edge.Target]);
             if (otherComponent != _currentComponent)
             {
                 --ComponentCount;

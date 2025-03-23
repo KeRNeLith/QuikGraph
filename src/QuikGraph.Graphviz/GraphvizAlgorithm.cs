@@ -23,7 +23,7 @@ namespace QuikGraph.Graphviz
         private readonly Dictionary<TVertex, int> _verticesIds = new Dictionary<TVertex, int>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="GraphvizAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="graph">Graph to convert to DOT.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
@@ -33,7 +33,7 @@ namespace QuikGraph.Graphviz
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="GraphvizAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="graph">Graph to convert to DOT.</param>
         /// <param name="imageType">Target output image type.</param>

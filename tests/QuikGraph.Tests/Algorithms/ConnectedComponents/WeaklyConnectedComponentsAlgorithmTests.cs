@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.ConnectedComponents;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
 
 namespace QuikGraph.Tests.Algorithms.ConnectedComponents
 {
@@ -13,15 +12,13 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
     [TestFixture]
     internal sealed class WeaklyConnectedComponentsAlgorithmTests
     {
-        #region Test helpers
-
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
         public void RunWeaklyConnectedComponentsAndCheck<TVertex, TEdge>([NotNull] IVertexListGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<TVertex, TEdge>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeWeaklyConnectedComponents();
 
-            Assert.AreEqual(graph.VertexCount, algorithm.Components.Count);
+            Assert.AreEqual(graph.VertexCount, algorithm.ComponentIndex.Count);
             if (graph.VertexCount == 0)
             {
                 Assert.IsTrue(algorithm.ComponentCount == 0);
@@ -30,7 +27,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
 
             Assert.Positive(algorithm.ComponentCount);
             Assert.LessOrEqual(algorithm.ComponentCount, graph.VertexCount);
-            foreach (KeyValuePair<TVertex, int> pair in algorithm.Components)
+            foreach (KeyValuePair<TVertex, int> pair in algorithm.ComponentIndex)
             {
                 Assert.GreaterOrEqual(pair.Value, 0);
                 Assert.IsTrue(pair.Value < algorithm.ComponentCount, $"{pair.Value} < {algorithm.ComponentCount}");
@@ -40,25 +37,23 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
             {
                 foreach (TEdge edge in graph.OutEdges(vertex))
                 {
-                    Assert.AreEqual(algorithm.Components[edge.Source], algorithm.Components[edge.Target]);
+                    Assert.AreEqual(algorithm.ComponentIndex[edge.Source], algorithm.ComponentIndex[edge.Target]);
                 }
             }
         }
 
-        #endregion
-
         [Test]
-        public void Constructor()
+        public void TestConstructor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             var components = new Dictionary<int, int>();
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph);
+            var algorithm = graph.ComputeWeaklyConnectedComponents();
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph, components);
+            algorithm = graph.ComputeWeaklyConnectedComponents(components);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, graph, components);
+            algorithm = graph.ComputeWeaklyConnectedComponents(components, null);
             AssertAlgorithmProperties(algorithm, graph);
 
             #region Local function
@@ -68,9 +63,9 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                 IVertexListGraph<TVertex, TEdge> g)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g, QuikGraph.Algorithms.ComputationState.Finished);
                 Assert.AreEqual(0, algo.ComponentCount);
-                CollectionAssert.IsEmpty(algo.Components);
+                CollectionAssert.IsEmpty(algo.ComponentIndex);
                 CollectionAssert.IsEmpty(algo.Graphs);
             }
 
@@ -80,27 +75,25 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void Constructor_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            AdjacencyGraph<int, IEdge<int>> graph = new (), nullGraph = null;
             var components = new Dictionary<int, int>();
 
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null));
+                () => nullGraph.ComputeWeaklyConnectedComponents());
 
+            _ = graph.ComputeWeaklyConnectedComponents(null);
             Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph, null));
+                () => nullGraph.ComputeWeaklyConnectedComponents(components));
             Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, components));
-            Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, null));
+                () => nullGraph.ComputeWeaklyConnectedComponents(null));
 
+            _ = graph.ComputeWeaklyConnectedComponents(null, null);
             Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, graph, null));
+                () => nullGraph.ComputeWeaklyConnectedComponents(components, null));
             Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, null, components));
-            Assert.Throws<ArgumentNullException>(
-                () => new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(null, null, null));
+                () => nullGraph.ComputeWeaklyConnectedComponents(null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -108,18 +101,16 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void OneComponent()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3)
+            );
 
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeWeaklyConnectedComponents();
 
             Assert.AreEqual(1, algorithm.ComponentCount);
             CollectionAssert.AreEquivalent(
@@ -130,7 +121,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [3] = 0,
                     [4] = 0
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
             Assert.AreEqual(1, algorithm.Graphs.Length);
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2, 3, 4 },
@@ -140,22 +131,20 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void TwoComponents()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3),
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3),
 
-                new Edge<int>(5, 6),
-                new Edge<int>(5, 7),
-                new Edge<int>(7, 6)
-            });
+                Edge.Create(5, 6),
+                Edge.Create(5, 7),
+                Edge.Create(7, 6)
+            );
 
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeWeaklyConnectedComponents();
 
             Assert.AreEqual(2, algorithm.ComponentCount);
             CollectionAssert.AreEquivalent(
@@ -169,7 +158,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [6] = 1,
                     [7] = 1
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
             Assert.AreEqual(2, algorithm.Graphs.Length);
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2, 3, 4  },
@@ -182,25 +171,23 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void MultipleComponents()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3),
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3),
 
-                new Edge<int>(5, 6),
-                new Edge<int>(5, 7),
-                new Edge<int>(7, 6),
+                Edge.Create(5, 6),
+                Edge.Create(5, 7),
+                Edge.Create(7, 6),
 
-                new Edge<int>(8, 9)
-            });
+                Edge.Create(8, 9)
+            );
             graph.AddVertex(10);
 
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<int, Edge<int>>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeWeaklyConnectedComponents();
 
             Assert.AreEqual(4, algorithm.ComponentCount);
             CollectionAssert.AreEquivalent(
@@ -217,7 +204,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [9] = 2,
                     [10] = 3
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
             Assert.AreEqual(4, algorithm.Graphs.Length);
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2, 3, 4 },
@@ -231,14 +218,6 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
             CollectionAssert.AreEquivalent(
                 new[] { 10 },
                 algorithm.Graphs[3].Vertices);
-        }
-
-        [Test]
-        [Category(TestCategories.LongRunning)]
-        public void WeaklyConnectedComponents()
-        {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-                RunWeaklyConnectedComponentsAndCheck(graph);
         }
     }
 }

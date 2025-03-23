@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using static QuikGraph.Tests.GraphTestHelpers;
 
@@ -28,15 +28,15 @@ namespace QuikGraph.Petri.Tests
             CollectionAssert.AreEquivalent(new[] { place1 }, net.Places);
             CollectionAssert.IsEmpty(net.Transitions);
             CollectionAssert.IsEmpty(net.Arcs);
-            AssertHasVertices(net.Graph, new[] { place1 });
-            AssertNoEdge(net.Graph);
+            net.Graph.AssertHasVertices(place1);
+            net.Graph.AssertNoEdge();
 
             var transition1 = net.AddTransition("T1");
             CollectionAssert.AreEquivalent(new[] { place1 }, net.Places);
             CollectionAssert.AreEquivalent(new[] { transition1 }, net.Transitions);
             CollectionAssert.IsEmpty(net.Arcs);
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, transition1 });
-            AssertNoEdge(net.Graph);
+            net.Graph.AssertHasVertices(place1, transition1);
+            net.Graph.AssertNoEdge();
 
             var place2 = net.AddPlace("P2");
             var transition2 = net.AddTransition("T2");
@@ -44,23 +44,23 @@ namespace QuikGraph.Petri.Tests
             CollectionAssert.AreEquivalent(new[] { place1, place2, place3 }, net.Places);
             CollectionAssert.AreEquivalent(new[] { transition1, transition2 }, net.Transitions);
             CollectionAssert.IsEmpty(net.Arcs);
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, place3, transition1, transition2 });
-            AssertNoEdge(net.Graph);
+            net.Graph.AssertHasVertices(place1, place2, place3, transition1, transition2);
+            net.Graph.AssertNoEdge();
 
             var arc1 = net.AddArc(place1, transition1);
             CollectionAssert.AreEquivalent(new[] { place1, place2, place3 }, net.Places);
             CollectionAssert.AreEquivalent(new[] { transition1, transition2 }, net.Transitions);
             CollectionAssert.AreEquivalent(new[] { arc1 }, net.Arcs);
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, place3, transition1, transition2 });
-            AssertHasEdges(net.Graph, new[] { arc1 });
+            net.Graph.AssertHasVertices(place1, place2, place3, transition1, transition2);
+            net.Graph.AssertHasEdges(arc1);
 
             var arc2 = net.AddArc(transition2, place3);
             var arc3 = net.AddArc(place2, transition2);
             CollectionAssert.AreEquivalent(new[] { place1, place2, place3 }, net.Places);
             CollectionAssert.AreEquivalent(new[] { transition1, transition2 }, net.Transitions);
             CollectionAssert.AreEquivalent(new[] { arc1, arc2, arc3 }, net.Arcs);
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, place3, transition1, transition2 });
-            AssertHasEdges(net.Graph, new[] { arc1, arc2, arc3 });
+            net.Graph.AssertHasVertices(place1, place2, place3, transition1, transition2);
+            net.Graph.AssertHasEdges(arc1, arc2, arc3);
         }
 
         [Test]
@@ -80,8 +80,8 @@ namespace QuikGraph.Petri.Tests
             var place1 = net.AddPlace("p1");
             var place2 = net.AddPlace("p2");
             var transition1 = net.AddTransition("t1");
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, transition1 });
-            AssertNoEdge(net.Graph);
+            net.Graph.AssertHasVertices(place1, place2, transition1);
+            net.Graph.AssertNoEdge();
 
             clonedNet = net.Clone();
             Assert.IsNotNull(clonedNet);
@@ -98,8 +98,8 @@ namespace QuikGraph.Petri.Tests
             var arc3 = net.AddArc(place3, transition2);
             var arc4 = net.AddArc(transition1, place3);
             var arc5 = net.AddArc(transition2, place1);
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, place3, transition1, transition2 });
-            AssertHasEdges(net.Graph, new[] { arc1, arc2, arc3, arc4, arc5 });
+            net.Graph.AssertHasVertices(place1, place2, place3, transition1, transition2);
+            net.Graph.AssertHasEdges(arc1, arc2, arc3, arc4, arc5);
 
             clonedNet = net.Clone();
             Assert.IsNotNull(clonedNet);
@@ -111,8 +111,8 @@ namespace QuikGraph.Petri.Tests
 
             var place4 = net.AddPlace("p4");
             var transition3 = net.AddTransition("t3");
-            AssertHasVertices(net.Graph, new IPetriVertex[] { place1, place2, place3, place4, transition1, transition2, transition3 });
-            AssertHasEdges(net.Graph, new[] { arc1, arc2, arc3, arc4, arc5 });
+            net.Graph.AssertHasVertices(place1, place2, place3, place4, transition1, transition2, transition3);
+            net.Graph.AssertHasEdges(arc1, arc2, arc3, arc4, arc5);
 
             clonedNet = net.Clone();
             Assert.IsNotNull(clonedNet);

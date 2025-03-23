@@ -15,6 +15,7 @@ src/DotParser/res.dot
 *.user
 *.userosscache
 *.sln.docstates
+.obsidian
 
 # Build results
 [Dd]ebug/

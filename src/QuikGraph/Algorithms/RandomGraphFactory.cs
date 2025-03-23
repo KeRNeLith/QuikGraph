@@ -169,7 +169,7 @@ namespace QuikGraph.Algorithms
                 {
                     b = vertices[rng.Next(vertexCount)];
                 }
-                while (!selfEdges && EqualityComparer<TVertex>.Default.Equals(a, b));
+                while (!selfEdges && graph.AreVerticesEqual(a, b));
 
                 if (graph.AddEdge(edgeFactory(a, b)))
                 {

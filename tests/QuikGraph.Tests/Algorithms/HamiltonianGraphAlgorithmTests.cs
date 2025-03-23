@@ -16,187 +16,159 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void IsHamiltonianEmpty()
         {
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(Enumerable.Empty<Vertices>());
+            var graph = CreateUndirectedGraph();
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsFalse(algorithm.IsHamiltonian());
+            Assert.IsFalse(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonian()
         {
             // Hamiltonian
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(2, 3),
-                new Vertices(1, 3),
-                new Vertices(2, 4),
-                new Vertices(3, 4)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(2, 3),
+                Edge.CreateUndirected(1, 3),
+                Edge.CreateUndirected(2, 4),
+                Edge.CreateUndirected(3, 4));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsTrue(algorithm.IsHamiltonian());
+            Assert.IsTrue(graph.IsHamiltonian());
 
             // Not Hamiltonian
-            graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(2, 3),
-                new Vertices(2, 4),
-                new Vertices(3, 4)
-            });
+            graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(2, 3),
+                Edge.CreateUndirected(2, 4),
+                Edge.CreateUndirected(3, 4)
+            );
 
-            algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsFalse(algorithm.IsHamiltonian());
+            Assert.IsFalse(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianOneVertexWithCycle()
         {
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 1)
-            });
+            var graph = CreateUndirectedGraph(Edge.CreateUndirected(1, 1));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsTrue(algorithm.IsHamiltonian());
+            Assert.IsTrue(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianTwoVertices()
         {
             // Hamiltonian
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2)
-            });
+            var graph = CreateUndirectedGraph(Edge.CreateUndirected(1, 2));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsTrue(algorithm.IsHamiltonian());
+            Assert.IsTrue(graph.IsHamiltonian());
 
             // Not Hamiltonian
-            graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 1),
-                new Vertices(2, 2)
-            });
+            graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 1),
+                Edge.CreateUndirected(2, 2));
 
-            algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsFalse(algorithm.IsHamiltonian());
+            Assert.IsFalse(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianWithLoops()
         {
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 1),
-                new Vertices(1, 1),
-                new Vertices(2, 2),
-                new Vertices(2, 2),
-                new Vertices(2, 2),
-                new Vertices(3, 3),
-                new Vertices(3, 3)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 1),
+                Edge.CreateUndirected(1, 1),
+                Edge.CreateUndirected(2, 2),
+                Edge.CreateUndirected(2, 2),
+                Edge.CreateUndirected(2, 2),
+                Edge.CreateUndirected(3, 3),
+                Edge.CreateUndirected(3, 3)
+            );
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsFalse(algorithm.IsHamiltonian());
+            Assert.IsFalse(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianWithParallelEdges()
         {
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(1, 2),
-                new Vertices(3, 4),
-                new Vertices(3, 4)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(3, 4),
+                Edge.CreateUndirected(3, 4));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsFalse(algorithm.IsHamiltonian());
+            Assert.IsFalse(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianDiracsTheorem()
         {
             // This graph is Hamiltonian and satisfies Dirac's theorem. This test should work faster
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(1, 3),
-                new Vertices(1, 4),
-                new Vertices(1, 7),
-                new Vertices(1, 8),
-                new Vertices(1, 10),
-                new Vertices(2, 6),
-                new Vertices(2, 9),
-                new Vertices(2, 4),
-                new Vertices(2, 5),
-                new Vertices(3, 4),
-                new Vertices(3, 6),
-                new Vertices(3, 7),
-                new Vertices(3, 8),
-                new Vertices(3, 8),
-                new Vertices(4, 6),
-                new Vertices(4, 5),
-                new Vertices(4, 7),
-                new Vertices(5, 7),
-                new Vertices(5, 6),
-                new Vertices(5, 9),
-                new Vertices(5, 10),
-                new Vertices(6, 9),
-                new Vertices(6, 10),
-                new Vertices(6, 7),
-                new Vertices(7, 8),
-                new Vertices(8, 9),
-                new Vertices(8, 10),
-                new Vertices(9, 10)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(1, 3),
+                Edge.CreateUndirected(1, 4),
+                Edge.CreateUndirected(1, 7),
+                Edge.CreateUndirected(1, 8),
+                Edge.CreateUndirected(1, 10),
+                Edge.CreateUndirected(2, 6),
+                Edge.CreateUndirected(2, 9),
+                Edge.CreateUndirected(2, 4),
+                Edge.CreateUndirected(2, 5),
+                Edge.CreateUndirected(3, 4),
+                Edge.CreateUndirected(3, 6),
+                Edge.CreateUndirected(3, 7),
+                Edge.CreateUndirected(3, 8),
+                Edge.CreateUndirected(3, 8),
+                Edge.CreateUndirected(4, 6),
+                Edge.CreateUndirected(4, 5),
+                Edge.CreateUndirected(4, 7),
+                Edge.CreateUndirected(5, 7),
+                Edge.CreateUndirected(5, 6),
+                Edge.CreateUndirected(5, 9),
+                Edge.CreateUndirected(5, 10),
+                Edge.CreateUndirected(6, 9),
+                Edge.CreateUndirected(6, 10),
+                Edge.CreateUndirected(6, 7),
+                Edge.CreateUndirected(7, 8),
+                Edge.CreateUndirected(8, 9),
+                Edge.CreateUndirected(8, 10),
+                Edge.CreateUndirected(9, 10));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsTrue(algorithm.IsHamiltonian());
+            Assert.IsTrue(graph.IsHamiltonian());
         }
 
         [Test]
         public void IsHamiltonianNotDiracsTheorem()
         {
             // This graph is Hamiltonian but don't satisfy Dirac's theorem. This test should work slowlier
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(1, 3),
-                new Vertices(1, 4),
-                new Vertices(1, 7),
-                new Vertices(1, 8),
-                new Vertices(1, 10),
-                new Vertices(2, 6),
-                new Vertices(2, 9),
-                new Vertices(2, 4),
-                new Vertices(3, 4),
-                new Vertices(3, 6),
-                new Vertices(3, 7),
-                new Vertices(3, 8),
-                new Vertices(4, 6),
-                new Vertices(4, 5),
-                new Vertices(4, 7),
-                new Vertices(5, 7),
-                new Vertices(5, 6),
-                new Vertices(5, 9),
-                new Vertices(5, 10),
-                new Vertices(6, 9),
-                new Vertices(6, 10),
-                new Vertices(6, 7),
-                new Vertices(7, 8),
-                new Vertices(8, 9),
-                new Vertices(8, 10),
-                new Vertices(9, 10)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(1, 3),
+                Edge.CreateUndirected(1, 4),
+                Edge.CreateUndirected(1, 7),
+                Edge.CreateUndirected(1, 8),
+                Edge.CreateUndirected(1, 10),
+                Edge.CreateUndirected(2, 6),
+                Edge.CreateUndirected(2, 9),
+                Edge.CreateUndirected(2, 4),
+                Edge.CreateUndirected(3, 4),
+                Edge.CreateUndirected(3, 6),
+                Edge.CreateUndirected(3, 7),
+                Edge.CreateUndirected(3, 8),
+                Edge.CreateUndirected(4, 6),
+                Edge.CreateUndirected(4, 5),
+                Edge.CreateUndirected(4, 7),
+                Edge.CreateUndirected(5, 7),
+                Edge.CreateUndirected(5, 6),
+                Edge.CreateUndirected(5, 9),
+                Edge.CreateUndirected(5, 10),
+                Edge.CreateUndirected(6, 9),
+                Edge.CreateUndirected(6, 10),
+                Edge.CreateUndirected(6, 7),
+                Edge.CreateUndirected(7, 8),
+                Edge.CreateUndirected(8, 9),
+                Edge.CreateUndirected(8, 10),
+                Edge.CreateUndirected(9, 10));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
-            Assert.IsTrue(algorithm.IsHamiltonian());
+            Assert.IsTrue(graph.IsHamiltonian());
         }
 
         #region Test helpers
@@ -246,41 +218,39 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void IsHamiltonianCyclesBuilder()
         {
-            UndirectedGraph<int, UndirectedEdge<int>> graph = CreateUndirectedGraph(new[]
-            {
-                new Vertices(1, 2),
-                new Vertices(1, 3),
-                new Vertices(1, 4),
-                new Vertices(1, 7),
-                new Vertices(1, 8),
-                new Vertices(1, 10),
-                new Vertices(2, 6),
-                new Vertices(2, 9),
-                new Vertices(2, 4),
-                new Vertices(3, 4),
-                new Vertices(3, 6),
-                new Vertices(3, 7),
-                new Vertices(3, 8),
-                new Vertices(4, 6),
-                new Vertices(4, 5),
-                new Vertices(4, 7),
-                new Vertices(5, 7),
-                new Vertices(5, 6),
-                new Vertices(5, 9),
-                new Vertices(5, 10),
-                new Vertices(6, 9),
-                new Vertices(6, 10),
-                new Vertices(6, 7),
-                new Vertices(7, 8),
-                new Vertices(8, 9),
-                new Vertices(8, 10),
-                new Vertices(9, 10)
-            });
+            var graph = CreateUndirectedGraph(
+                Edge.CreateUndirected(1, 2),
+                Edge.CreateUndirected(1, 3),
+                Edge.CreateUndirected(1, 4),
+                Edge.CreateUndirected(1, 7),
+                Edge.CreateUndirected(1, 8),
+                Edge.CreateUndirected(1, 10),
+                Edge.CreateUndirected(2, 6),
+                Edge.CreateUndirected(2, 9),
+                Edge.CreateUndirected(2, 4),
+                Edge.CreateUndirected(3, 4),
+                Edge.CreateUndirected(3, 6),
+                Edge.CreateUndirected(3, 7),
+                Edge.CreateUndirected(3, 8),
+                Edge.CreateUndirected(4, 6),
+                Edge.CreateUndirected(4, 5),
+                Edge.CreateUndirected(4, 7),
+                Edge.CreateUndirected(5, 7),
+                Edge.CreateUndirected(5, 6),
+                Edge.CreateUndirected(5, 9),
+                Edge.CreateUndirected(5, 10),
+                Edge.CreateUndirected(6, 9),
+                Edge.CreateUndirected(6, 10),
+                Edge.CreateUndirected(6, 7),
+                Edge.CreateUndirected(7, 8),
+                Edge.CreateUndirected(8, 9),
+                Edge.CreateUndirected(8, 10),
+                Edge.CreateUndirected(9, 10));
 
-            var algorithm = new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(graph);
+            var algorithm = graph.CreateHamiltonianGraphAlgorithm();
 
             var hashSet = new HashSet<List<int>>(new SequenceComparer<int>());
-            hashSet.UnionWith(algorithm.GetPermutations());
+            hashSet.UnionWith(algorithm.GetAllVertexPermutations());
 
             Assert.AreEqual(hashSet.Count, Factorial(graph.VertexCount));
         }
@@ -288,14 +258,15 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void IsHamiltonian_Throws()
         {
+            IUndirectedGraph<int, UndirectedEdge<int>> nullGraph = null;
+
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(
-                () => new IsHamiltonianGraphAlgorithm<int, UndirectedEdge<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateHamiltonianGraphAlgorithm());
 
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<ArgumentNullException>(
-                () => IsHamiltonianGraphAlgorithm.IsHamiltonian<int, UndirectedEdge<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.IsHamiltonian());
+
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }

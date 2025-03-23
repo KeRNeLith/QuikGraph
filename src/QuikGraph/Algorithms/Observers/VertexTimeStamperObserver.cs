@@ -18,7 +18,7 @@ namespace QuikGraph.Algorithms.Observers
         private int _currentTime;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexTimeStamperObserver{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexTimeStamperObserver{TVertex}"/> class.
         /// </summary>
         public VertexTimeStamperObserver()
             : this(new Dictionary<TVertex, int>(), new Dictionary<TVertex, int>())
@@ -26,7 +26,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexTimeStamperObserver{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexTimeStamperObserver{TVertex}"/> class.
         /// </summary>
         /// <param name="discoverTimes">Vertices discover times.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="discoverTimes"/> is <see langword="null"/>.</exception>
@@ -37,7 +37,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexTimeStamperObserver{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexTimeStamperObserver{TVertex}"/> class.
         /// </summary>
         /// <param name="discoverTimes">Vertices discover times.</param>
         /// <param name="finishTimes">Vertices fully treated times.</param>

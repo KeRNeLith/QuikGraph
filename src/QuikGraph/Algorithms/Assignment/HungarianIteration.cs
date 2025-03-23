@@ -38,7 +38,7 @@ namespace QuikGraph.Algorithms.Assignment
         public HungarianAlgorithm.Steps Step { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HungarianIteration"/> struct.
+        /// Initializes a new <see cref="HungarianIteration"/> struct.
         /// </summary>
         internal HungarianIteration(
             [NotNull] int[,] costs,

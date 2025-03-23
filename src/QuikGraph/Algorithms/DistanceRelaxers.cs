@@ -2,102 +2,72 @@
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Implementation of several distance relaxers.
-    /// </summary>
+    /// <summary> Different Singleton Implementations of <see cref="IDistanceRelaxer"/>. </summary>
     public static class DistanceRelaxers
     {
-        /// <summary>
-        /// Shortest distance relaxer.
-        /// </summary>
+        /// <summary> Shortest <see cref="IDistanceRelaxer"/>. </summary>
         [NotNull]
         public static readonly IDistanceRelaxer ShortestDistance = new ShortestDistanceRelaxer();
 
+        /// <inheritdoc cref="ShortestDistance"/>
         private sealed class ShortestDistanceRelaxer : IDistanceRelaxer
         {
             /// <inheritdoc />
             public double InitialDistance => double.MaxValue;
 
             /// <inheritdoc />
-            public int Compare(double x, double y)
-            {
-                return x.CompareTo(y);
-            }
+            public int Compare(double x, double y) => x.CompareTo(y);
 
             /// <inheritdoc />
-            public double Combine(double distance, double weight)
-            {
-                return distance + weight;
-            }
+            public double Combine(double distance, double weight) => distance + weight;
         }
 
-        /// <summary>
-        /// Critical distance relaxer.
-        /// </summary>
+        /// <summary> Critical <see cref="IDistanceRelaxer"/>. </summary>
         [NotNull]
         public static readonly IDistanceRelaxer CriticalDistance = new CriticalDistanceRelaxer();
 
+        /// <inheritdoc cref="CriticalDistance"/>
         private sealed class CriticalDistanceRelaxer : IDistanceRelaxer
         {
             /// <inheritdoc />
             public double InitialDistance => double.MinValue;
 
             /// <inheritdoc />
-            public int Compare(double x, double y)
-            {
-                return -x.CompareTo(y);
-            }
+            public int Compare(double x, double y) => -x.CompareTo(y);
 
             /// <inheritdoc />
-            public double Combine(double distance, double weight)
-            {
-                return distance + weight;
-            }
+            public double Combine(double distance, double weight) => distance + weight;
         }
 
-        /// <summary>
-        /// Edge shortest distance relaxer.
-        /// </summary>
+        /// <summary> Edge shortest <see cref="IDistanceRelaxer"/>. </summary>
         [NotNull]
         public static readonly IDistanceRelaxer EdgeShortestDistance = new EdgeDistanceRelaxer();
 
+        /// <inheritdoc cref="EdgeShortestDistance"/>
         private sealed class EdgeDistanceRelaxer : IDistanceRelaxer
         {
             /// <inheritdoc />
             public double InitialDistance => 0;
 
             /// <inheritdoc />
-            public int Compare(double x, double y)
-            {
-                return x.CompareTo(y);
-            }
+            public int Compare(double x, double y) => x.CompareTo(y);
 
             /// <inheritdoc />
-            public double Combine(double distance, double weight)
-            {
-                return distance + weight;
-            }
+            public double Combine(double distance, double weight) => distance + weight;
         }
 
-        /// <summary>
-        /// Prim relaxer.
-        /// </summary>
+        /// <summary> Prim <see cref="IDistanceRelaxer"/>. </summary>
         [NotNull]
         public static readonly IDistanceRelaxer Prim = new PrimRelaxer();
 
+        /// <inheritdoc cref="Prim"/>
         private sealed class PrimRelaxer : IDistanceRelaxer
         {
             public double InitialDistance => double.MaxValue;
 
-            public int Compare(double x, double y)
-            {
-                return x.CompareTo(y);
-            }
+            public int Compare(double x, double y) => x.CompareTo(y);
 
-            public double Combine(double distance, double weight)
-            {
-                return weight;
-            }
+            public double Combine(double distance, double weight) => weight;
         }
     }
 }

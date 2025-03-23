@@ -1,4 +1,4 @@
-#if SUPPORTS_SERIALIZATION || SUPPORTS_CLONEABLE
+﻿#if SUPPORTS_SERIALIZATION || SUPPORTS_CLONEABLE
 using System;
 #endif
 using System.Collections.Generic;
@@ -9,12 +9,8 @@ using System.Runtime.Serialization;
 
 namespace QuikGraph.Collections
 {
-    /// <summary>
-    /// A cloneable dictionary of vertices associated to their edges.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public interface IVertexEdgeDictionary<TVertex, TEdge> : IDictionary<TVertex, IEdgeList<TVertex, TEdge>>
+    /// <summary> A cloneable dictionary of vertices associated to their edge-List. </summary>
+    public interface IVertexEdgeDictionary<TVertex, TEdge> : IDictionary<TVertex, IEdgeList<TEdge>>
 #if SUPPORTS_CLONEABLE
         , ICloneable
 #endif
@@ -23,10 +19,7 @@ namespace QuikGraph.Collections
 #endif
      where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Gets a clone of the dictionary. The vertices and edges are not cloned.
-        /// </summary>
-        /// <returns>Cloned dictionary.</returns>
+        /// <summary> Returns a clone of this dictionary. The vertices and edges are not cloned. </summary>
         [Pure]
         [NotNull]
 #if SUPPORTS_CLONEABLE

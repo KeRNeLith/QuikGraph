@@ -1,60 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Algorithms.Search;
 using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.ConnectedComponents
 {
-    /// <summary>
-    /// Algorithm that computes connected components of a graph.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Extension Methods for <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> </summary>
+    public static class ConnectedComponentsAlgorithm {
+
+        /// <summary> Creates an <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> for <paramref name="undirectedSimpleGraph"/> </summary>
+        public static ConnectedComponentsAlgorithm<TVertex, TEdge> CreateConnectedComponentsAlgorithm<TVertex, TEdge>
+            (this IUndirectedGraph<TVertex, TEdge> undirectedSimpleGraph)
+            where TEdge : IEdge<TVertex> => new ConnectedComponentsAlgorithm<TVertex, TEdge>(undirectedSimpleGraph);
+
+        /// <summary> Aggregates the Number of Nodes for each Component </summary>
+        /// <remarks>
+        /// This is faster than aggregating the Number of Edges and since each connected Component with N+1 Vertices
+        /// has at least N Edges. 
+        /// </remarks>
+        public static int[] NumVerticesInComponent<TVertex, TEdge>(this ConnectedComponentsAlgorithm<TVertex, TEdge> componentsAlgorithm)
+            where TEdge : IEdge<TVertex>
+        {
+            int[] numVerticesInComponent = new int[componentsAlgorithm.ComponentCount];
+            foreach (KeyValuePair<TVertex, int> indexOfVertex in componentsAlgorithm.ComponentIndex)
+            {
+                ++numVerticesInComponent[indexOfVertex.Value];
+            }
+
+            return numVerticesInComponent;
+        }
+
+        /// <summary> Aggregates the Number of Nodes for each Component </summary>
+        /// <remarks>
+        /// This is faster than aggregating the Number of Edges and since each connected Component with N+1 Vertices
+        /// has at least N Edges. 
+        /// </remarks>
+        public static int[] NumEdgesInComponent<TVertex, TEdge>(this ConnectedComponentsAlgorithm<TVertex, TEdge> componentsAlgorithm)
+            where TEdge : IEdge<TVertex>
+        {
+            int[] numVerticesInComponent = new int[componentsAlgorithm.ComponentCount];
+            foreach (KeyValuePair<TVertex, int> indexOfVertex in componentsAlgorithm.ComponentIndex)
+            {
+                numVerticesInComponent[indexOfVertex.Value] += componentsAlgorithm.VisitedGraph.AdjacentEdges(indexOfVertex.Key)?.Count() ?? 0;
+            }
+
+            return numVerticesInComponent;
+        }
+
+    }
+
+    /// <summary> computes connected components of a graph. </summary>
+    /// <remarks>
+    /// Identifies all connected subgraphs in an undirected graph
+    /// to identify clusters or isolate regions.
+    /// </remarks>
     public sealed class ConnectedComponentsAlgorithm<TVertex, TEdge>
         : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         , IConnectedComponentAlgorithm<TVertex, TEdge, IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public ConnectedComponentsAlgorithm([NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph)
-            : this(visitedGraph, new Dictionary<TVertex, int>())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="components">Graph components.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
-        public ConnectedComponentsAlgorithm(
-            [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TVertex, int> components)
-            : this(null, visitedGraph, components)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConnectedComponentsAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="components">Graph components.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
         public ConnectedComponentsAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
             [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TVertex, int> components)
-            : base(host, visitedGraph)
+            [CanBeNull] IDictionary<TVertex, int> components = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
-            Components = components ?? throw new ArgumentNullException(nameof(components));
+            ComponentIndex = components ?? new Dictionary<TVertex, int>(visitedGraph.VertexCount);
         }
 
         #region AlgorithmBase<TGraph>
@@ -64,7 +85,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         {
             base.Initialize();
 
-            Components.Clear();
+            ComponentIndex.Clear();
             ComponentCount = 0;
         }
 
@@ -78,10 +99,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
             UndirectedDepthFirstSearchAlgorithm<TVertex, TEdge> dfs = null;
             try
             {
-                dfs = new UndirectedDepthFirstSearchAlgorithm<TVertex, TEdge>(
-                    this,
-                    VisitedGraph,
-                    new Dictionary<TVertex, GraphColor>(VisitedGraph.VertexCount));
+                dfs = VisitedGraph.CreateUndirectedDepthFirstSearchAlgorithm(host: this);
 
                 dfs.StartVertex += OnStartVertex;
                 dfs.DiscoverVertex += OnVertexDiscovered;
@@ -106,7 +124,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
         public int ComponentCount { get; private set; }
 
         /// <inheritdoc />
-        public IDictionary<TVertex, int> Components { get; }
+        public IDictionary<TVertex, int> ComponentIndex { get; }
 
         #endregion
 
@@ -117,7 +135,7 @@ namespace QuikGraph.Algorithms.ConnectedComponents
 
         private void OnVertexDiscovered([NotNull] TVertex vertex)
         {
-            Components[vertex] = ComponentCount;
+            ComponentIndex[vertex] = ComponentCount;
         }
     }
 }

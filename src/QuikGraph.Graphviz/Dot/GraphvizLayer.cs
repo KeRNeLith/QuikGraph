@@ -12,7 +12,7 @@ namespace QuikGraph.Graphviz.Dot
     public class GraphvizLayer
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizLayer"/> class.
+        /// Initializes a new <see cref="GraphvizLayer"/> class.
         /// </summary>
         /// <param name="name">Layer name.</param>
         /// <exception cref="T:System.ArgumentException"><paramref name="name"/> is <see langword="null"/> or empty.</exception>

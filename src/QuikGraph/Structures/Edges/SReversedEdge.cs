@@ -6,6 +6,34 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
+    /// <summary> Extension Methods for <see cref="SReversedEdge{TVertex,TEdge}"/> </summary>
+    /// <inheritdoc cref="CreateReversedEdge{TVertex,TEdge}(TEdge)"/>
+    public static class SReversedEdge
+    {
+        /// <summary> Creates a <see cref="SReversedEdge{TVertex,TEdge}"/> from <paramref name="edge"/> </summary>
+        [CanBeNull]
+        public static SReversedEdge<TVertex, TEdge>? CreateReversedEdge<TVertex, TEdge>([CanBeNull] this TEdge edge) where TEdge : IEdge<TVertex>
+        {
+            if (edge == null)
+            {
+                return null;
+            }
+
+            return new SReversedEdge<TVertex, TEdge>(edge);
+        }
+
+        /// <inheritdoc cref="CreateReversedEdge{TVertex,TEdge}(TEdge)"/>
+        public static SReversedEdge<TVertex, TEdge>? CreateReversedEdge<TVertex, TEdge>(this TEdge? edge) where TEdge : struct, IEdge<TVertex>
+        {
+            if (edge is null)
+            {
+                return null;
+            }
+
+            return new SReversedEdge<TVertex, TEdge>(edge.Value);
+        }
+    }
+
     /// <summary>
     /// The default struct based reversed <see cref="IEdge{TVertex}"/> implementation.
     /// </summary>
@@ -20,7 +48,7 @@ namespace QuikGraph
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SReversedEdge{TVertex, TEdge}"/> struct.
+        /// Initializes a new <see cref="SReversedEdge{TVertex, TEdge}"/> struct.
         /// </summary>
         /// <param name="originalEdge">Original edge.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="originalEdge"/> is <see langword="null"/>.</exception>

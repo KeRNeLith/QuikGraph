@@ -1,4 +1,4 @@
-//using System;
+﻿//using System;
 //using NUnit.Framework;
 //using QuikGraph.Algorithms;
 
@@ -13,20 +13,20 @@
 //        [Test]
 //        public void Constructor()
 //        {
-//            var graph = new AdjacencyGraph<int, Edge<int>>();
+//            var graph = new AdjacencyGraph<int, IEdge<int>>();
 //            Func<Edge<int>, double> distances = edge => 1.0;
 
-//            var algorithm = new CentralityApproximationAlgorithm<int, Edge<int>>(graph, distances);
+//            var algorithm = new CentralityApproximationAlgorithm<int, IEdge<int>>(graph, distances);
 //            AssertAlgorithmProperties(algorithm, graph, distances);
 
 //            var random = new Random(123456);
-//            algorithm = new CentralityApproximationAlgorithm<int, Edge<int>>(graph, distances)
+//            algorithm = new CentralityApproximationAlgorithm<int, IEdge<int>>(graph, distances)
 //            {
 //                Rand = random
 //            };
 //            AssertAlgorithmProperties(algorithm, graph, distances, random);
 
-//            algorithm = new CentralityApproximationAlgorithm<int, Edge<int>>(graph, distances)
+//            algorithm = new CentralityApproximationAlgorithm<int, IEdge<int>>(graph, distances)
 //            {
 //                MaxIterationCount = 12
 //            };
@@ -60,19 +60,19 @@
 //        [Test]
 //        public void Constructor_Throws()
 //        {
-//            var graph = new AdjacencyGraph<int, Edge<int>>();
+//            var graph = new AdjacencyGraph<int, IEdge<int>>();
 //            Func<Edge<int>, double> distances = edge => 1.0;
 
 //            // ReSharper disable ObjectCreationAsStatement
 //            // ReSharper disable AssignNullToNotNullAttribute
 //            Assert.Throws<ArgumentNullException>(
-//                () => new CentralityApproximationAlgorithm<int, Edge<int>>(null, distances));
+//                () => new CentralityApproximationAlgorithm<int, IEdge<int>>(null, distances));
 //            Assert.Throws<ArgumentNullException>(
-//                () => new CentralityApproximationAlgorithm<int, Edge<int>>(graph, null));
+//                () => new CentralityApproximationAlgorithm<int, IEdge<int>>(graph, null));
 //            Assert.Throws<ArgumentNullException>(
-//                () => new CentralityApproximationAlgorithm<int, Edge<int>>(null, null));
+//                () => new CentralityApproximationAlgorithm<int, IEdge<int>>(null, null));
 
-//            var algorithm = new CentralityApproximationAlgorithm<int, Edge<int>>(graph, distances);
+//            var algorithm = new CentralityApproximationAlgorithm<int, IEdge<int>>(graph, distances);
 //            Assert.Throws<ArgumentOutOfRangeException>(() => algorithm.MaxIterationCount = 0);
 //            Assert.Throws<ArgumentOutOfRangeException>(() => algorithm.MaxIterationCount = -1);
 //            Assert.Throws<ArgumentOutOfRangeException>(() => algorithm.MaxIterationCount = -10);
@@ -85,19 +85,19 @@
 //        [Test]
 //        public void SimpleGraph()
 //        {
-//            var graph = new AdjacencyGraph<string, Edge<string>>();
+//            var graph = new AdjacencyGraph<string, IEdge<string>>();
 //            graph.AddVerticesAndEdgeRange(new[]
 //            {
-//                new Edge<string>("Mark", "Alice"),
-//                new Edge<string>("Alice", "Bridget"),
-//                new Edge<string>("Alice", "Doug"),
-//                new Edge<string>("Alice", "Charles"),
-//                new Edge<string>("Charles", "Michael")
+//                Edge.Create("Mark", "Alice"),
+//                Edge.Create("Alice", "Bridget"),
+//                Edge.Create("Alice", "Doug"),
+//                Edge.Create("Alice", "Charles"),
+//                Edge.Create("Charles", "Michael")
 //            });
 //            Func<Edge<string>, double> distances = edge => 1.0;
 
 //            var random = new Random(123456);
-//            var algorithm = new CentralityApproximationAlgorithm<string, Edge<string>>(graph, distances)
+//            var algorithm = new CentralityApproximationAlgorithm<string, IEdge<string>>(graph, distances)
 //            {
 //                Rand = random,
 //                MaxIterationCount = 50

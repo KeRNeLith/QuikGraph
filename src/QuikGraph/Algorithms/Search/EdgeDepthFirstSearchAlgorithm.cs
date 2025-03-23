@@ -6,9 +6,18 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.Search
 {
-    /// <summary>
-    /// A edge depth first search algorithm for directed graphs.
-    /// </summary>
+    /// <inheritdoc cref="CreateEdgeDepthFirstSearchAlgorithm"/>
+    public static class EdgeDepthFirstSearchAlgorithm
+    {
+        /// <summary> Creates a new <see cref="EdgeDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static EdgeDepthFirstSearchAlgorithm<TVertex, TEdge> CreateEdgeDepthFirstSearchAlgorithm<TVertex, TEdge>(
+            [NotNull] this IEdgeListAndIncidenceGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IDictionary<TEdge, GraphColor> edgesColors = null,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new EdgeDepthFirstSearchAlgorithm<TVertex, TEdge>(visitedGraph, edgesColors, host);
+    }
+
+    /// <summary> Edge depth first search algorithm for directed graphs. </summary>
     /// <remarks>
     /// This is a variant of the classic DFS algorithm where the
     /// edges are color marked instead of the vertices.
@@ -22,46 +31,22 @@ namespace QuikGraph.Algorithms.Search
         , ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public EdgeDepthFirstSearchAlgorithm(
-            [NotNull] IEdgeListAndIncidenceGraph<TVertex, TEdge> visitedGraph)
-            : this(visitedGraph, new Dictionary<TEdge, GraphColor>())
-        {
-        }
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="EdgeDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgesColors">Edges associated to their colors (treatment states).</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgesColors"/> is <see langword="null"/>.</exception>
-        public EdgeDepthFirstSearchAlgorithm(
-            [NotNull] IEdgeListAndIncidenceGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TEdge, GraphColor> edgesColors)
-            : this(null, visitedGraph, edgesColors)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgesColors">Edges associated to their colors (treatment states).</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgesColors"/> is <see langword="null"/>.</exception>
-        public EdgeDepthFirstSearchAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal EdgeDepthFirstSearchAlgorithm(
             [NotNull] IEdgeListAndIncidenceGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IDictionary<TEdge, GraphColor> edgesColors)
-            : base(host, visitedGraph)
+            [CanBeNull] IDictionary<TEdge, GraphColor> edgesColors = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
-            EdgesColors = edgesColors ?? throw new ArgumentNullException(nameof(edgesColors));
+            EdgesColors = edgesColors ?? new Dictionary<TEdge, GraphColor>();
         }
 
         /// <summary>
@@ -213,7 +198,7 @@ namespace QuikGraph.Algorithms.Search
             // Start with root vertex
             if (TryGetRootVertex(out TVertex root))
             {
-                AssertRootInGraph(root);
+                RootShouldBeInGraph(root);
 
                 OnStartVertex(root);
 

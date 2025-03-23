@@ -6,34 +6,37 @@ using static QuikGraph.Utils.DisposableHelpers;
 
 namespace QuikGraph.Algorithms.Observers
 {
-    /// <summary>
-    /// Recorder of vertices predecessors (undirected).
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Recorder of vertices predecessors (undirected) by observing Edges. </summary>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
-    public sealed class VertexPredecessorRecorderObserver<TVertex, TEdge> : IObserver<ITreeBuilderAlgorithm<TVertex, TEdge>>
-        where TEdge : IEdge<TVertex>
+    public sealed class VertexPredecessorRecorderObserver<TVertex, TEdge>
+        : IObserver<ITreeBuilderAlgorithm<TVertex, TEdge>> where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VertexPredecessorRecorderObserver{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <inheritdoc cref="VertexPredecessorRecorderObserver{TVertex, TEdge}"/>
         public VertexPredecessorRecorderObserver()
             : this(new Dictionary<TVertex, TEdge>())
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VertexPredecessorRecorderObserver{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="verticesPredecessors">Vertices predecessors.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="verticesPredecessors"/> is <see langword="null"/>.</exception>
-        public VertexPredecessorRecorderObserver(
-            [NotNull] IDictionary<TVertex, TEdge> verticesPredecessors)
+        /// <inheritdoc cref="VertexPredecessorRecorderObserver{TVertex, TEdge}"/>
+        public VertexPredecessorRecorderObserver(IEqualityComparer<TVertex> equality)
+            : this(new Dictionary<TVertex, TEdge>(equality), equality.Equals)
+        {
+        }
+
+        /// <inheritdoc cref="VertexPredecessorRecorderObserver{TVertex, TEdge}"/>
+        public VertexPredecessorRecorderObserver(Func<TVertex, TVertex, bool> equality)
+            : this(new Dictionary<TVertex, TEdge>(), equality)
+        {
+        }
+
+        /// <inheritdoc cref="VertexPredecessorRecorderObserver{TVertex, TEdge}"/>
+        public VertexPredecessorRecorderObserver([NotNull] IDictionary<TVertex, TEdge> verticesPredecessors
+            , Func<TVertex, TVertex, bool> equals = null)
         {
             VerticesPredecessors = verticesPredecessors ?? throw new ArgumentNullException(nameof(verticesPredecessors));
+            AreVerticesEqual = equals;
         }
 
         /// <summary>
@@ -41,6 +44,11 @@ namespace QuikGraph.Algorithms.Observers
         /// </summary>
         [NotNull]
         public IDictionary<TVertex, TEdge> VerticesPredecessors { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public Func<TVertex, TVertex, bool> AreVerticesEqual { get; }
 
         #region IObserver<TAlgorithm>
 
@@ -63,18 +71,11 @@ namespace QuikGraph.Algorithms.Observers
             VerticesPredecessors[edge.Target] = edge;
         }
 
-        /// <summary>
-        /// Tries to get the predecessor path, if reachable.
-        /// </summary>
-        /// <param name="vertex">Path ending vertex.</param>
-        /// <param name="path">Path to the ending vertex.</param>
-        /// <returns>True if a path was found, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
+        /// <summary> Tries to get the predecessor path, if reachable. </summary>
+        /// <param name="terminal">Path ending vertex.</param>
+        /// <returns>Path to the ending vertex, null if no path was found.</returns>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="terminal"/> is <see langword="null"/>.</exception>
         [Pure]
-        [ContractAnnotation("=> true, path:notnull;=> false, path:null")]
-        public bool TryGetPath([NotNull] TVertex vertex, [ItemNotNull] out IEnumerable<TEdge> path)
-        {
-            return VerticesPredecessors.TryGetPath(vertex, out path);
-        }
+        public List<TEdge> GetPath([NotNull] TVertex terminal) => VerticesPredecessors.GetPath(terminal, AreVerticesEqual);
     }
 }

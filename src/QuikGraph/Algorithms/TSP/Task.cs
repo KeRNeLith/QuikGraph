@@ -5,15 +5,18 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.TSP
 {
+    /// <summary> Minimizes the <see cref="MinCost"/> for the <see cref="Path"/> </summary>
     internal sealed class Task<TVertex, TEdge>
         where TEdge : EquatableEdge<TVertex>
     {
         [NotNull]
         private readonly BidirectionalGraph<TVertex, TEdge> _graph;
 
+        /// <summary> The Cost for each edge </summary>
         [NotNull]
         private readonly IDictionary<EquatableEdge<TVertex>, double> _weight;
 
+        /// <summary> The Path to optimize </summary>
         [NotNull]
         public BidirectionalGraph<TVertex, TEdge> Path { get; }
 
@@ -25,87 +28,65 @@ namespace QuikGraph.Algorithms.TSP
         [NotNull]
         public TaskPriority Priority { get; }
 
-        public Task(
-            [NotNull] BidirectionalGraph<TVertex, TEdge> graph,
-            [NotNull] IDictionary<EquatableEdge<TVertex>, double> weights,
-            [NotNull] BidirectionalGraph<TVertex, TEdge> path,
-            double cost)
-            : this(graph, weights, path, cost, "Init")
-        {
-        }
+        public bool ConnectsAllVertices() => Path.EdgeCount == _graph.VertexCount;
 
         public Task(
             [NotNull] BidirectionalGraph<TVertex, TEdge> graph,
             [NotNull] IDictionary<EquatableEdge<TVertex>, double> weights,
-            [NotNull] BidirectionalGraph<TVertex, TEdge> path,
-            double cost,
-            [NotNull] string taskName)
+            [NotNull] BidirectionalGraph<TVertex, TEdge> path, double cost,
+            [NotNull] string taskName = "Init")
         {
             TaskName = taskName;
             _graph = new BidirectionalGraph<TVertex, TEdge>(graph);
             _weight = new Dictionary<EquatableEdge<TVertex>, double>(weights);
             Path = path;
-            MinCost = cost;
-            Initialize();
+            BuildInitialPath();
+            MinCost = cost + Reduce();
             Priority = new TaskPriority(MinCost, path.EdgeCount);
         }
 
-        private void Initialize()
+        private void BuildInitialPath()
         {
-            if (Check())
+            if (CanAddSingleEdgeWithoutCycle())
                 return;
 
-            RemoveCycles();
-            Reduce();
+            foreach(var edge in Path.EdgesWithoutCycles(_graph.Edges).ToList())
+            {
+                _graph.RemoveEdge(edge);
+                _weight.Remove(edge);
+            };
         }
 
-        private bool Check()
+        private bool CanAddSingleEdgeWithoutCycle()
         {
-            if (_graph.EdgeCount == 1)
+            if (_graph.EdgeCount != 1)
             {
-                Path.AddEdge(_graph.Edges.First());
-                if (Path.IsDirectedAcyclicGraph())
-                {
-                    Path.RemoveEdge(_graph.Edges.First());
-                    return false;
-                }
-
-                return true;
+                return false;
             }
 
-            return false;
-        }
-
-        private void RemoveCycles()
-        {
-            var edgesToRemove = new List<TEdge>();
-            foreach (TEdge edge in _graph.Edges)
+            var singleEdge = _graph.Edges.First();
+            Path.AddEdge(singleEdge);
+            if (Path.IsDirectedAcyclicGraph())
             {
-                Path.AddEdge(edge);
-                if (!Path.IsDirectedAcyclicGraph())
-                {
-                    edgesToRemove.Add(edge);
-                    _weight.Remove(edge);
-                }
-
-                Path.RemoveEdge(edge);
+                Path.RemoveEdge(singleEdge);
+                return false;
             }
 
-            edgesToRemove.ForEach(edge => _graph.RemoveEdge(edge));
+            return true;
+
         }
 
-        private void Reduce()
+        private double Reduce()
         {
             if (_graph.IsEdgesEmpty)
             {
-                MinCost = double.PositiveInfinity;
-                return;
+                return double.PositiveInfinity;
             }
 
             double sum = ReduceOutEdges();
             sum += ReduceInEdges();
 
-            MinCost += sum;
+            return sum;
         }
 
         private double ReduceOutEdges()
@@ -113,10 +94,7 @@ namespace QuikGraph.Algorithms.TSP
             double sum = 0;
             foreach (TVertex vertex in _graph.Vertices)
             {
-                if (!_graph.TryGetOutEdges(vertex, out IEnumerable<TEdge> outEdges))
-                    continue;
-
-                TEdge[] outEdgesArray = outEdges.ToArray();
+                TEdge[] outEdgesArray = _graph.OutEdges(vertex).AsArray();
                 if (outEdgesArray.Length <= 0)
                     continue;
 
@@ -137,10 +115,14 @@ namespace QuikGraph.Algorithms.TSP
             double sum = 0;
             foreach (TVertex vertex in _graph.Vertices)
             {
-                if (!_graph.TryGetInEdges(vertex, out IEnumerable<TEdge> inEdges))
-                    continue;
+                var inEdges = _graph.InEdges(vertex);
+                //if (inEdges.IsNullOrEmpty())
+                //    continue;
 
-                TEdge[] inEdgesArray = inEdges.ToArray();
+                //if (!_graph.InEdges(vertex, out IEnumerable<TEdge> inEdges))
+                //    continue;
+
+                TEdge[] inEdgesArray = inEdges.AsArray(); // ?? Array.Empty<TEdge>();
                 if (inEdgesArray.Length <= 0)
                     continue;
 
@@ -157,14 +139,15 @@ namespace QuikGraph.Algorithms.TSP
         }
 
         [NotNull, ItemNotNull]
-        private IEnumerable<TEdge> GetZeroEdges()
+        private IEnumerable<TEdge> GetZeroEdges(double threshold = double.Epsilon)
         {
             var zeros = new List<TEdge>();
             foreach (TVertex vertex in _graph.Vertices)
             {
-                if (_graph.TryGetOutEdges(vertex, out IEnumerable<TEdge> outEdges))
+                var outEdges = _graph.OutEdges(vertex);
+                if (outEdges != null)
                 {
-                    zeros.AddRange(outEdges.Where(edge => Math.Abs(_weight[edge]) < double.Epsilon));
+                    zeros.AddRange(outEdges.Where(edge => Math.Abs(_weight[edge]) < threshold));
                 }
             }
 
@@ -179,13 +162,13 @@ namespace QuikGraph.Algorithms.TSP
             [NotNull] TVertex target)
         {
             return
-                row.Where(edge => !EqualityComparer<TVertex>.Default.Equals(edge.Target, target))
+                row.Where(edge => !_graph.AreVerticesEqual(edge.Target, target))
                     .DefaultIfEmpty(null)
                     .Min(edge => edge is null
                         ? double.PositiveInfinity
                         : _weight[edge])
                 +
-                column.Where(edge => !EqualityComparer<TVertex>.Default.Equals(edge.Source, source))
+                column.Where(edge => !_graph.AreVerticesEqual(edge.Source, source))
                     .DefaultIfEmpty(null)
                     .Min(edge => edge is null
                         ? double.PositiveInfinity
@@ -201,12 +184,12 @@ namespace QuikGraph.Algorithms.TSP
                 TVertex v1 = edge.Source;
                 TVertex v2 = edge.Target;
 
-                if (_graph.TryGetOutEdges(v1, out IEnumerable<TEdge> row)
-                    && _graph.TryGetInEdges(v2, out IEnumerable<TEdge> column))
+                var row = _graph.OutEdges(v1);
+                var column = _graph.InEdges(v2);
                 {
                     double maxCandidate = ComputeMaxCandidate(row, column, v1, v2);
 
-                    if (maxCandidate > max)
+                    if (max < maxCandidate)
                     {
                         max = maxCandidate;
                         edgeForSplit = edge;
@@ -217,10 +200,7 @@ namespace QuikGraph.Algorithms.TSP
             return edgeForSplit;
         }
 
-        private bool CanSplit()
-        {
-            return MinCost < double.PositiveInfinity;
-        }
+        private bool CanSplit() => MinCost < double.PositiveInfinity;
 
         public bool Split(out Task<TVertex, TEdge> taskTake, out Task<TVertex, TEdge> taskDrop)
         {
@@ -264,14 +244,6 @@ namespace QuikGraph.Algorithms.TSP
             taskDrop = new Task<TVertex, TEdge>(graphDrop, weightsDrop, new BidirectionalGraph<TVertex, TEdge>(Path), MinCost, $"Drop{edgeForSplit}");
 
             return true;
-        }
-
-        /// <summary>
-        /// Checks if the result is ready to be used.
-        /// </summary>
-        public bool IsResultReady()
-        {
-            return Path.EdgeCount == _graph.VertexCount;
         }
     }
 }

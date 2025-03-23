@@ -2,29 +2,21 @@
 
 namespace QuikGraph.Algorithms.Services
 {
-    /// <summary>
-    /// Represents algorithm component (services).
-    /// </summary>
+    /// <summary> Allows to <see cref="GetService{T}"/>s that an algorithm needs. </summary>
     public interface IAlgorithmComponent
     {
-        /// <summary>
-        /// Algorithm common services.
-        /// </summary>
+        /// <inheritdoc cref="IAlgorithmServices"/>
         [NotNull]
         IAlgorithmServices Services { get; }
 
-        /// <summary>
-        /// Gets the service with given <typeparamref name="T"/>.
-        /// </summary>
+        /// <summary> Gets the service with given <typeparamref name="T"/>ype. </summary>
         /// <typeparam name="T">Service type.</typeparam>
-        /// <returns>Found service, otherwise <see langword="null"/>.</returns>
+        /// <exception cref="T:System.InvalidOperationException">Requested service is not present on algorithm.</exception>
         [Pure]
         [CanBeNull]
         T GetService<T>();
 
-        /// <summary>
-        /// Tries to get the service with given <typeparamref name="T"/>.
-        /// </summary>
+        /// <summary> Tries to get the service with given <typeparamref name="T"/>. </summary>
         /// <typeparam name="T">Service type.</typeparam>
         /// <param name="service">Found service.</param>
         /// <returns>True if the service was found, false otherwise.</returns>

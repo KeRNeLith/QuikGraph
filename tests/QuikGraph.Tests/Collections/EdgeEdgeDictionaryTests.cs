@@ -15,8 +15,8 @@ namespace QuikGraph.Tests.Collections
         public void Constructors()
         {
             // ReSharper disable ObjectCreationAsStatement
-            Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>());
-            Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, Edge<int>>(12));
+            Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, IEdge<int>>());
+            Assert.DoesNotThrow(() => new EdgeEdgeDictionary<int, IEdge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
         }
 

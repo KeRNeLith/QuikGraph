@@ -1,28 +1,15 @@
-using JetBrains.Annotations;
-
-namespace QuikGraph.Tests
+﻿namespace QuikGraph.Tests
 {
-    /// <summary>
-    /// Unit test categories.
-    /// </summary>
+    /// <summary> Unit test categories. </summary>
     public static class TestCategories
     {
-        /// <summary>
-        /// Long unit tests.
-        /// </summary>
-        [NotNull]
-        public const string LongRunning = "LongRunning";
+        /// <summary> Long-running unit tests. </summary>
+        public const string LongRunning = nameof(LongRunning);
 
-        /// <summary>
-        /// Unit tests skipped by the CI.
-        /// </summary>
-        [NotNull]
-        public const string CISkip = "CISkip";
+        /// <summary> Unit tests skipped by the CI. </summary>
+        public const string CISkip = nameof(CISkip);
 
-        /// <summary>
-        /// Verbose unit tests (not really relevant to test a feature).
-        /// </summary>
-        [NotNull]
-        public const string Verbose = "VerboseTest";
+        /// <summary> Verbose unit tests (not really relevant to test a feature). </summary>
+        public const string VerboseTest = nameof(VerboseTest);
     }
 }

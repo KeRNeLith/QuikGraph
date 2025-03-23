@@ -101,7 +101,7 @@ namespace QuikGraph.Collections
         private readonly Head _tail;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SoftHeap{TKey,TValue}"/> class.
+        /// Initializes a new <see cref="SoftHeap{TKey,TValue}"/> class.
         /// </summary>
         /// <param name="maximumErrorRate">Indicates the maximum error rate to respect.</param>
         /// <param name="keyMaxValue">Gives the maximum key value.</param>
@@ -113,7 +113,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SoftHeap{TKey,TValue}"/> class.
+        /// Initializes a new <see cref="SoftHeap{TKey,TValue}"/> class.
         /// </summary>
         /// <param name="maximumErrorRate">Indicates the maximum error rate to respect.</param>
         /// <param name="keyMaxValue">Gives the maximum key value.</param>

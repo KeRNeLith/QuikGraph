@@ -26,8 +26,17 @@ namespace QuikGraph
         , IClusteredGraph
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClusteredAdjacencyGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ClusteredAdjacencyGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="wrappedGraph">Graph to wrap.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="wrappedGraph"/> is <see langword="null"/>.</exception>
@@ -39,7 +48,7 @@ namespace QuikGraph
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ClusteredAdjacencyGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ClusteredAdjacencyGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="parentGraph">Parent graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="parentGraph"/> is <see langword="null"/>.</exception>
@@ -165,72 +174,37 @@ namespace QuikGraph
         public virtual IEnumerable<TEdge> Edges => Wrapped.Edges;
 
         /// <inheritdoc />
-        public bool ContainsEdge(TEdge edge)
-        {
-            return Wrapped.ContainsEdge(edge);
-        }
+        public bool ContainsEdge(TEdge edge) => Wrapped.ContainsEdge(edge);
 
         #endregion
 
         #region IIncidenceGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool ContainsEdge(TVertex source, TVertex target)
-        {
-            return Wrapped.ContainsEdge(source, target);
-        }
+        public bool ContainsEdge(TVertex source, TVertex target) => Wrapped.ContainsEdge(source, target);
 
         /// <inheritdoc />
-        public bool TryGetEdge(TVertex source, TVertex target, out TEdge edge)
-        {
-            return Wrapped.TryGetEdge(source, target, out edge);
-        }
+        public bool TryGetEdge(TVertex source, TVertex target, out TEdge edge) => Wrapped.TryGetEdge(source, target, out edge);
 
         /// <inheritdoc />
-        public virtual bool TryGetEdges(TVertex source, TVertex target, out IEnumerable<TEdge> edges)
-        {
-            return Wrapped.TryGetEdges(source, target, out edges);
-        }
+        public virtual IEnumerable<TEdge> GetEdges(TVertex source, TVertex target) => Wrapped.GetEdges(source, target);
 
         #endregion
 
         #region IImplicitGraph<TVertex,TEdge> 
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(TVertex vertex)
-        {
-            return Wrapped.IsOutEdgesEmpty(vertex);
-        }
+        public int? OutDegree(TVertex vertex) => Wrapped.OutDegree(vertex);
 
         /// <inheritdoc />
-        public int OutDegree(TVertex vertex)
-        {
-            return Wrapped.OutDegree(vertex);
-        }
+        public virtual IEnumerable<TEdge> OutEdges(TVertex vertex) => Wrapped.OutEdges(vertex);
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEdge> OutEdges(TVertex vertex)
-        {
-            return Wrapped.OutEdges(vertex);
-        }
-
-        /// <inheritdoc />
-        public virtual bool TryGetOutEdges(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            return Wrapped.TryGetOutEdges(vertex, out edges);
-        }
-
-        /// <inheritdoc />
-        public TEdge OutEdge(TVertex vertex, int index)
-        {
-            return Wrapped.OutEdge(vertex, index);
-        }
+        public TEdge OutEdge(TVertex vertex, int index) => Wrapped.OutEdge(vertex, index);
 
         #endregion
 
-        /// <summary>
-        /// Adds a vertex to this graph.
-        /// </summary>
+        /// <summary> Adds a vertex to this graph. </summary>
         /// <param name="vertex">Vertex to add.</param>
         /// <returns>True if the vertex was added, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
@@ -248,14 +222,12 @@ namespace QuikGraph
             return Wrapped.AddVertex(vertex);
         }
 
-        /// <summary>
-        /// Adds given vertices to this graph.
-        /// </summary>
-        /// <param name="vertices">Vertices to add.</param>
+        /// <summary> Adds the <paramref name="vertices"/> to this graph. </summary>
         /// <returns>The number of vertex added.</returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// <paramref name="vertices"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
-        /// </exception>
+        public virtual int AddVertexRange([NotNull, ItemNotNull] params TVertex[] vertices) => AddVertexRange(vertices.AsEnumerable());
+
+        /// <summary> Adds the <paramref name="vertices"/> to this graph. </summary>
+        /// <returns>The number of vertex added.</returns>
         public virtual int AddVertexRange([NotNull, ItemNotNull] IEnumerable<TVertex> vertices)
         {
             if (vertices is null)
@@ -322,13 +294,13 @@ namespace QuikGraph
         /// <param name="predicate">Predicate to check on each vertex.</param>
         /// <returns>The number of vertex removed.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
-        public int RemoveVertexIf([NotNull, InstantHandle] VertexPredicate<TVertex> predicate)
+        public int RemoveVertexIf([NotNull, InstantHandle] Func<TVertex, bool> predicate)
         {
             if (predicate is null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var verticesToRemove = new VertexList<TVertex>();
-            verticesToRemove.AddRange(Vertices.Where(vertex => predicate(vertex)));
+            verticesToRemove.AddRange(Vertices.Where(predicate));
 
             foreach (TVertex vertex in verticesToRemove)
             {
@@ -353,6 +325,17 @@ namespace QuikGraph
             AddVertex(edge.Target);
             return AddEdge(edge);
         }
+
+        /// <summary>
+        /// Adds a set of edges (and it's vertices if necessary).
+        /// </summary>
+        /// <param name="edges">Edges to add.</param>
+        /// <returns>The number of edges added.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="edges"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
+        /// </exception>
+        public int AddVerticesAndEdgeRange([NotNull, ItemNotNull] params TEdge[] edges)
+            => AddVerticesAndEdgeRange(edges.AsEnumerable());
 
         /// <summary>
         /// Adds a set of edges (and it's vertices if necessary).
@@ -391,9 +374,15 @@ namespace QuikGraph
             return Wrapped.AddEdge(edge);
         }
 
-        /// <summary>
-        /// Adds a set of edges to this graph.
-        /// </summary>
+        /// <summary> Adds a set of edges to this graph. </summary>
+        /// <param name="edges">Edges to add.</param>
+        /// <returns>The number of edges successfully added to this graph.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="edges"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
+        /// </exception>
+        public int AddEdgeRange([NotNull, ItemNotNull] params TEdge[] edges) => AddEdgeRange(edges.AsEnumerable());
+
+        /// <summary> Adds a set of edges to this graph. </summary>
         /// <param name="edges">Edges to add.</param>
         /// <returns>The number of edges successfully added to this graph.</returns>
         /// <exception cref="T:System.ArgumentNullException">
@@ -461,13 +450,13 @@ namespace QuikGraph
         /// <param name="predicate">Predicate to check if an edge should be removed.</param>
         /// <returns>The number of edges removed.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
-        public int RemoveEdgeIf([NotNull, InstantHandle] EdgePredicate<TVertex, TEdge> predicate)
+        public int RemoveEdgeIf([NotNull, InstantHandle] Func<TEdge, bool> predicate)
         {
             if (predicate is null)
                 throw new ArgumentNullException(nameof(predicate));
 
-            var edgesToRemove = new EdgeList<TVertex, TEdge>();
-            edgesToRemove.AddRange(Edges.Where(edge => predicate(edge)));
+            var edgesToRemove = new EdgeList<TEdge>();
+            edgesToRemove.AddRange(Edges.Where(predicate));
 
             foreach (TEdge edge in edgesToRemove)
             {
@@ -486,7 +475,7 @@ namespace QuikGraph
         /// <returns>The number of removed edges.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
-        public int RemoveOutEdgeIf([NotNull] TVertex vertex, [NotNull, InstantHandle] EdgePredicate<TVertex, TEdge> predicate)
+        public int RemoveOutEdgeIf([NotNull] TVertex vertex, [NotNull, InstantHandle] Func<TEdge, bool> predicate)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));

@@ -15,7 +15,7 @@ namespace QuikGraph.Petri
     internal sealed class Place<TToken> : IPlace<TToken>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Place{TToken}"/> class.
+        /// Initializes a new <see cref="Place{TToken}"/> class.
         /// </summary>
         /// <param name="name">Place name.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>

@@ -20,7 +20,7 @@ namespace QuikGraph
     public struct STaggedUndirectedEdge<TVertex, TTag> : IUndirectedEdge<TVertex>, ITagged<TTag>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="STaggedUndirectedEdge{TVertex, TTag}"/> struct.
+        /// Initializes a new <see cref="STaggedUndirectedEdge{TVertex, TTag}"/> struct.
         /// </summary>
         /// <param name="source">The source vertex.</param>
         /// <param name="target">The target vertex.</param>
@@ -85,7 +85,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.TaggedUndirectedEdgeFormatString, Source, Target, Tag?.ToString() ?? "no tag");
+            return string.Format(EdgeFormats.TaggedUndirected, Source, Target, Tag?.ToString() ?? "no tag");
         }
     }
 }

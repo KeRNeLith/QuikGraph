@@ -16,8 +16,8 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void GetVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVertexRange(new[] { 1, 2, 3, 4, 5 });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVertexRange( 1, 2, 3, 4, 5 );
 
             int vertex = RandomGraphFactory.GetVertex(graph, new Random(123456));
             Assert.AreEqual(2, vertex);
@@ -38,8 +38,8 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void GetVertex_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var graph2 = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var graph2 = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
             var random = new Random();
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
@@ -64,58 +64,57 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void GetEdge()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge23 = new Edge<int>(2, 3);
-            var edge24 = new Edge<int>(2, 4);
-            var edge35 = new Edge<int>(3, 5);
-            graph.AddVerticesAndEdgeRange(new[]
-            {
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge23 = Edge.Create(2, 3);
+            var edge24 = Edge.Create(2, 4);
+            var edge35 = Edge.Create(3, 5);
+            graph.AddVerticesAndEdgeRange(
                 edge12, edge13, edge23, edge24, edge35
-            });
+            );
 
-            Edge<int> edge = RandomGraphFactory.GetEdge(graph, new Random(123456));
+            IEdge<int> edge = RandomGraphFactory.GetEdge(graph, new Random(123456));
             Assert.AreSame(edge13, edge);
 
             edge = RandomGraphFactory.GetEdge(graph, new Random(456789));
             Assert.AreSame(edge35, edge);
 
-            edge = RandomGraphFactory.GetEdge<int, Edge<int>>(graph.Edges, graph.VertexCount, new Random(123456));
+            edge = RandomGraphFactory.GetEdge<int, IEdge<int>>(graph.Edges, graph.VertexCount, new Random(123456));
             Assert.AreSame(edge13, edge);
 
-            edge = RandomGraphFactory.GetEdge<int, Edge<int>>(graph.Edges, graph.VertexCount, new Random(456789));
+            edge = RandomGraphFactory.GetEdge<int, IEdge<int>>(graph.Edges, graph.VertexCount, new Random(456789));
             Assert.AreSame(edge35, edge);
 
-            edge = RandomGraphFactory.GetEdge<int, Edge<int>>(graph.Edges, 3, new Random(123));
+            edge = RandomGraphFactory.GetEdge<int, IEdge<int>>(graph.Edges, 3, new Random(123));
             Assert.AreSame(edge23, edge);
         }
 
         [Test]
         public void GetEdge_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var graph2 = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var graph2 = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
             var random = new Random();
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(null, random));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(null, random));
             Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge(graph2, null));
-            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(null, null));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(null, null));
 
-            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(null, 1, random));
-            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(Enumerable.Empty<Edge<int>>(), 1, null));
-            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(null, 1, null));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(null, 1, random));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(Enumerable.Empty<IEdge<int>>(), 1, null));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(null, 1, null));
             // ReSharper restore AssignNullToNotNullAttribute
             Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.GetVertex(graph, random));
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(Enumerable.Empty<Edge<int>>(), -1, random));
-            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(Enumerable.Empty<Edge<int>>(), 0, random));
-            Assert.Throws<InvalidOperationException>(() => RandomGraphFactory.GetEdge<int, Edge<int>>(Enumerable.Empty<Edge<int>>(), 1, random));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(Enumerable.Empty<IEdge<int>>(), -1, random));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(Enumerable.Empty<IEdge<int>>(), 0, random));
+            Assert.Throws<InvalidOperationException>(() => RandomGraphFactory.GetEdge<int, IEdge<int>>(Enumerable.Empty<IEdge<int>>(), 1, random));
             Assert.Throws<InvalidOperationException>(
-                () => RandomGraphFactory.GetEdge<int, Edge<int>>(
-                    new[] { new Edge<int>(1, 2), new Edge<int>(1, 3) },
+                () => RandomGraphFactory.GetEdge<int, IEdge<int>>(
+                    new[] { Edge.Create(1, 2), Edge.Create(1, 3) },
                     10,
                     new Random(123456)));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
@@ -136,8 +135,8 @@ namespace QuikGraph.Tests.Algorithms
                 2,
                 0,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2 });
-            AssertNoEdge(graph);
+            graph.AssertHasVertices(1, 2 );
+            graph.AssertNoEdge();
 
             // With self edge
             v = 0;
@@ -149,21 +148,19 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 4),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new (1, 2),
+                    new (1, 2),
+                    new (1, 2),
+                    new (2, 1),
+                    new (3, 5),
+                    new (3, 1),
+                    new (4, 5),
+                    new (4, 4),
+                    new (4, 1),
+                    new (5, 3)
                 });
 
             // Without self edge
@@ -177,21 +174,20 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 false);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new (1, 2),
+                    new (1, 2),
+                    new (1, 2),
+                    new (2, 1),
+                    new (3, 5),
+                    new (3, 1),
+                    new (3, 1),
+                    new (4, 5),
+                    new (4, 1),
+                    new (5, 3)
                 });
 
             // Different seed change generated graph
@@ -205,24 +201,23 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 2),
-                    new EquatableEdge<int>(2, 5),
-                    new EquatableEdge<int>(3, 4),
-                    new EquatableEdge<int>(3, 2),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 2),
-                    new EquatableEdge<int>(4, 2),
-                    new EquatableEdge<int>(5, 2),
-                    new EquatableEdge<int>(5, 3)
+                    new(1, 2),
+                    new(2, 2),
+                    new(2, 5),
+                    new(3, 4),
+                    new(3, 2),
+                    new(4, 5),
+                    new(4, 2),
+                    new(4, 2),
+                    new(5, 2),
+                    new(5, 3)
                 });
 
-            // On non empty graph, keep existing stuff
+            // On non-empty graph, keep existing stuff
             graph.Clear();
             graph.AddVerticesAndEdge(new EquatableEdge<int>(6, 7));
             v = 0;
@@ -234,173 +229,53 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5, 6, 7 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5, 6, 7 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(6, 7),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 4),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new (6, 7),
+                    new (1, 2),
+                    new (1, 2),
+                    new (1, 2),
+                    new (2, 1),
+                    new (3, 5),
+                    new (3, 1),
+                    new (4, 5),
+                    new (4, 4),
+                    new (4, 1),
+                    new (5, 3)
                 });
         }
 
         [Test]
         public void Create_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             var random = new Random();
 
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    () => 1,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    () => 1,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    null,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableVertexAndEdgeListGraph<int, Edge<int>>)null,
-                    null,
-                    null,
-                    null,
-                    1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, () => 1, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, null, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, () => 1, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, () => 1, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, () => 1, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, null, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, null, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableVertexAndEdgeListGraph<int, IEdge<int>>)null, null, null, null, 1, 1, false));
             // ReSharper restore AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    -1, 1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    0, 1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, -1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    0, 0, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    -1, -1, false));
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, -1, 1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 0, 1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 1, -1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 0, 0, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, -1, -1, false));
         }
 
         [Test]
@@ -418,8 +293,8 @@ namespace QuikGraph.Tests.Algorithms
                 2,
                 0,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2 });
-            AssertNoEdge(graph);
+            graph.AssertHasVertices(1, 2 );
+            graph.AssertNoEdge();
 
             // With self edge
             v = 0;
@@ -431,21 +306,20 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 4),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new (1, 2),
+                    new (1, 2),
+                    new (1, 2),
+                    new (2, 1),
+                    new (3, 5),
+                    new (3, 1),
+                    new (4, 5),
+                    new (4, 4),
+                    new (4, 1),
+                    new (5, 3)
                 });
 
             // Without self edge
@@ -459,21 +333,20 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 false);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new(1, 2),
+                    new(1, 2),
+                    new(1, 2),
+                    new(2, 1),
+                    new(3, 5),
+                    new(3, 1),
+                    new(3, 1),
+                    new(4, 5),
+                    new(4, 1),
+                    new(5, 3)
                 });
 
             // Different seed change generated graph
@@ -487,21 +360,20 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 2),
-                    new EquatableEdge<int>(2, 5),
-                    new EquatableEdge<int>(3, 4),
-                    new EquatableEdge<int>(3, 2),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 2),
-                    new EquatableEdge<int>(4, 2),
-                    new EquatableEdge<int>(5, 2),
-                    new EquatableEdge<int>(5, 3)
+                    new(1, 2),
+                    new(2, 2),
+                    new(2, 5),
+                    new(3, 4),
+                    new(3, 2),
+                    new(4, 5),
+                    new(4, 2),
+                    new(4, 2),
+                    new(5, 2),
+                    new(5, 3)
                 });
 
             // On non empty graph, keep existing stuff
@@ -516,173 +388,53 @@ namespace QuikGraph.Tests.Algorithms
                 5,
                 10,
                 true);
-            AssertHasVertices(graph, new[] { 1, 2, 3, 4, 5, 6, 7 });
-            AssertHasEdges(
-                graph,
-                new[]
+            graph.AssertHasVertices(1, 2, 3, 4, 5, 6, 7 );
+            graph.AssertHasEdges(
+                new EquatableEdge<int>[]
                 {
-                    new EquatableEdge<int>(6, 7),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(2, 1),
-                    new EquatableEdge<int>(3, 5),
-                    new EquatableEdge<int>(3, 1),
-                    new EquatableEdge<int>(4, 5),
-                    new EquatableEdge<int>(4, 4),
-                    new EquatableEdge<int>(4, 1),
-                    new EquatableEdge<int>(5, 3)
+                    new(6, 7),
+                    new(1, 2),
+                    new(1, 2),
+                    new(1, 2),
+                    new(2, 1),
+                    new(3, 5),
+                    new(3, 1),
+                    new(4, 5),
+                    new(4, 4),
+                    new(4, 1),
+                    new(5, 3)
                 });
         }
 
         [Test]
         public void Create_Undirected_Throws()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            var graph = new UndirectedGraph<int, IEdge<int>>();
             var random = new Random();
 
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    () => 1,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    null,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    () => 1,
-                    null,
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    null,
-                    (source, target) => new Edge<int>(source, target),
-                    null,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    null,
-                    null,
-                    random,
-                    1, 1, false));
-            Assert.Throws<ArgumentNullException>(
-                () => RandomGraphFactory.Create(
-                    (IMutableUndirectedGraph<int, Edge<int>>)null,
-                    null,
-                    null,
-                    null,
-                    1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, () => 1, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, null, Edge.Create, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, () => 1, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, () => 1, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, null, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph, () => 1, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create(graph,null, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, () => 1, null, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, null, Edge.Create, null, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, null, null, random, 1, 1, false));
+            Assert.Throws<ArgumentNullException>(() => RandomGraphFactory.Create((IMutableUndirectedGraph<int, IEdge<int>>)null, null, null, null, 1, 1, false));
+
             // ReSharper restore AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    -1, 1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    0, 1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    1, -1, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    0, 0, false));
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => RandomGraphFactory.Create(
-                    graph,
-                    () => 1,
-                    (source, target) => new Edge<int>(source, target),
-                    random,
-                    -1, -1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, -1, 1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 0, 1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 1, -1, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, 0, 0, false));
+            Assert.Throws<ArgumentOutOfRangeException>(() => RandomGraphFactory.Create(graph, () => 1, Edge.Create, random, -1, -1, false));
         }
     }
 }

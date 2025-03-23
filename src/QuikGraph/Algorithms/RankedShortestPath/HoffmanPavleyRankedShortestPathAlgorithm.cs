@@ -10,16 +10,24 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.RankedShortestPath
 {
-    /// <summary>
-    /// Hoffman and Pavley K-shortest path algorithm.
-    /// </summary>
+    /// <inheritdoc cref="CreateHoffmanPavleyRankedShortestPathAlgorithm"/>
+    public static class HoffmanPavleyRankedShortestPathAlgorithm
+    {
+        /// <summary> Creates a new <see cref="HoffmanPavleyRankedShortestPathAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static HoffmanPavleyRankedShortestPathAlgorithm<TVertex, TEdge> CreateHoffmanPavleyRankedShortestPathAlgorithm<TVertex
+            , TEdge>([NotNull] this IBidirectionalGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] Func<TEdge, double> edgeWeights,
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new HoffmanPavleyRankedShortestPathAlgorithm<TVertex, TEdge>(visitedGraph, edgeWeights, distanceRelaxer, host);
+    }
+
+    /// <summary> Hoffman and Pavley K-shortest path algorithm. </summary>
     /// <remarks>
     /// Reference:
     /// Hoffman, W. and Pavley, R. 1959. A Method for the Solution of the Nth Best Path Problem. 
     /// J. ACM 6, 4 (Oct. 1959), 506-514. DOI= http://doi.acm.org/10.1145/320998.321004
     /// </remarks>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
     public sealed class HoffmanPavleyRankedShortestPathAlgorithm<TVertex, TEdge>
         : RankedShortestPathAlgorithmBase<TVertex, TEdge, IBidirectionalGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
@@ -31,52 +39,21 @@ namespace QuikGraph.Algorithms.RankedShortestPath
         private readonly Func<TEdge, double> _edgeWeights;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HoffmanPavleyRankedShortestPathAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that for a given edge provide its weight.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        public HoffmanPavleyRankedShortestPathAlgorithm(
-            [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights)
-            : this(visitedGraph, edgeWeights, DistanceRelaxers.ShortestDistance)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HoffmanPavleyRankedShortestPathAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="HoffmanPavleyRankedShortestPathAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that for a given edge provide its weight.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public HoffmanPavleyRankedShortestPathAlgorithm(
-            [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : this(null, visitedGraph, edgeWeights, distanceRelaxer)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HoffmanPavleyRankedShortestPathAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that for a given edge provide its weight.</param>
-        /// <param name="distanceRelaxer">Distance relaxer.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public HoffmanPavleyRankedShortestPathAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal HoffmanPavleyRankedShortestPathAlgorithm(
             [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
             [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : base(host, visitedGraph, distanceRelaxer)
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, distanceRelaxer ?? DistanceRelaxers.ShortestDistance, host)
         {
             _edgeWeights = edgeWeights ?? throw new ArgumentNullException(nameof(edgeWeights));
         }
@@ -143,7 +120,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
             if (!TryGetTargetVertex(out TVertex target))
                 throw new InvalidOperationException("Target vertex not set.");
             if (!VisitedGraph.ContainsVertex(target))
-                throw new VertexNotFoundException("Target vertex is not part of the graph.");
+                throw new Exception("Target vertex is not part of the graph.");
 
             // Start by building the minimum tree starting from the target vertex.
             ComputeMinimumTree(
@@ -178,8 +155,8 @@ namespace QuikGraph.Algorithms.RankedShortestPath
                 Debug.Assert(Math.Abs(deviation.Weight - path.Sum(e => _edgeWeights(e))) < float.Epsilon);
                 Debug.Assert(path.Count > 0);
 
-                // Add to list if has no cycle
-                if (!path.HasCycles<TVertex, TEdge>())
+                // Add to list, if has no cycle
+                if (!path.Cast<IEdge<TVertex>>().HasCycles(VisitedGraph.AreVerticesEqual))
                     AddComputedShortestPath(path);
 
                 // Append new deviation paths
@@ -215,7 +192,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
             if (path.Count == 0)
                 return; // Unreachable vertices
 
-            if (!path.HasCycles<TVertex, TEdge>())
+            if (!path.Cast<IEdge<TVertex>>().HasCycles(VisitedGraph.AreVerticesEqual))
                 AddComputedShortestPath(path);
 
             // Create deviation paths
@@ -234,18 +211,16 @@ namespace QuikGraph.Algorithms.RankedShortestPath
         {
             Debug.Assert(target != null);
 
-            var reversedGraph =
-                new ReversedBidirectionalGraph<TVertex, TEdge>(VisitedGraph);
+            var reversedGraph = VisitedGraph.CreateReversedBidirectionalGraph();
             var successorsObserver =
-                new VertexPredecessorRecorderObserver<TVertex, SReversedEdge<TVertex, TEdge>>();
+                new VertexPredecessorRecorderObserver<TVertex, SReversedEdge<TVertex, TEdge>>(VisitedGraph.AreVerticesEqual);
             var distancesObserver =
                 new VertexDistanceRecorderObserver<TVertex, SReversedEdge<TVertex, TEdge>>(ReversedEdgeWeight);
             var shortestPath =
-                new DijkstraShortestPathAlgorithm<TVertex, SReversedEdge<TVertex, TEdge>>(
-                    this,
-                    reversedGraph,
+                reversedGraph.CreateDijkstraShortestPathAlgorithm(
                     ReversedEdgeWeight,
-                    DistanceRelaxer);
+                    DistanceRelaxer,
+                    this);
 
             using (successorsObserver.Attach(shortestPath))
             using (distancesObserver.Attach(shortestPath))
@@ -259,14 +234,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
 
             distances = distancesObserver.Distances;
 
-            #region Local function
-
-            double ReversedEdgeWeight(SReversedEdge<TVertex, TEdge> edge)
-            {
-                return _edgeWeights(edge.OriginalEdge);
-            }
-
-            #endregion
+            double ReversedEdgeWeight(SReversedEdge<TVertex, TEdge> edge) => _edgeWeights(edge.OriginalEdge);
         }
 
         private void EnqueueDeviationPaths(
@@ -280,7 +248,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
             Debug.Assert(root != null);
             Debug.Assert(distances != null);
             Debug.Assert(path != null);
-            Debug.Assert(path[0].IsAdjacent(root));
+            Debug.Assert(path[0].IsAdjacent(root, VisitedGraph.AreVerticesEqual));
             Debug.Assert(0 <= startEdge && startEdge < path.Length);
 
             TVertex previousVertex = root;
@@ -335,7 +303,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
             foreach (TEdge deviationEdge in VisitedGraph.OutEdges(previousVertex))
             {
                 // Skip self edges and equal edges
-                if (EqualityComparer<TEdge>.Default.Equals(deviationEdge, edge) || deviationEdge.IsSelfEdge())
+                if (EqualityComparer<TEdge>.Default.Equals(deviationEdge, edge) || deviationEdge.IsSelfEdge(VisitedGraph.AreVerticesEqual))
                     continue;
 
                 // Any edge obviously creating a loop
@@ -375,7 +343,7 @@ namespace QuikGraph.Algorithms.RankedShortestPath
                 current = edge.Target;
             }
 
-            Debug.Assert(path.Count == 0 || EqualityComparer<TVertex>.Default.Equals(path.ElementAt(path.Count - 1).Target, _target));
+            Debug.Assert(path.Count == 0 || VisitedGraph.AreVerticesEqual(path.ElementAt(path.Count - 1).Target, _target));
         }
 
         [DebuggerDisplay("Weight = {" + nameof(Weight) + "}, Index = {" + nameof(DeviationIndex) + "}, Edge = {" + nameof(DeviationEdge) + "}")]

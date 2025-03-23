@@ -8,73 +8,71 @@ using static QuikGraph.Tests.GraphTestHelpers;
 
 namespace QuikGraph.Tests.Predicates
 {
-    /// <summary>
-    /// Base class for filtered graph tests.
-    /// </summary>
+    /// <summary> Base class for filtered graph tests. </summary>
     internal abstract class FilteredGraphTestsBase : GraphTestsBase
     {
         #region Vertices & Edges
 
         protected static void Vertices_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IVertexSet<int>> createFilteredGraph)
-            where TGraph : IMutableVertexSet<int>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IVertexSet<int>> createFilteredGraph)
+            where TGraph : IMutableVertexSet<int>, IMutableGraph<int, IEdge<int>>
         {
             IVertexSet<int> filteredGraph = createFilteredGraph(_ => true, _ => true);
             AssertNoVertex(filteredGraph);
 
-            wrappedGraph.AddVertexRange(new[] { 1, 2, 3 });
-            AssertHasVertices(filteredGraph, new[] { 1, 2, 3 });
+            wrappedGraph.AddVertexRange( 1, 2, 3 );
+            filteredGraph.AssertHasVertices(1, 2, 3 );
 
 
             wrappedGraph.Clear();
             filteredGraph = createFilteredGraph(vertex => vertex < 3, _ => true);
             AssertNoVertex(filteredGraph);
 
-            wrappedGraph.AddVertexRange(new[] { 1, 2, 3 });
-            AssertHasVertices(filteredGraph, new[] { 1, 2 });
+            wrappedGraph.AddVertexRange( 1, 2, 3 );
+            filteredGraph.AssertHasVertices(1, 2 );
         }
 
         public void Edges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IEdgeSet<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IEdgeSet<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
-            IEdgeSet<int, Edge<int>> filteredGraph = createFilteredGraph(_ => true, _ => true);
-            AssertNoEdge(filteredGraph);
+            IEdgeSet<int, IEdge<int>> filteredGraph = createFilteredGraph(_ => true, _ => true);
+            filteredGraph.AssertNoEdge();
 
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge22 = new Edge<int>(2, 2);
-            var edge31 = new Edge<int>(3, 1);
-            var edge33 = new Edge<int>(3, 3);
-            var edge41 = new Edge<int>(4, 1);
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge22, edge31, edge33, edge41 });
-            AssertHasEdges(filteredGraph, new[] { edge12, edge13, edge22, edge31, edge33, edge41 });
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge22 = Edge.Create(2, 2);
+            var edge31 = Edge.Create(3, 1);
+            var edge33 = Edge.Create(3, 3);
+            var edge41 = Edge.Create(4, 1);
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge22, edge31, edge33, edge41 );
+            filteredGraph.AssertHasEdges(edge12, edge13, edge22, edge31, edge33, edge41 );
 
 
             wrappedGraph.Clear();
             filteredGraph = createFilteredGraph(vertex => vertex <= 3, _ => true);
-            AssertNoEdge(filteredGraph);
+            filteredGraph.AssertNoEdge();
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge22, edge31, edge33, edge41 });
-            AssertHasEdges(filteredGraph, new[] { edge12, edge13, edge22, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge22, edge31, edge33, edge41 );
+            filteredGraph.AssertHasEdges(edge12, edge13, edge22, edge31, edge33 );
 
 
             wrappedGraph.Clear();
             filteredGraph = createFilteredGraph(_ => true, edge => edge.Source != edge.Target);
-            AssertNoEdge(filteredGraph);
+            filteredGraph.AssertNoEdge();
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge22, edge31, edge33, edge41 });
-            AssertHasEdges(filteredGraph, new[] { edge12, edge13, edge31, edge41 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge22, edge31, edge33, edge41 );
+            filteredGraph.AssertHasEdges(edge12, edge13, edge31, edge41 );
 
 
             wrappedGraph.Clear();
             filteredGraph = createFilteredGraph(vertex => vertex <= 3, edge => edge.Source != edge.Target);
-            AssertNoEdge(filteredGraph);
+            filteredGraph.AssertNoEdge();
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge22, edge31, edge33, edge41 });
-            AssertHasEdges(filteredGraph, new[] { edge12, edge13, edge31 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge22, edge31, edge33, edge41 );
+            filteredGraph.AssertHasEdges(edge12, edge13, edge31 );
         }
 
         #endregion
@@ -83,8 +81,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void ContainsVertex_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitVertexSet<int>> createFilteredGraph)
-            where TGraph : IMutableVertexSet<int>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitVertexSet<int>> createFilteredGraph)
+            where TGraph : IMutableVertexSet<int>, IMutableGraph<int, IEdge<int>>
         {
             IImplicitVertexSet<int> filteredGraph = createFilteredGraph(
                 _ => true,
@@ -142,12 +140,12 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void ContainsEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IEdgeSet<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IEdgeSet<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
-            IEdgeSet<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IEdgeSet<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 _ => true,
                 _ => true);
 
@@ -163,11 +161,11 @@ namespace QuikGraph.Tests.Predicates
             filteredGraph = createFilteredGraph(
                 vertex => vertex > 0 && vertex < 3,
                 _ => true);
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(2, 1);
-            var edge4 = new Edge<int>(2, 2);
-            var otherEdge1 = new Edge<int>(1, 2);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(2, 1);
+            var edge4 = Edge.Create(2, 2);
+            var otherEdge1 = Edge.Create(1, 2);
 
             Assert.IsFalse(filteredGraph.ContainsEdge(edge1));
             Assert.IsFalse(filteredGraph.ContainsEdge(edge2));
@@ -211,11 +209,11 @@ namespace QuikGraph.Tests.Predicates
             Assert.IsTrue(filteredGraph.ContainsEdge(otherEdge1));
 
             // Both vertices not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 10)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 10)));
             // Source not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 1)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 1)));
             // Target not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(1, 0)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(1, 0)));
 
             #endregion
 
@@ -268,11 +266,11 @@ namespace QuikGraph.Tests.Predicates
             Assert.IsTrue(filteredGraph.ContainsEdge(otherEdge1));
 
             // Both vertices not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 10)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 10)));
             // Source not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 1)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 1)));
             // Target not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(1, 0)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(1, 0)));
 
             #endregion
 
@@ -325,18 +323,18 @@ namespace QuikGraph.Tests.Predicates
             Assert.IsTrue(filteredGraph.ContainsEdge(otherEdge1));
 
             // Both vertices not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 10)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 10)));
             // Source not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(0, 1)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(0, 1)));
             // Target not in graph
-            Assert.IsFalse(filteredGraph.ContainsEdge(new Edge<int>(1, 0)));
+            Assert.IsFalse(filteredGraph.ContainsEdge(Edge.Create(1, 0)));
 
             #endregion
         }
 
         protected static void ContainsEdge_EquatableEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, EquatableEdge<int>>, IEdgeSet<int, EquatableEdge<int>>> createFilteredGraph)
+            [NotNull] Func<Func<int, bool>, Func<EquatableEdge<int>, bool>, IEdgeSet<int, EquatableEdge<int>>> createFilteredGraph)
             where TGraph : IMutableVertexAndEdgeSet<int, EquatableEdge<int>>, IMutableGraph<int, EquatableEdge<int>>
         {
             #region Part 1
@@ -530,8 +528,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void ContainsEdge_SourceTarget_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -544,13 +542,13 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            IIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex > 0 && vertex < 3,
                 _ => true);
 
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(2, 2);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(2, 2);
 
             Assert.IsFalse(filteredGraph.ContainsEdge(1, 2));
             Assert.IsFalse(filteredGraph.ContainsEdge(2, 1));
@@ -632,8 +630,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void ContainsEdge_SourceTarget_UndirectedGraph_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitUndirectedGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitUndirectedGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -646,13 +644,13 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            IImplicitUndirectedGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IImplicitUndirectedGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex > 0 && vertex < 3,
                 _ => true);
 
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(2, 2);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(2, 2);
 
             Assert.IsFalse(filteredGraph.ContainsEdge(1, 2));
             Assert.IsFalse(filteredGraph.ContainsEdge(2, 1));
@@ -738,8 +736,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void OutEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -752,16 +750,16 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge11 = new Edge<int>(1, 1);
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge24 = new Edge<int>(2, 4);
-            var edge33 = new Edge<int>(3, 3);
-            var edge34 = new Edge<int>(3, 4);
-            var edge41 = new Edge<int>(4, 1);
+            var edge11 = Edge.Create(1, 1);
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge24 = Edge.Create(2, 4);
+            var edge33 = Edge.Create(3, 3);
+            var edge34 = Edge.Create(3, 4);
+            var edge41 = Edge.Create(4, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge34, edge41 });
-            IImplicitGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge34, edge41 );
+            IImplicitGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
@@ -769,14 +767,14 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge13, filteredGraph.OutEdge(1, 2));
             Assert.AreSame(edge33, filteredGraph.OutEdge(3, 0));
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.OutEdge(4, 0)); // Filtered
+            Assert.IsNull(filteredGraph.OutEdge(4, 0)); // Filtered
 
             #endregion
 
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge34, edge41 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge34, edge41 );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
@@ -792,7 +790,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge34, edge41 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge34, edge41 );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 edge => edge.Source != edge.Target);
@@ -801,7 +799,7 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge13, filteredGraph.OutEdge(1, 1));
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             AssertIndexOutOfRange(() => filteredGraph.OutEdge(3, 0));  // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.OutEdge(4, 1)); // Filtered
+            Assert.IsNull(filteredGraph.OutEdge(4, 1)); // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -809,8 +807,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void OutEdge_Throws_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -828,20 +826,19 @@ namespace QuikGraph.Tests.Predicates
             const int vertex3 = 3;
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex1)
-            });
-            IImplicitGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex1)
+            );
+            IImplicitGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 _ => true);
 
             AssertIndexOutOfRange(() => filteredGraph.OutEdge(vertex1, 2));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.OutEdge(vertex3, 0));
+            Assert.IsNull(filteredGraph.OutEdge(vertex3, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -852,20 +849,19 @@ namespace QuikGraph.Tests.Predicates
             const int vertex4 = 4;
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex1)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex1)
+            );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != 1);
 
             AssertIndexOutOfRange(() => filteredGraph.OutEdge(vertex1, 0));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.OutEdge(vertex4, 0));
+            Assert.IsNull(filteredGraph.OutEdge(vertex4, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -874,22 +870,21 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex2),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex1)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex2),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex1)
+            );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 edge => edge.Source != 1);
 
             AssertIndexOutOfRange(() => filteredGraph.OutEdge(vertex1, 0));
             AssertIndexOutOfRange(() => filteredGraph.OutEdge(vertex2, 1));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.OutEdge(vertex4, 0));
+            Assert.IsNull(filteredGraph.OutEdge(vertex4, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -897,8 +892,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void OutEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -911,26 +906,26 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge14 = new Edge<int>(1, 4);
-            var edge15 = new Edge<int>(1, 5);
-            var edge24 = new Edge<int>(2, 4);
-            var edge31 = new Edge<int>(3, 1);
-            var edge33 = new Edge<int>(3, 3);
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge14 = Edge.Create(1, 4);
+            var edge15 = Edge.Create(1, 5);
+            var edge24 = Edge.Create(2, 4);
+            var edge31 = Edge.Create(3, 1);
+            var edge33 = Edge.Create(3, 3);
 
-            IImplicitGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IImplicitGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
             wrappedGraph.AddVertex(1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13 );  // Filtered
             AssertNoOutEdge(filteredGraph, 2);                                   // Filtered
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge31, edge33 });
+            AssertHasOutEdges(filteredGraph, 3, edge31, edge33 );
 
             #endregion
 
@@ -944,11 +939,11 @@ namespace QuikGraph.Tests.Predicates
             wrappedGraph.AddVertex(1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13, edge14, edge15 });
-            AssertHasOutEdges(filteredGraph, 2, new[] { edge24 });
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge31 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13, edge14, edge15 );
+            AssertHasOutEdges(filteredGraph, 2, edge24 );
+            AssertHasOutEdges(filteredGraph, 3, edge31 );  // Filtered
 
             #endregion
 
@@ -962,11 +957,11 @@ namespace QuikGraph.Tests.Predicates
             wrappedGraph.AddVertex(1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13 );  // Filtered
             AssertNoOutEdge(filteredGraph, 2);                                   // Filtered
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge31 });          // Filtered
+            AssertHasOutEdges(filteredGraph, 3, edge31 );          // Filtered
 
             #endregion
         }
@@ -977,8 +972,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void InEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IBidirectionalIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IBidirectionalIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -991,14 +986,14 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge11 = new Edge<int>(1, 1);
-            var edge13 = new Edge<int>(1, 3);
-            var edge14 = new Edge<int>(1, 4);
-            var edge21 = new Edge<int>(2, 1);
+            var edge11 = Edge.Create(1, 1);
+            var edge13 = Edge.Create(1, 3);
+            var edge14 = Edge.Create(1, 4);
+            var edge21 = Edge.Create(2, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge13, edge14, edge21 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge13, edge14, edge21 );
 
-            IBidirectionalIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IBidirectionalIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
@@ -1007,7 +1002,7 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge13, filteredGraph.InEdge(3, 0));
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             AssertIndexOutOfRange(() => filteredGraph.InEdge(1, 2));    // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.InEdge(4, 0)); // Filtered
+            Assert.IsNull(filteredGraph.InEdge(4, 0)); // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1015,7 +1010,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge13, edge14, edge21 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge13, edge14, edge21 );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
@@ -1029,7 +1024,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge13, edge14, edge21 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge13, edge14, edge21 );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 edge => edge.Source != edge.Target);
@@ -1038,7 +1033,7 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge21, filteredGraph.InEdge(1, 0)); // Filtered
             Assert.AreSame(edge13, filteredGraph.InEdge(3, 0));
             AssertIndexOutOfRange(() => filteredGraph.InEdge(1, 2));    // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.InEdge(4, 0)); // Filtered
+            Assert.IsNull(filteredGraph.InEdge(4, 0)); // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1046,8 +1041,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void InEdge_Throws_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IBidirectionalIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IBidirectionalIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1065,20 +1060,19 @@ namespace QuikGraph.Tests.Predicates
             const int vertex3 = 3;
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex1),
-                new Edge<int>(vertex3, vertex1),
-                new Edge<int>(vertex3, vertex2)
-            });
-            IBidirectionalIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex1),
+                Edge.Create(vertex3, vertex1),
+                Edge.Create(vertex3, vertex2)
+            );
+            IBidirectionalIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 _ => true);
 
             AssertIndexOutOfRange(() => filteredGraph.InEdge(vertex1, 2));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.InEdge(vertex3, 0));
+            Assert.IsNull(filteredGraph.InEdge(vertex3, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1086,14 +1080,13 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex1),
-                new Edge<int>(vertex3, vertex1),
-                new Edge<int>(vertex3, vertex2)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex1),
+                Edge.Create(vertex3, vertex1),
+                Edge.Create(vertex3, vertex2)
+            );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
@@ -1107,20 +1100,19 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex1),
-                new Edge<int>(vertex3, vertex1),
-                new Edge<int>(vertex3, vertex2)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex1),
+                Edge.Create(vertex3, vertex1),
+                Edge.Create(vertex3, vertex2)
+            );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 edge => edge.Source != edge.Target);
 
             AssertIndexOutOfRange(() => filteredGraph.InEdge(vertex1, 1));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.InEdge(vertex3, 0));
+            Assert.IsNull(filteredGraph.InEdge(vertex3, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1128,8 +1120,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void InEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IBidirectionalIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IBidirectionalIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1142,14 +1134,14 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge14 = new Edge<int>(1, 4);
-            var edge24 = new Edge<int>(2, 4);
-            var edge32 = new Edge<int>(3, 2);
-            var edge33 = new Edge<int>(3, 3);
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge14 = Edge.Create(1, 4);
+            var edge24 = Edge.Create(2, 4);
+            var edge32 = Edge.Create(3, 2);
+            var edge33 = Edge.Create(3, 3);
 
-            IBidirectionalIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IBidirectionalIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
@@ -1157,15 +1149,15 @@ namespace QuikGraph.Tests.Predicates
             AssertNoInEdge(filteredGraph, 1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge24, edge32, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge24, edge32, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13 );  // Filtered
             AssertNoOutEdge(filteredGraph, 2);  // Filtered
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge32, edge33 });
+            AssertHasOutEdges(filteredGraph, 3, edge32, edge33 );
 
             AssertNoInEdge(filteredGraph, 1);
-            AssertHasInEdges(filteredGraph, 2, new[] { edge12, edge32 });
-            AssertHasInEdges(filteredGraph, 3, new[] { edge13, edge33 });
+            AssertHasInEdges(filteredGraph, 2, edge12, edge32 );
+            AssertHasInEdges(filteredGraph, 3, edge13, edge33 );
 
             #endregion
 
@@ -1180,15 +1172,15 @@ namespace QuikGraph.Tests.Predicates
             AssertNoInEdge(filteredGraph, 1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge24, edge32, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge24, edge32, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13, edge14 });
-            AssertHasOutEdges(filteredGraph, 2, new[] { edge24 });
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge32 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13, edge14 );
+            AssertHasOutEdges(filteredGraph, 2, edge24 );
+            AssertHasOutEdges(filteredGraph, 3, edge32 );  // Filtered
 
             AssertNoInEdge(filteredGraph, 1);
-            AssertHasInEdges(filteredGraph, 2, new[] { edge12, edge32 });
-            AssertHasInEdges(filteredGraph, 3, new[] { edge13 });   // Filtered
+            AssertHasInEdges(filteredGraph, 2, edge12, edge32 );
+            AssertHasInEdges(filteredGraph, 3, edge13 );   // Filtered
 
             #endregion
 
@@ -1203,15 +1195,15 @@ namespace QuikGraph.Tests.Predicates
             AssertNoInEdge(filteredGraph, 1);
             AssertNoOutEdge(filteredGraph, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge24, edge32, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge24, edge32, edge33 );
 
-            AssertHasOutEdges(filteredGraph, 1, new[] { edge12, edge13 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 1, edge12, edge13 );  // Filtered
             AssertNoOutEdge(filteredGraph, 2);  // Filtered
-            AssertHasOutEdges(filteredGraph, 3, new[] { edge32 });  // Filtered
+            AssertHasOutEdges(filteredGraph, 3, edge32 );  // Filtered
 
             AssertNoInEdge(filteredGraph, 1);
-            AssertHasInEdges(filteredGraph, 2, new[] { edge12, edge32 });
-            AssertHasInEdges(filteredGraph, 3, new[] { edge13 });   // Filtered
+            AssertHasInEdges(filteredGraph, 2, edge12, edge32 );
+            AssertHasInEdges(filteredGraph, 3, edge13 );   // Filtered
 
             #endregion
         }
@@ -1222,8 +1214,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void AdjacentEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitUndirectedGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitUndirectedGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1236,15 +1228,15 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge11 = new Edge<int>(1, 1);
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge24 = new Edge<int>(2, 4);
-            var edge33 = new Edge<int>(3, 3);
-            var edge41 = new Edge<int>(4, 1);
+            var edge11 = Edge.Create(1, 1);
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge24 = Edge.Create(2, 4);
+            var edge33 = Edge.Create(3, 3);
+            var edge41 = Edge.Create(4, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge41 });
-            IImplicitUndirectedGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge41 );
+            IImplicitUndirectedGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
@@ -1253,14 +1245,14 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge13, filteredGraph.AdjacentEdge(3, 0));
             Assert.AreSame(edge33, filteredGraph.AdjacentEdge(3, 1));
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.AdjacentEdge(4, 1)); // Filtered
+            Assert.IsNull(filteredGraph.AdjacentEdge(4, 1)); // Filtered
 
             #endregion
 
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge41 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge41 );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
@@ -1276,7 +1268,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge11, edge12, edge13, edge24, edge33, edge41 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge11, edge12, edge13, edge24, edge33, edge41 );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 edge => edge.Source != edge.Target);
@@ -1286,7 +1278,7 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreSame(edge13, filteredGraph.AdjacentEdge(3, 0));
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(3, 1));  // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.AdjacentEdge(4, 1)); // Filtered
+            Assert.IsNull(filteredGraph.AdjacentEdge(4, 1)); // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1294,8 +1286,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void AdjacentEdge_Throws_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitUndirectedGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitUndirectedGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1313,20 +1305,19 @@ namespace QuikGraph.Tests.Predicates
             const int vertex3 = 3;
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex1)
-            });
-            IImplicitUndirectedGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex1)
+            );
+            IImplicitUndirectedGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 _ => true);
 
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(vertex1, 2));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.AdjacentEdge(vertex3, 0));
+            Assert.IsNull(filteredGraph.AdjacentEdge(vertex3, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1338,21 +1329,20 @@ namespace QuikGraph.Tests.Predicates
             const int vertex5 = 5;
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex4)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex4)
+            );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != 1);
 
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(vertex1, 0));
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(vertex2, 1));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.AdjacentEdge(vertex5, 0));
+            Assert.IsNull(filteredGraph.AdjacentEdge(vertex5, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1361,22 +1351,21 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(vertex1, vertex1),
-                new Edge<int>(vertex1, vertex2),
-                new Edge<int>(vertex1, vertex3),
-                new Edge<int>(vertex2, vertex2),
-                new Edge<int>(vertex2, vertex3),
-                new Edge<int>(vertex3, vertex1)
-            });
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(vertex1, vertex1),
+                Edge.Create(vertex1, vertex2),
+                Edge.Create(vertex1, vertex3),
+                Edge.Create(vertex2, vertex2),
+                Edge.Create(vertex2, vertex3),
+                Edge.Create(vertex3, vertex1)
+            );
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 3,
                 edge => edge.Source != 1);
 
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(vertex1, 0));
             AssertIndexOutOfRange(() => filteredGraph.AdjacentEdge(vertex2, 1));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.AdjacentEdge(vertex4, 0));
+            Assert.IsNull(filteredGraph.AdjacentEdge(vertex4, 0));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1384,8 +1373,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void AdjacentEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitUndirectedGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitUndirectedGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part1
 
@@ -1398,14 +1387,14 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge12 = new Edge<int>(1, 2);
-            var edge13 = new Edge<int>(1, 3);
-            var edge14 = new Edge<int>(1, 4);
-            var edge24 = new Edge<int>(2, 4);
-            var edge31 = new Edge<int>(3, 1);
-            var edge33 = new Edge<int>(3, 3);
+            var edge12 = Edge.Create(1, 2);
+            var edge13 = Edge.Create(1, 3);
+            var edge14 = Edge.Create(1, 4);
+            var edge24 = Edge.Create(2, 4);
+            var edge31 = Edge.Create(3, 1);
+            var edge33 = Edge.Create(3, 3);
 
-            IImplicitUndirectedGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IImplicitUndirectedGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 _ => true);
 
@@ -1413,13 +1402,13 @@ namespace QuikGraph.Tests.Predicates
             AssertNoAdjacentEdge(filteredGraph, 1);
 
             wrappedGraph.AddVertex(5);
-            var edge15 = new Edge<int>(1, 5);
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            var edge15 = Edge.Create(1, 5);
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasAdjacentEdges(filteredGraph, 1, new[] { edge12, edge13, edge14, edge31 });
-            AssertHasAdjacentEdges(filteredGraph, 2, new[] { edge12, edge24 });
-            AssertHasAdjacentEdges(filteredGraph, 3, new[] { edge13, edge31, edge33 }, 4);  // Has self edge counting twice
-            AssertHasAdjacentEdges(filteredGraph, 4, new[] { edge14, edge24 });
+            filteredGraph.AssertHasAdjacentEdges(1, new[] { edge12, edge13, edge14, edge31 });
+            filteredGraph.AssertHasAdjacentEdges(2, new[] { edge12, edge24 });
+            filteredGraph.AssertHasAdjacentEdges(3, new[] { edge13, edge31, edge33 }, 4);  // Has self edge counting twice
+            filteredGraph.AssertHasAdjacentEdges(4, new[] { edge14, edge24 });
 
             #endregion
 
@@ -1434,12 +1423,12 @@ namespace QuikGraph.Tests.Predicates
             AssertNoAdjacentEdge(filteredGraph, 1);
 
             wrappedGraph.AddVertex(5);
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasAdjacentEdges(filteredGraph, 1, new[] { edge12, edge13, edge14, edge15, edge31 });
-            AssertHasAdjacentEdges(filteredGraph, 2, new[] { edge12, edge24 });
-            AssertHasAdjacentEdges(filteredGraph, 3, new[] { edge13, edge31 });
-            AssertHasAdjacentEdges(filteredGraph, 4, new[] { edge14, edge24 });
+            filteredGraph.AssertHasAdjacentEdges(1, edge12, edge13, edge14, edge15, edge31 );
+            filteredGraph.AssertHasAdjacentEdges(2, edge12, edge24 );
+            filteredGraph.AssertHasAdjacentEdges(3, edge13, edge31 );
+            filteredGraph.AssertHasAdjacentEdges(4, edge14, edge24 );
 
             #endregion
 
@@ -1454,12 +1443,12 @@ namespace QuikGraph.Tests.Predicates
             AssertNoAdjacentEdge(filteredGraph, 1);
 
             wrappedGraph.AddVertex(5);
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge12, edge13, edge14, edge15, edge24, edge31, edge33 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge12, edge13, edge14, edge15, edge24, edge31, edge33 );
 
-            AssertHasAdjacentEdges(filteredGraph, 1, new[] { edge12, edge13, edge14, edge31 });
-            AssertHasAdjacentEdges(filteredGraph, 2, new[] { edge12, edge24 });
-            AssertHasAdjacentEdges(filteredGraph, 3, new[] { edge13, edge31 });
-            AssertHasAdjacentEdges(filteredGraph, 4, new[] { edge14, edge24 });
+            filteredGraph.AssertHasAdjacentEdges(1, edge12, edge13, edge14, edge31 );
+            filteredGraph.AssertHasAdjacentEdges(2, edge12, edge24 );
+            filteredGraph.AssertHasAdjacentEdges(3, edge13, edge31 );
+            filteredGraph.AssertHasAdjacentEdges(4, edge14, edge24 );
 
             #endregion
         }
@@ -1470,8 +1459,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void Degree_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IBidirectionalIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IBidirectionalIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1485,25 +1474,25 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(1, 4);
-            var edge4 = new Edge<int>(2, 4);
-            var edge5 = new Edge<int>(3, 2);
-            var edge6 = new Edge<int>(3, 3);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(1, 4);
+            var edge4 = Edge.Create(2, 4);
+            var edge5 = Edge.Create(3, 2);
+            var edge6 = Edge.Create(3, 3);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
             wrappedGraph.AddVertex(5);
 
-            IBidirectionalIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IBidirectionalIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
             Assert.AreEqual(2, filteredGraph.Degree(1));    // Filtered
             Assert.AreEqual(2, filteredGraph.Degree(2));    // Filtered
             Assert.AreEqual(4, filteredGraph.Degree(3));    // Self edge
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.Degree(4));    // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.Degree(5));    // Filtered
+            Assert.IsNull(filteredGraph.Degree(4));    // Filtered
+            Assert.IsNull(filteredGraph.Degree(5));    // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1512,7 +1501,7 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
             wrappedGraph.AddVertex(5);
 
             filteredGraph = createFilteredGraph(
@@ -1532,7 +1521,7 @@ namespace QuikGraph.Tests.Predicates
 
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
             wrappedGraph.AddVertex(5);
 
             filteredGraph = createFilteredGraph(
@@ -1542,8 +1531,8 @@ namespace QuikGraph.Tests.Predicates
             Assert.AreEqual(2, filteredGraph.Degree(1));    // Filtered
             Assert.AreEqual(2, filteredGraph.Degree(2));    // Filtered
             Assert.AreEqual(2, filteredGraph.Degree(3));    // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.Degree(4));    // Filtered
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph.Degree(5));    // Filtered
+            Assert.IsNull(filteredGraph.Degree(4));    // Filtered
+            Assert.IsNull(filteredGraph.Degree(5));    // Filtered
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
 
             #endregion
@@ -1555,38 +1544,36 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void TryGetEdge_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
-            TryGetEdge_ImmutableGraph_Test(
-                wrappedGraph,
-                () => createFilteredGraph(_ => true, _ => true));
+            TryGetEdge_ImmutableGraph_Test(wrappedGraph, () => createFilteredGraph(_ => true, _ => true));
 
             #endregion
 
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 2);
-            var edge3 = new Edge<int>(1, 3);
-            var edge4 = new Edge<int>(2, 2);
-            var edge5 = new Edge<int>(2, 4);
-            var edge6 = new Edge<int>(3, 1);
-            var edge7 = new Edge<int>(5, 2);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 2);
+            var edge3 = Edge.Create(1, 3);
+            var edge4 = Edge.Create(2, 2);
+            var edge5 = Edge.Create(2, 4);
+            var edge6 = Edge.Create(3, 1);
+            var edge7 = Edge.Create(5, 2);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
-            IIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 _ => true);
 
             Assert.IsFalse(filteredGraph.TryGetEdge(0, 10, out _));
             Assert.IsFalse(filteredGraph.TryGetEdge(0, 1, out _));
 
-            Assert.IsTrue(filteredGraph.TryGetEdge(2, 4, out Edge<int> gotEdge));
+            Assert.IsTrue(filteredGraph.TryGetEdge(2, 4, out IEdge<int> gotEdge));
             Assert.AreSame(edge5, gotEdge);
 
             Assert.IsTrue(filteredGraph.TryGetEdge(2, 2, out gotEdge));
@@ -1605,7 +1592,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
             filteredGraph = createFilteredGraph(
                 _ => true,
@@ -1632,7 +1619,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
             filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
@@ -1657,14 +1644,14 @@ namespace QuikGraph.Tests.Predicates
             #endregion
         }
 
-        protected static void TryGetEdges_Test<TGraph>(
+        protected static void GetEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
-            TryGetEdges_Test(
+            GetEdges_Test(
                 createFilteredGraph(_ => true, _ => true),
                 edges => wrappedGraph.AddVerticesAndEdgeRange(edges));
 
@@ -1673,31 +1660,31 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 2);
-            var edge3 = new Edge<int>(1, 3);
-            var edge4 = new Edge<int>(2, 2);
-            var edge5 = new Edge<int>(2, 4);
-            var edge6 = new Edge<int>(3, 1);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 2);
+            var edge3 = Edge.Create(1, 3);
+            var edge4 = Edge.Create(2, 2);
+            var edge5 = Edge.Create(2, 4);
+            var edge6 = Edge.Create(3, 1);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
 
-            IIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 _ => true);
 
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 10, out _));
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 1, out _));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 10));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 1));
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 2, out IEnumerable<Edge<int>> gotEdges));
+            var gotEdges = filteredGraph.GetEdges(2, 2);
             CollectionAssert.AreEqual(new[] { edge4 }, gotEdges);
 
-            Assert.IsFalse(filteredGraph.TryGetEdges(2, 4, out _)); // Filtered
+            Assert.IsEmpty(filteredGraph.GetEdges(2, 4)); // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(1, 2, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(1, 2);
             CollectionAssert.AreEqual(new[] { edge1, edge2 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 1, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(2, 1);
             CollectionAssert.IsEmpty(gotEdges);
 
             #endregion
@@ -1705,25 +1692,25 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
 
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 10, out _));
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 1, out _));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 10));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 1));
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 2, out gotEdges)); // Filtered
+            gotEdges = filteredGraph.GetEdges(2, 2); // Filtered
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 4, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(2, 4);
             CollectionAssert.AreEqual(new[] { edge5 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(1, 2, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(1, 2);
             CollectionAssert.AreEqual(new[] { edge1, edge2 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 1, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(2, 1);
             CollectionAssert.IsEmpty(gotEdges);
 
             #endregion
@@ -1731,24 +1718,24 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6 );
 
             filteredGraph = createFilteredGraph(
                 vertex => vertex < 4,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 10, out _));
-            Assert.IsFalse(filteredGraph.TryGetEdges(0, 1, out _));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 10));
+            Assert.IsEmpty(filteredGraph.GetEdges(0, 1));
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 2, out gotEdges)); // Filtered
+            gotEdges = filteredGraph.GetEdges(2, 2); // Filtered
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsFalse(filteredGraph.TryGetEdges(2, 4, out _)); // Filtered
+            Assert.IsEmpty(filteredGraph.GetEdges(2, 4)); // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(1, 2, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(1, 2);
             CollectionAssert.AreEqual(new[] { edge1, edge2 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetEdges(2, 1, out gotEdges));
+            gotEdges = filteredGraph.GetEdges(2, 1);
             CollectionAssert.IsEmpty(gotEdges);
 
             #endregion
@@ -1756,8 +1743,8 @@ namespace QuikGraph.Tests.Predicates
 
         protected static void TryGetEdge_UndirectedGraph_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitUndirectedGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitUndirectedGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
@@ -1770,24 +1757,24 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 2);
-            var edge3 = new Edge<int>(1, 3);
-            var edge4 = new Edge<int>(2, 2);
-            var edge5 = new Edge<int>(2, 4);
-            var edge6 = new Edge<int>(3, 1);
-            var edge7 = new Edge<int>(5, 2);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 2);
+            var edge3 = Edge.Create(1, 3);
+            var edge4 = Edge.Create(2, 2);
+            var edge5 = Edge.Create(2, 4);
+            var edge6 = Edge.Create(3, 1);
+            var edge7 = Edge.Create(5, 2);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
-            IImplicitUndirectedGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            IImplicitUndirectedGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 _ => true);
 
             Assert.IsFalse(filteredGraph.TryGetEdge(0, 10, out _));
             Assert.IsFalse(filteredGraph.TryGetEdge(0, 1, out _));
 
-            Assert.IsTrue(filteredGraph.TryGetEdge(2, 4, out Edge<int> gotEdge));
+            Assert.IsTrue(filteredGraph.TryGetEdge(2, 4, out IEdge<int> gotEdge));
             Assert.AreSame(edge5, gotEdge);
 
             Assert.IsTrue(filteredGraph.TryGetEdge(2, 2, out gotEdge));
@@ -1808,7 +1795,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
             filteredGraph = createFilteredGraph(
                 _ => true,
@@ -1840,7 +1827,7 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
 
             filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
@@ -1867,14 +1854,14 @@ namespace QuikGraph.Tests.Predicates
             #endregion
         }
 
-        protected static void TryGetOutEdges_Test<TGraph>(
+        protected static void GetOutEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IImplicitGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IImplicitGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
-            TryGetOutEdges_Test(
+            GetOutEdges_Test(
                 createFilteredGraph(_ => true, _ => true),
                 edges => wrappedGraph.AddVerticesAndEdgeRange(edges));
 
@@ -1883,31 +1870,31 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 2);
-            var edge3 = new Edge<int>(1, 3);
-            var edge4 = new Edge<int>(2, 2);
-            var edge5 = new Edge<int>(2, 3);
-            var edge6 = new Edge<int>(2, 4);
-            var edge7 = new Edge<int>(4, 3);
-            var edge8 = new Edge<int>(4, 5);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 2);
+            var edge3 = Edge.Create(1, 3);
+            var edge4 = Edge.Create(2, 2);
+            var edge5 = Edge.Create(2, 3);
+            var edge6 = Edge.Create(2, 4);
+            var edge7 = Edge.Create(4, 3);
+            var edge8 = Edge.Create(4, 5);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 });
-            IImplicitGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 );
+            IImplicitGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 _ => true);
 
-            Assert.IsFalse(filteredGraph.TryGetOutEdges(0, out _));
+            Assert.IsNull(filteredGraph.OutEdges(0));
 
-            Assert.IsFalse(filteredGraph.TryGetOutEdges(5, out _)); // Filtered
+            Assert.IsEmpty(filteredGraph.OutEdges(5)); // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(3, out IEnumerable<Edge<int>> gotEdges));
+            var gotEdges = filteredGraph.OutEdges(3);
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(4, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(4);
             CollectionAssert.AreEqual(new[] { edge7 }, gotEdges);   // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(2, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(2);
             CollectionAssert.AreEqual(new[] { edge4, edge5, edge6 }, gotEdges);
 
             #endregion
@@ -1915,23 +1902,23 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetOutEdges(0, out _));
+            Assert.IsNull(filteredGraph.OutEdges(0));
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(5, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(5);
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(3, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(3);
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(4, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(4);
             CollectionAssert.AreEqual(new[] { edge7, edge8 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(2, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(2);
             CollectionAssert.AreEqual(new[] { edge5, edge6 }, gotEdges);   // Filtered
 
             #endregion
@@ -1939,35 +1926,35 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8 );
             filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetOutEdges(0, out _));
+            Assert.IsNull(filteredGraph.OutEdges(0));
 
-            Assert.IsFalse(filteredGraph.TryGetOutEdges(5, out _)); // Filtered
+            Assert.IsEmpty(filteredGraph.OutEdges(5)); // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(3, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(3);
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(4, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(4);
             CollectionAssert.AreEqual(new[] { edge7 }, gotEdges);   // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetOutEdges(2, out gotEdges));
+            gotEdges = filteredGraph.OutEdges(2);
             CollectionAssert.AreEqual(new[] { edge5, edge6 }, gotEdges);   // Filtered
 
             #endregion
         }
 
-        protected static void TryGetInEdges_Test<TGraph>(
+        protected static void GetInEdges_Test<TGraph>(
             [NotNull] TGraph wrappedGraph,
-            [NotNull] Func<VertexPredicate<int>, EdgePredicate<int, Edge<int>>, IBidirectionalIncidenceGraph<int, Edge<int>>> createFilteredGraph)
-            where TGraph : IMutableVertexAndEdgeSet<int, Edge<int>>, IMutableGraph<int, Edge<int>>
+            [NotNull] Func<Func<int, bool>, Func<IEdge<int>, bool>, IBidirectionalIncidenceGraph<int, IEdge<int>>> createFilteredGraph)
+            where TGraph : IMutableVertexAndEdgeSet<int, IEdge<int>>, IMutableGraph<int, IEdge<int>>
         {
             #region Part 1
 
-            TryGetInEdges_Test(
+            GetInEdges_Test(
                 createFilteredGraph(_ => true, _ => true),
                 edges => wrappedGraph.AddVerticesAndEdgeRange(edges));
 
@@ -1976,27 +1963,27 @@ namespace QuikGraph.Tests.Predicates
             #region Part 2
 
             wrappedGraph.Clear();
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 2);
-            var edge3 = new Edge<int>(1, 3);
-            var edge4 = new Edge<int>(2, 2);
-            var edge5 = new Edge<int>(2, 4);
-            var edge6 = new Edge<int>(3, 1);
-            var edge7 = new Edge<int>(5, 3);
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 2);
+            var edge3 = Edge.Create(1, 3);
+            var edge4 = Edge.Create(2, 2);
+            var edge5 = Edge.Create(2, 4);
+            var edge6 = Edge.Create(3, 1);
+            var edge7 = Edge.Create(5, 3);
 
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
-            IBidirectionalIncidenceGraph<int, Edge<int>> filteredGraph = createFilteredGraph(
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
+            IBidirectionalIncidenceGraph<int, IEdge<int>> filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 _ => true);
 
-            Assert.IsFalse(filteredGraph.TryGetInEdges(0, out _));
+            Assert.IsNull(filteredGraph.InEdges(0));
 
-            Assert.IsFalse(filteredGraph.TryGetInEdges(5, out _));  // Filtered
+            Assert.IsNull(filteredGraph.InEdges(5));  // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(4, out IEnumerable<Edge<int>> gotEdges));
+            var gotEdges = filteredGraph.InEdges(4);
             CollectionAssert.AreEqual(new[] { edge5 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(2, out gotEdges));
+            gotEdges = filteredGraph.InEdges(2);
             CollectionAssert.AreEqual(new[] { edge1, edge2, edge4 }, gotEdges);
 
             #endregion
@@ -2004,20 +1991,20 @@ namespace QuikGraph.Tests.Predicates
             #region Part 3
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
             filteredGraph = createFilteredGraph(
                 _ => true,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetInEdges(0, out _));
+            Assert.IsNull(filteredGraph.InEdges(0));
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(5, out gotEdges));
+            gotEdges = filteredGraph.InEdges(5);
             CollectionAssert.IsEmpty(gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(4, out gotEdges));
+            gotEdges = filteredGraph.InEdges(4);
             CollectionAssert.AreEqual(new[] { edge5 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(2, out gotEdges));
+            gotEdges = filteredGraph.InEdges(2);
             CollectionAssert.AreEqual(new[] { edge1, edge2 }, gotEdges);    // Filtered
 
             #endregion
@@ -2025,19 +2012,19 @@ namespace QuikGraph.Tests.Predicates
             #region Part 4
 
             wrappedGraph.Clear();
-            wrappedGraph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3, edge4, edge5, edge6, edge7 });
+            wrappedGraph.AddVerticesAndEdgeRange( edge1, edge2, edge3, edge4, edge5, edge6, edge7 );
             filteredGraph = createFilteredGraph(
                 vertex => vertex <= 4,
                 edge => edge.Source != edge.Target);
 
-            Assert.IsFalse(filteredGraph.TryGetInEdges(0, out _));
+            Assert.IsNull(filteredGraph.InEdges(0));
 
-            Assert.IsFalse(filteredGraph.TryGetInEdges(5, out _));  // Filtered
+            Assert.IsNull(filteredGraph.InEdges(5));  // Filtered
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(4, out gotEdges));
+            gotEdges = filteredGraph.InEdges(4);
             CollectionAssert.AreEqual(new[] { edge5 }, gotEdges);
 
-            Assert.IsTrue(filteredGraph.TryGetInEdges(2, out gotEdges));
+            gotEdges = filteredGraph.InEdges(2);
             CollectionAssert.AreEqual(new[] { edge1, edge2 }, gotEdges);    // Filtered
 
             #endregion

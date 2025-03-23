@@ -7,11 +7,7 @@ using static QuikGraph.Utils.DisposableHelpers;
 
 namespace QuikGraph.Algorithms.Observers
 {
-    /// <summary>
-    /// Recorder of vertices predecessors paths.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Recorder of <see cref="VerticesPredecessors"/>> to build up paths. </summary>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
@@ -19,49 +15,44 @@ namespace QuikGraph.Algorithms.Observers
         IObserver<IVertexPredecessorRecorderAlgorithm<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VertexPredecessorPathRecorderObserver{TVertex,TEdge}"/> class.
-        /// </summary>
+
+        /// <summary> Equality Comparer, assigned on <see cref="Attach(IVertexPredecessorRecorderAlgorithm{TVertex, TEdge})"/> </summary>
+        public Func<TVertex, TVertex, bool> AreVerticesEqual { get; private set; }
+
+        /// <inheritdoc cref="VertexPredecessorPathRecorderObserver{TVertex, TEdge}"/>
+        public VertexPredecessorPathRecorderObserver(IEqualityComparer<TVertex> equals)
+            : this(new Dictionary<TVertex, TEdge>(equals), equals.Equals)
+        {
+        }
+
+        /// <inheritdoc cref="VertexPredecessorPathRecorderObserver{TVertex, TEdge}"/>
         public VertexPredecessorPathRecorderObserver()
             : this(new Dictionary<TVertex, TEdge>())
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VertexPredecessorPathRecorderObserver{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="verticesPredecessors">Vertices predecessors.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="verticesPredecessors"/> is <see langword="null"/>.</exception>
-        public VertexPredecessorPathRecorderObserver(
-            [NotNull] IDictionary<TVertex, TEdge> verticesPredecessors)
+        /// <inheritdoc cref="VertexPredecessorPathRecorderObserver{TVertex, TEdge}"/>
+        public VertexPredecessorPathRecorderObserver([NotNull] IDictionary<TVertex, TEdge> verticesPredecessors
+            , Func<TVertex, TVertex, bool> equals = null)
         {
             VerticesPredecessors = verticesPredecessors ?? throw new ArgumentNullException(nameof(verticesPredecessors));
+            AreVerticesEqual = equals;
         }
 
-        /// <summary>
-        /// Vertices predecessors.
-        /// </summary>
+        /// <summary> Predecessor Edges indexed by their <see cref="IEdge{TVertex}.Target"/> Vertices. </summary>
         [NotNull]
         public IDictionary<TVertex, TEdge> VerticesPredecessors { get; }
 
-        /// <summary>
-        /// Path ending vertices.
-        /// </summary>
+        /// <summary> Terminal, i.e. Path-ending vertices. </summary>
         [NotNull, ItemNotNull]
         public ICollection<TVertex> EndPathVertices { get; } = new List<TVertex>();
 
-        /// <summary>
-        /// Gets all paths.
-        /// </summary>
-        /// <returns>Enumerable of paths.</returns>
+        /// <summary> Enumerates the paths from all <see cref="EndPathVertices"/>. </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public IEnumerable<IEnumerable<TEdge>> AllPaths()
-        {
-            return EndPathVertices
-                .Select(vertex => VerticesPredecessors.TryGetPath(vertex, out IEnumerable<TEdge> path) ? path : null)
+        public IEnumerable<List<TEdge>> AllPaths() => EndPathVertices
+                .Select(vertex => VerticesPredecessors.GetPath(vertex, AreVerticesEqual))
                 .Where(path => path != null);
-        }
 
         #region IObserver<TAlgorithm>
 
@@ -70,6 +61,8 @@ namespace QuikGraph.Algorithms.Observers
         {
             if (algorithm is null)
                 throw new ArgumentNullException(nameof(algorithm));
+
+            AreVerticesEqual = AreVerticesEqual ?? algorithm.VisitededGraph.AreVerticesEqual;
 
             algorithm.TreeEdge += OnEdgeDiscovered;
             algorithm.FinishVertex += OnVertexFinished;
@@ -93,10 +86,10 @@ namespace QuikGraph.Algorithms.Observers
         {
             Debug.Assert(vertex != null);
 
-            if (VerticesPredecessors.Values.Any(edge => EqualityComparer<TVertex>.Default.Equals(edge.Source, vertex)))
-                return;
-
-            EndPathVertices.Add(vertex);
+            if (!VerticesPredecessors.Values.Any(edge => AreVerticesEqual(edge.Source, vertex)))
+            {
+                EndPathVertices.Add(vertex);
+            }
         }
     }
 }

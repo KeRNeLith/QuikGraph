@@ -1,4 +1,4 @@
-namespace QuikGraph
+﻿namespace QuikGraph
 {
     /// <summary>
     /// A graph with vertices of type <typeparamref name="TVertex"/>
@@ -7,17 +7,13 @@ namespace QuikGraph
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
     // ReSharper disable once UnusedTypeParameter
-    public interface IGraph<TVertex, TEdge>
+    public interface IGraph<TVertex, TEdge> : IImplicitVertexSet<TVertex>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Gets a value indicating if the graph is directed
-        /// </summary>
+        /// <summary> Flag if the graph is directed </summary>
         bool IsDirected { get; }
 
-        /// <summary>
-        /// Gets a value indicating if the graph allows parallel edges
-        /// </summary>
+        /// <summary> Flag if the graph allows parallel edges </summary>
         bool AllowParallelEdges { get; }
     }
 }

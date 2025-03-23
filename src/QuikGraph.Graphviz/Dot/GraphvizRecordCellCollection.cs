@@ -16,14 +16,14 @@ namespace QuikGraph.Graphviz.Dot
     public sealed class GraphvizRecordCellCollection : Collection<GraphvizRecordCell>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizRecordCellCollection"/> class.
+        /// Initializes a new <see cref="GraphvizRecordCellCollection"/> class.
         /// </summary>
         public GraphvizRecordCellCollection()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizRecordCellCollection"/> class.
+        /// Initializes a new <see cref="GraphvizRecordCellCollection"/> class.
         /// </summary>
         /// <param name="collection">The collection that is wrapped by the new collection.</param>
         public GraphvizRecordCellCollection([NotNull, ItemNotNull] IList<GraphvizRecordCell> collection)
@@ -32,7 +32,7 @@ namespace QuikGraph.Graphviz.Dot
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizRecordCellCollection"/> class.
+        /// Initializes a new <see cref="GraphvizRecordCellCollection"/> class.
         /// </summary>
         /// <param name="collection">The collection that is wrapped by the new collection.</param>
         public GraphvizRecordCellCollection([NotNull, ItemNotNull] GraphvizRecordCellCollection collection)

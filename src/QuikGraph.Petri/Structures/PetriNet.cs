@@ -22,7 +22,7 @@ namespace QuikGraph.Petri
 #endif
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PetriNet{Token}"/> class.
+        /// Initializes a new <see cref="PetriNet{Token}"/> class.
         /// </summary>
         public PetriNet()
         {

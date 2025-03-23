@@ -28,8 +28,17 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArrayUndirectedGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ArrayUndirectedGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="baseGraph">Wrapped graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="baseGraph"/> is <see langword="null"/>.</exception>
@@ -137,24 +146,20 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(vertex, out TEdge[] edges))
                 return edges.AsEnumerable();
-            throw new VertexNotFoundException();
+
+            return null;
         }
 
         /// <inheritdoc />
-        public int AdjacentDegree(TVertex vertex)
+        public int? AdjacentDegree(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_vertexEdges.TryGetValue(vertex, out TEdge[] edges))
-                return edges.Sum(edge => edge.IsSelfEdge() ? 2 : 1);    // Self edge count twice
-            throw new VertexNotFoundException();
-        }
+                return edges.Sum(edge => edge.IsSelfEdge(AreVerticesEqual) ? 2 : 1);    // Self edge count twice
 
-        /// <inheritdoc />
-        public bool IsAdjacentEdgesEmpty(TVertex vertex)
-        {
-            return AdjacentDegree(vertex) == 0;
+            return null;
         }
 
         /// <inheritdoc />
@@ -165,7 +170,8 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(vertex, out TEdge[] adjacentEdges))
                 return adjacentEdges[index];
-            throw new VertexNotFoundException();
+
+            return default(TEdge);
         }
 
         /// <inheritdoc />

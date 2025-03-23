@@ -29,7 +29,7 @@ namespace QuikGraph.Collections
         private readonly short _directionMultiplier;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="FibonacciHeap{TPriority,TValue}"/> class.
         /// </summary>
         public FibonacciHeap()
             : this(HeapDirection.Increasing, Comparer<TPriority>.Default.Compare)
@@ -37,7 +37,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="FibonacciHeap{TPriority,TValue}"/> class.
         /// </summary>
         /// <param name="direction">Heap direction.</param>
         public FibonacciHeap(HeapDirection direction)
@@ -46,7 +46,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="FibonacciHeap{TPriority,TValue}"/> class.
         /// </summary>
         /// <param name="direction">Heap direction.</param>
         /// <param name="priorityComparison">Priority comparer.</param>

@@ -19,46 +19,33 @@ namespace QuikGraph.Algorithms.ShortestPath
         , IDistancesCollection<TVertex>
         where TEdge : IEdge<TVertex>
     {
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
+
         /// <summary>
         /// Vertices distances.
         /// </summary>
         private IDictionary<TVertex, double> _distances;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedShortestPathAlgorithmBase{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="UndirectedShortestPathAlgorithmBase{TVertex,TEdge}"/> class.
         /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        protected UndirectedShortestPathAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights)
-            : this(host, visitedGraph, edgeWeights, DistanceRelaxers.ShortestDistance)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedShortestPathAlgorithmBase{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
         protected UndirectedShortestPathAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
             [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
             [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : base(host, visitedGraph)
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
             Weights = edgeWeights ?? throw new ArgumentNullException(nameof(edgeWeights));
-            DistanceRelaxer = distanceRelaxer ?? throw new ArgumentNullException(nameof(distanceRelaxer));
+            DistanceRelaxer = distanceRelaxer ?? DistanceRelaxers.ShortestDistance;
         }
 
         /// <summary>
@@ -105,7 +92,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         {
             bool vertexFound = TryGetDistance(vertex, out double distance);
             if (!vertexFound)
-                throw new VertexNotFoundException($"No recorded distance for vertex {vertex}.");
+                return double.NaN;
             return distance;
         }
 
@@ -158,11 +145,11 @@ namespace QuikGraph.Algorithms.ShortestPath
         public IDictionary<TVertex, GraphColor> VerticesColors { get; private set; }
 
         /// <inheritdoc />
-        public GraphColor GetVertexColor(TVertex vertex)
+        public GraphColor? GetVertexColor(TVertex vertex)
         {
             if (VerticesColors.TryGetValue(vertex, out GraphColor color))
                 return color;
-            throw new VertexNotFoundException();
+            return null;
         }
 
         #endregion
@@ -201,11 +188,11 @@ namespace QuikGraph.Algorithms.ShortestPath
             Debug.Assert(source != null);
             Debug.Assert(target != null);
             Debug.Assert(
-                (EqualityComparer<TVertex>.Default.Equals(edge.Source, source)
-                    && EqualityComparer<TVertex>.Default.Equals(edge.Target, target))
+                (VisitedGraph.AreVerticesEqual(edge.Source, source)
+                    && VisitedGraph.AreVerticesEqual(edge.Target, target))
                 ||
-                (EqualityComparer<TVertex>.Default.Equals(edge.Source, target)
-                    && EqualityComparer<TVertex>.Default.Equals(edge.Target, source)));
+                (VisitedGraph.AreVerticesEqual(edge.Source, target)
+                    && VisitedGraph.AreVerticesEqual(edge.Target, source)));
 
             double du = GetVertexDistance(source);
             double dv = GetVertexDistance(target);

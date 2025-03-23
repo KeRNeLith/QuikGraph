@@ -13,7 +13,7 @@ namespace QuikGraph
     public class VertexEventArgs<TVertex> : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexEventArgs{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexEventArgs{TVertex}"/> class.
         /// </summary>
         /// <param name="vertex">Concerned vertex.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>

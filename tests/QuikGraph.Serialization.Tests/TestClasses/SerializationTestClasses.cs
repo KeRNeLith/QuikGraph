@@ -117,7 +117,7 @@ namespace QuikGraph.Serialization.Tests
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Person"/> class.
+        /// Initializes a new <see cref="Person"/> class.
         /// Each new instance will be given a unique identifier.
         /// This parameterless constructor is also required for serialization.
         /// </summary>
@@ -129,7 +129,7 @@ namespace QuikGraph.Serialization.Tests
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Person"/> class with
+        /// Initializes a new <see cref="Person"/> class with
         /// the <paramref name="firstName"/> and the <paramref name="lastName"/>.
         /// </summary>
         /// <param name="firstName">First name.</param>
@@ -147,7 +147,7 @@ namespace QuikGraph.Serialization.Tests
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Person"/> class with
+        /// Initializes a new <see cref="Person"/> class with
         /// the <paramref name="firstName"/>, the <paramref name="lastName"/>
         /// and the <paramref name="gender"/>.
         /// </summary>

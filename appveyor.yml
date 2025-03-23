@@ -41,6 +41,7 @@ environment:
 # Setup build version
 install:
   - ps: ./build/setupBuild.ps1
+  - ps: choco install docfx -y
 
 # Assembly infos & csproj patching
 assembly_info:
@@ -89,7 +90,7 @@ build_script:
 # Start SonarQube analysis (only for Release configuration)
   - ps: $analysisFile = (Convert-Path SonarQube.Analysis.xml).ToString()
   - ps: >-
-      if ($env:IsFullIntegrationBuild -eq $true)
+      if ($env:IsFullIntegrationBuild -eq $NULL)
       {
           & $sonarScanner begin /k:"quikgraph" /s:$analysisFile /o:"kernelith-github" /d:sonar.host.url="https://sonarcloud.io" /d:"sonar.branch.name=$env:APPVEYOR_REPO_BRANCH" /d:sonar.cs.opencover.reportsPaths="coverage.xml" /d:sonar.login="$env:SONARQUBE_TOKEN"
       }
@@ -122,7 +123,7 @@ test_script:
       $testAssemblies = (ls tests\*.Tests\bin\$env:Configuration\net461\*Tests.dll | Where-Object { $_ -Match "net*" -and $_ -NotMatch "netcoreapp*" -and [System.IO.Path]::GetFileNameWithoutExtension($_.FullName) -Match $_.Directory.Parent.Parent.Parent.Name } | % FullName | sort-object -Unique);
       
       $testsPassed = $false;
-      if ($env:IsFullIntegrationBuild -eq $true)
+      if ($env:IsFullIntegrationBuild -eq $NULL)
       {
           $opencover = (Resolve-Path "tools\OpenCover.*\tools\OpenCover.Console.exe").ToString();
           $coveralls = (Resolve-Path "tools\csmacnz.Coveralls.exe").ToString();
@@ -143,7 +144,7 @@ test_script:
       # Upload results to AppVeyor
       
       $wc = New-Object 'System.Net.WebClient';
-      $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml));
+      #$wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestResult.xml));
       
       if (!$testsPassed)
       {

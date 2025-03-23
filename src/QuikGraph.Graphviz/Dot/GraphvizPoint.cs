@@ -23,7 +23,7 @@ namespace QuikGraph.Graphviz.Dot
         public int Y { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizPoint"/> class.
+        /// Initializes a new <see cref="GraphvizPoint"/> class.
         /// </summary>
         /// <param name="x">X value.</param>
         /// <param name="y">Y value.</param>

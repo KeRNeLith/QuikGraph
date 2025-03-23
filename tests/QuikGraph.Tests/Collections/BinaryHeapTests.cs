@@ -148,21 +148,21 @@ namespace QuikGraph.Tests.Collections
         [Test]
         public void Constructor()
         {
-            AssertHeapBaseProperties(new BinaryHeap<int, Edge<int>>());
+            AssertHeapBaseProperties(new BinaryHeap<int, IEdge<int>>());
 
-            AssertHeapBaseProperties(new BinaryHeap<int, Edge<int>>(0), 0);
+            AssertHeapBaseProperties(new BinaryHeap<int, IEdge<int>>(0), 0);
 
-            AssertHeapBaseProperties(new BinaryHeap<int, Edge<int>>(42), 42);
+            AssertHeapBaseProperties(new BinaryHeap<int, IEdge<int>>(42), 42);
 
-            AssertHeapBaseProperties(new BinaryHeap<int, Edge<int>>(Comparer<int>.Default.Compare));
+            AssertHeapBaseProperties(new BinaryHeap<int, IEdge<int>>(Comparer<int>.Default.Compare));
 
             AssertHeapBaseProperties(
-                new BinaryHeap<int, Edge<int>>(12, Comparer<int>.Default.Compare),
+                new BinaryHeap<int, IEdge<int>>(12, Comparer<int>.Default.Compare),
                 12);
 
             Comparison<int> comparer = (x, y) => x.CompareTo(y);
             AssertHeapProperties(
-                new BinaryHeap<int, Edge<int>>(12, comparer),
+                new BinaryHeap<int, IEdge<int>>(12, comparer),
                 12,
                 comparer);
 
@@ -193,11 +193,11 @@ namespace QuikGraph.Tests.Collections
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => new BinaryHeap<int, Edge<int>>(null));
-            Assert.Throws<ArgumentNullException>(() => new BinaryHeap<int, Edge<int>>(12, null));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, Edge<int>>(-1));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, Edge<int>>(-1, null));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, Edge<int>>(-1, (x, y) => x.CompareTo(y)));
+            Assert.Throws<ArgumentNullException>(() => new BinaryHeap<int, IEdge<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => new BinaryHeap<int, IEdge<int>>(12, null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, IEdge<int>>(-1));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, IEdge<int>>(-1, null));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new BinaryHeap<int, IEdge<int>>(-1, (x, y) => x.CompareTo(y)));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -1310,7 +1310,7 @@ namespace QuikGraph.Tests.Collections
 
                 Assert.Throws<InvalidOperationException>(() => { var _ = enumerator.Current; });
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
-                Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
+                Assert.Throws<InvalidOperationException>(enumerator.Reset);
             }
 
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
@@ -1321,7 +1321,7 @@ namespace QuikGraph.Tests.Collections
 
                 Assert.Throws<InvalidOperationException>(() => { var _ = enumerator.Current; });
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
-                Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
+                Assert.Throws<InvalidOperationException>(enumerator.Reset);
             }
 
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
@@ -1332,7 +1332,7 @@ namespace QuikGraph.Tests.Collections
 
                 Assert.Throws<InvalidOperationException>(() => { var _ = enumerator.Current; });
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
-                Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
+                Assert.Throws<InvalidOperationException>(enumerator.Reset);
             }
 
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
@@ -1344,7 +1344,7 @@ namespace QuikGraph.Tests.Collections
                 // No new or removed element
                 Assert.DoesNotThrow(() => { var _ = enumerator.Current; });
                 Assert.DoesNotThrow(() => enumerator.MoveNext());
-                Assert.DoesNotThrow(() => enumerator.Reset());
+                Assert.DoesNotThrow(enumerator.Reset);
             }
 
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
@@ -1355,7 +1355,7 @@ namespace QuikGraph.Tests.Collections
 
                 Assert.Throws<InvalidOperationException>(() => { var _ = enumerator.Current; });
                 Assert.Throws<InvalidOperationException>(() => enumerator.MoveNext());
-                Assert.Throws<InvalidOperationException>(() => enumerator.Reset());
+                Assert.Throws<InvalidOperationException>(enumerator.Reset);
             }
 
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
@@ -1367,7 +1367,7 @@ namespace QuikGraph.Tests.Collections
                 // No new or removed element
                 Assert.DoesNotThrow(() => { var _ = enumerator.Current; });
                 Assert.DoesNotThrow(() => enumerator.MoveNext());
-                Assert.DoesNotThrow(() => enumerator.Reset());
+                Assert.DoesNotThrow(enumerator.Reset);
             }
         }
 

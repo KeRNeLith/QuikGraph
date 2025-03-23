@@ -46,7 +46,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario<int>
             {
-                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                EdgesInGraph = new[] { Edge.Create(1, 2) },
                 AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = true
@@ -54,7 +54,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
 
             IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(3));
+            Assert.IsNull(algorithm.GetVertexColor(3));
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario<int>
             {
-                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                EdgesInGraph = new[] { Edge.Create(1, 2) },
                 SingleVerticesInGraph = new int[0],
                 AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
@@ -72,7 +72,14 @@ namespace QuikGraph.Tests.Algorithms.Contracts
             IVertexColorizerAlgorithm<int> algorithm = CreateAlgorithmAndMaybeDoComputation(scenario);
 
             Type expectedExceptionType = GetExpectedExceptionType();
-            Assert.Throws(expectedExceptionType, () => algorithm.GetVertexColor(2));
+            if (expectedExceptionType == null)
+            {
+                Assert.IsNull(algorithm.GetVertexColor(2));
+            }
+            else
+            {
+                Assert.Throws(expectedExceptionType, () => algorithm.GetVertexColor(2));
+            }
 
             #region Local function
 
@@ -88,7 +95,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
                         return typeof(NullReferenceException);
                 }
 
-                return typeof(VertexNotFoundException);
+                return null; //typeof(Exception);
             }
 
             #endregion
@@ -99,7 +106,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario<int>
             {
-                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                EdgesInGraph = new[] { Edge.Create(1, 2) },
                 AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,
                 DoComputation = true
@@ -115,7 +122,7 @@ namespace QuikGraph.Tests.Algorithms.Contracts
         {
             var scenario = new ContractScenario<int>
             {
-                EdgesInGraph = new[] { new Edge<int>(1, 2) },
+                EdgesInGraph = new[] { Edge.Create(1, 2) },
                 SingleVerticesInGraph = new[] { 3 },
                 AccessibleVerticesFromRoot = new[] { 2 },
                 Root = 1,

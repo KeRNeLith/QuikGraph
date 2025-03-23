@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.Observers;
 using QuikGraph.Algorithms.RandomWalks;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
 
 namespace QuikGraph.Tests.Algorithms.RandomWalks
 {
@@ -15,9 +14,9 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
     [TestFixture]
     internal sealed class RandomWalkAlgorithmTests : RootedAlgorithmTestsBase
     {
-        #region Test helpers
 
-        private static void RunRandomWalkAndCheck<TVertex, TEdge>(
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public static void RunRandomWalkAndCheck<TVertex, TEdge>(
             [NotNull] IVertexListGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
@@ -136,27 +135,25 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
             #endregion
         }
 
-        #endregion
-
         [Test]
         public void Constructor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var chain = new WeightedMarkovEdgeChain<int, Edge<int>>(new Dictionary<Edge<int>, double>());
-            EdgePredicate<int, Edge<int>> predicate = _ => true;
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var chain = new WeightedMarkovEdgeChain<int, IEdge<int>>(new Dictionary<IEdge<int>, double>());
+            Func<IEdge<int>, bool> predicate = _ => true;
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph, chain);
+            algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph, chain);
             AssertAlgorithmProperties(algorithm, graph, chain);
 
-            algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph)
+            algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph)
             {
                 EndPredicate = predicate
             };
             AssertAlgorithmProperties(algorithm, graph, p: predicate);
 
-            algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph)
+            algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph)
             {
                 EdgeChain = chain
             };
@@ -168,10 +165,10 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
                 RandomWalkAlgorithm<TVertex, TEdge> algo,
                 IVertexListGraph<TVertex, TEdge> g,
                 IEdgeChain<TVertex, TEdge> c = null,
-                EdgePredicate<TVertex, TEdge> p = null)
+                Func<TEdge, bool> p = null)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 if (c is null)
                     Assert.IsNotNull(algo.EdgeChain);
                 else
@@ -185,21 +182,21 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
         [Test]
         public void Constructor_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var chain = new WeightedMarkovEdgeChain<int, Edge<int>>(new Dictionary<Edge<int>, double>());
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var chain = new WeightedMarkovEdgeChain<int, IEdge<int>>(new Dictionary<IEdge<int>, double>());
 
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new RandomWalkAlgorithm<int, Edge<int>>(null));
+                () => new RandomWalkAlgorithm<int, IEdge<int>>(null));
             Assert.Throws<ArgumentNullException>(
-                () => new RandomWalkAlgorithm<int, Edge<int>>(graph, null));
+                () => new RandomWalkAlgorithm<int, IEdge<int>>(graph, null));
             Assert.Throws<ArgumentNullException>(
-                () => new RandomWalkAlgorithm<int, Edge<int>>(null, chain));
+                () => new RandomWalkAlgorithm<int, IEdge<int>>(null, chain));
             Assert.Throws<ArgumentNullException>(
-                () => new RandomWalkAlgorithm<int, Edge<int>>(null, null));
+                () => new RandomWalkAlgorithm<int, IEdge<int>>(null, null));
 
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph, chain);
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph, chain);
             Assert.Throws<ArgumentNullException>(() => algorithm.EdgeChain = null);
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
@@ -210,95 +207,85 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
         [Test]
         public void TryGetRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
             TryGetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
             SetRootVertex_Test(algorithm);
         }
 
         [Test]
         public void SetRootVertex_Throws()
         {
-            var graph = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
-            var algorithm = new RandomWalkAlgorithm<TestVertex, Edge<TestVertex>>(graph);
-            SetRootVertex_Throws_Test(algorithm);
+            var graph = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
+            var algorithm = new RandomWalkAlgorithm<TestVertex, IEdge<TestVertex>>(graph);
+            SetRootVertex_Null_Should_Throw_ArgumentNullException(algorithm);
         }
 
         [Test]
         public void ClearRootVertex()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
-            ClearRootVertex_Test(algorithm);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
+            ClearRootVertex_RaisesVertexChanged_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithoutRoot_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             ComputeWithoutRoot_Throws_Test(
-                () => new RandomWalkAlgorithm<int, Edge<int>>(graph));
+                () => new RandomWalkAlgorithm<int, IEdge<int>>(graph));
         }
 
         [Test]
         public void ComputeWithRoot()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             graph.AddVertex(0);
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
             ComputeWithRoot_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithRoot_Throws()
         {
-            var graph = new AdjacencyGraph<TestVertex, Edge<TestVertex>>();
-            ComputeWithRoot_Throws_Test(
-                () => new RandomWalkAlgorithm<TestVertex, Edge<TestVertex>>(graph));
+            var graph = new AdjacencyGraph<TestVertex, IEdge<TestVertex>>();
+            ComputeWithUnknownRootOrNull_Throws_Test(
+                () => new RandomWalkAlgorithm<TestVertex, IEdge<TestVertex>>(graph));
         }
 
         #endregion
 
         [Test]
-        public void RandomWalk()
-        {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-                RunRandomWalkAndCheck(graph);
-        }
-
-        [Test]
         public void RandomWalkWithPredicate()
         {
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(2, 3);
-            var edge4 = new Edge<int>(3, 4);
-            var edge5 = new Edge<int>(4, 5);
-            var edge6 = new Edge<int>(5, 4);
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                edge1, edge2, edge3, edge4, edge5, edge6
-            });
-            var chain = new NormalizedMarkovEdgeChain<int, Edge<int>>
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(2, 3);
+            var edge4 = Edge.Create(3, 4);
+            var edge5 = Edge.Create(4, 5);
+            var edge6 = Edge.Create(5, 4);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(edge1, edge2, edge3, edge4, edge5, edge6);
+            var chain = new NormalizedMarkovEdgeChain<int, IEdge<int>>
             {
                 Rand = new Random(123456)
             };
 
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph, chain)
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph, chain)
             {
                 EndPredicate = edge => edge == edge4
             };
 
-            var encounteredEdges = new List<Edge<int>>();
-            algorithm.TreeEdge += edge => encounteredEdges.Add(edge);
+            var encounteredEdges = new List<IEdge<int>>();
+            algorithm.TreeEdge += encounteredEdges.Add;
             algorithm.EndVertex += vertex => Assert.AreEqual(3, vertex); 
 
             algorithm.Generate(1, int.MaxValue);
@@ -314,11 +301,11 @@ namespace QuikGraph.Tests.Algorithms.RandomWalks
         [Test]
         public void RandomWalk_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new RandomWalkAlgorithm<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = new RandomWalkAlgorithm<int, IEdge<int>>(graph);
 
-            Assert.Throws<VertexNotFoundException>(() => algorithm.Generate(1));
-            Assert.Throws<VertexNotFoundException>(() => algorithm.Generate(1, 12));
+            Assert.Throws<Exception>(() => algorithm.Generate(1));
+            Assert.Throws<Exception>(() => algorithm.Generate(1, 12));
         }
     }
 }

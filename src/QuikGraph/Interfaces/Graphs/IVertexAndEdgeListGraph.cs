@@ -1,11 +1,9 @@
-namespace QuikGraph
+﻿namespace QuikGraph
 {
-    /// <summary>
-    /// A directed graph with vertices of type <typeparamref name="TVertex"/>
-    /// and edges of type <typeparamref name="TEdge"/> that can be enumerated efficiently.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Directed graph with efficiently enumerable <typeparamref name="TVertex"/> and <typeparamref name="TEdge"/>. </summary>
+    /// <remarks>
+    /// Unifies the vertex and edge list graph concepts.
+    /// </remarks>
     public interface IVertexAndEdgeListGraph<TVertex, TEdge> 
         : IVertexListGraph<TVertex, TEdge>
         , IEdgeListGraph<TVertex, TEdge>

@@ -8,6 +8,17 @@ using QuikGraph.Utils;
 
 namespace QuikGraph.Algorithms.RandomWalks
 {
+    /// <inheritdoc cref="CreateCyclePoppingRandomTreeAlgorithm"/>
+    public static class CyclePoppingRandomTreeAlgorithm
+    {
+        /// <summary> Creates a new <see cref="CyclePoppingRandomTreeAlgorithm{TVertex,TEdge}"/>. </summary>
+        public static CyclePoppingRandomTreeAlgorithm<TVertex, TEdge> CreateCyclePoppingRandomTreeAlgorithm<TVertex, TEdge>(
+            [NotNull] this IVertexListGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IMarkovEdgeChain<TVertex, TEdge> edgeChain = null,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new CyclePoppingRandomTreeAlgorithm<TVertex, TEdge>(visitedGraph, edgeChain, host);
+    }
+
     /// <summary>
     /// Wilson-Propp Cycle-Popping algorithm for Random Tree Generation.
     /// </summary>
@@ -19,45 +30,22 @@ namespace QuikGraph.Algorithms.RandomWalks
         , ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CyclePoppingRandomTreeAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public CyclePoppingRandomTreeAlgorithm([NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph)
-            : this(visitedGraph, new NormalizedMarkovEdgeChain<TVertex, TEdge>())
-        {
-        }
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CyclePoppingRandomTreeAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="CyclePoppingRandomTreeAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeChain">Edge chain strategy to use.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeChain"/> is <see langword="null"/>.</exception>
-        public CyclePoppingRandomTreeAlgorithm(
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IMarkovEdgeChain<TVertex, TEdge> edgeChain)
-            : this(null, visitedGraph, edgeChain)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CyclePoppingRandomTreeAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeChain">Edge chain strategy to use.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeChain"/> is <see langword="null"/>.</exception>
-        public CyclePoppingRandomTreeAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal CyclePoppingRandomTreeAlgorithm(
             [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] IMarkovEdgeChain<TVertex, TEdge> edgeChain)
-            : base(host, visitedGraph)
+            [CanBeNull] IMarkovEdgeChain<TVertex, TEdge> edgeChain = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
-            EdgeChain = edgeChain ?? throw new ArgumentNullException(nameof(edgeChain));
+            EdgeChain = edgeChain ?? new NormalizedMarkovEdgeChain<TVertex, TEdge>();
         }
 
         /// <summary>
@@ -69,11 +57,11 @@ namespace QuikGraph.Algorithms.RandomWalks
         #region IVertexColorizerAlgorithm<TVertex>
 
         /// <inheritdoc />
-        public GraphColor GetVertexColor(TVertex vertex)
+        public GraphColor? GetVertexColor(TVertex vertex)
         {
             if (VerticesColors.TryGetValue(vertex, out GraphColor color))
                 return color;
-            throw new VertexNotFoundException();
+            return null;
         }
 
         #endregion

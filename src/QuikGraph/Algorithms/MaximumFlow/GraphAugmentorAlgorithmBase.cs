@@ -17,21 +17,21 @@ namespace QuikGraph.Algorithms.MaximumFlow
         where TGraph : IMutableVertexAndEdgeSet<TVertex, TEdge>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphAugmentorAlgorithmBase{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="GraphAugmentorAlgorithmBase{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="vertexFactory">Vertex factory method.</param>
         /// <param name="edgeFactory">Edge factory method.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
         protected GraphAugmentorAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
             [NotNull] TGraph visitedGraph,
             [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-            : base(host, visitedGraph)
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
             VertexFactory = vertexFactory ?? throw new ArgumentNullException(nameof(vertexFactory));
             EdgeFactory = edgeFactory ?? throw new ArgumentNullException(nameof(edgeFactory));

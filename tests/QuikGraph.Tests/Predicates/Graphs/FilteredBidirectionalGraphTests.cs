@@ -14,21 +14,15 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Construction()
         {
-            VertexPredicate<int> vertexPredicate = _ => true;
-            EdgePredicate<int, Edge<int>> edgePredicate = _ => true;
+            Func<int, bool> vertexPredicate = _ => true;
+            Func<Edge<int>, bool> edgePredicate = _ => true;
 
             var graph = new BidirectionalGraph<int, Edge<int>>();
-            var filteredGraph = new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                graph,
-                vertexPredicate,
-                edgePredicate);
+            var filteredGraph = graph.FilteredBiDir(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph, graph);
 
             graph = new BidirectionalGraph<int, Edge<int>>(false);
-            filteredGraph = new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                graph,
-                vertexPredicate,
-                edgePredicate);
+            filteredGraph = graph.FilteredBiDir(vertexPredicate, edgePredicate);
             AssertGraphProperties(filteredGraph, graph, false);
 
             #region Local function
@@ -56,44 +50,44 @@ namespace QuikGraph.Tests.Predicates
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                    new BidirectionalGraph<int, Edge<int>>(),
+            Assert.Throws<ArgumentNullException>(()
+                    => new BidirectionalGraph<int, Edge<int>>()
+                        .FilteredBiDir<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
                     _ => true,
                     null));
 
-            Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                    new BidirectionalGraph<int, Edge<int>>(),
+            Assert.Throws<ArgumentNullException>(()
+                => new BidirectionalGraph<int, Edge<int>>()
+                .FilteredBiDir<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
+                () => new FilteredBidirectionalGraph<int, IEdge<int>, BidirectionalGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     _ => true));
 
-            Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                    new BidirectionalGraph<int, Edge<int>>(),
+            Assert.Throws<ArgumentNullException>(()
+                => new BidirectionalGraph<int, Edge<int>>()
+                .FilteredBiDir<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
                     null,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
+                () => new FilteredBidirectionalGraph<int, IEdge<int>, BidirectionalGraph<int, IEdge<int>>>(
                     null,
                     _ => true,
                     null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
+                () => new FilteredBidirectionalGraph<int, IEdge<int>, BidirectionalGraph<int, IEdge<int>>>(
                     null,
                     null,
                     _ => true));
 
             Assert.Throws<ArgumentNullException>(
-                () => new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
+                () => new FilteredBidirectionalGraph<int, IEdge<int>, BidirectionalGraph<int, IEdge<int>>>(
                     null,
                     null,
                     null));
@@ -106,27 +100,17 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Vertices()
         {
-            var wrappedGraph = new BidirectionalGraph<int, Edge<int>>();
-            Vertices_Test(
-                wrappedGraph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        wrappedGraph,
-                        vertexPredicate,
-                        edgePredicate));
+            var wrappedGraph = new BidirectionalGraph<int, IEdge<int>>();
+            Vertices_Test(wrappedGraph, (vertexPredicate, edgePredicate)
+                => wrappedGraph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void Edges()
         {
-            var wrappedGraph = new BidirectionalGraph<int, Edge<int>>();
-            Edges_Test(
-                wrappedGraph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        wrappedGraph,
-                        vertexPredicate,
-                        edgePredicate));
+            var wrappedGraph = new BidirectionalGraph<int, IEdge<int>>();
+            Edges_Test(wrappedGraph, (vertexPredicate, edgePredicate)
+                => wrappedGraph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         #endregion
@@ -136,21 +120,16 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void ContainsVertex()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            ContainsVertex_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            ContainsVertex_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsVertex_Throws()
         {
-            var filteredGraph = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            var filteredGraph = new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             ContainsVertex_Throws_Test(filteredGraph);
@@ -163,47 +142,32 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void ContainsEdge()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            ContainsEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            ContainsEdge_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsEdge_EquatableEdge()
         {
             var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
-            ContainsEdge_EquatableEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            ContainsEdge_EquatableEdge_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsEdge_SourceTarget()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            ContainsEdge_SourceTarget_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            ContainsEdge_SourceTarget_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void ContainsEdge_Throws()
         {
-            var filteredGraph = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            var filteredGraph = new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             ContainsEdge_NullThrows_Test(filteredGraph);
@@ -217,31 +181,24 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void OutEdge()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            OutEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            OutEdge_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void OutEdge_Throws()
         {
-            var graph1 = new BidirectionalGraph<int, Edge<int>>();
-            OutEdge_Throws_Test(
-                graph1,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph1,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph1 = new BidirectionalGraph<int, IEdge<int>>();
+            OutEdge_Throws_Test(graph1, (vertexPredicate, edgePredicate)
+                => graph1.FilteredBiDir(vertexPredicate, edgePredicate));
+        }
 
-            var graph2 = new BidirectionalGraph<TestVertex, Edge<TestVertex>>();
-            var filteredGraph2 = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                graph2,
+        [Test]
+        public void OutEdgeUnFiltered_Throws()
+        {
+            var graph2 = new BidirectionalGraph<TestVertex, IEdge<TestVertex>>();
+            var filteredGraph2 = graph2.FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             OutEdge_NullThrows_Test(filteredGraph2);
@@ -250,42 +207,39 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void OutEdges()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            OutEdges_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            OutEdges_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
-        public void OutEdges_Throws()
+        public void OutEdgesUnFiltered_Throws()
         {
             var graph1 = new BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>();
-            var filteredGraph1 = new FilteredBidirectionalGraph
+            var filteredGraph1 = graph1.FilteredBiDir
                 <
                     EquatableTestVertex,
                     Edge<EquatableTestVertex>,
                     BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>
                 >(
-                graph1,
                 _ => true,
                 _ => true);
             OutEdges_NullThrows_Test(filteredGraph1);
             OutEdges_Throws_Test(filteredGraph1);
+        }
 
+        [Test]
+        public void OutEdges_Throws()
+        {
             var graph2 = new BidirectionalGraph<int, Edge<int>>();
-            var filteredGraph2 = new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                graph2,
+            var filteredGraph2 = graph2.FilteredBiDir<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
                 vertex => vertex < 4,
                 _ => true);
 
-            graph2.AddVertexRange(new[] { 1, 2, 3, 4, 5 });
+            graph2.AddVertexRange( 1, 2, 3, 4, 5);
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph2.OutEdges(4));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph2.OutEdges(5));
+            Assert.IsEmpty(filteredGraph2.OutEdges(4));
+            Assert.IsEmpty(filteredGraph2.OutEdges(5));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
         }
 
@@ -296,31 +250,24 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void InEdge()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            InEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            InEdge_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void InEdge_Throws()
         {
-            var graph1 = new BidirectionalGraph<int, Edge<int>>();
-            InEdge_Throws_Test(
-                graph1,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph1,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph1 = new BidirectionalGraph<int, IEdge<int>>();
+            InEdge_Throws_Test(graph1, (vertexPredicate, edgePredicate)
+                => graph1.FilteredBiDir(vertexPredicate, edgePredicate));
+        }
 
-            var graph2 = new BidirectionalGraph<TestVertex, Edge<TestVertex>>();
-            var filteredGraph2 = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                graph2,
+        [Test]
+        public void InEdgeUnfiltered_Throws()
+        {
+            var graph2 = new BidirectionalGraph<TestVertex, IEdge<TestVertex>>();
+            var filteredGraph2 = graph2.FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             InEdge_NullThrows_Test(filteredGraph2);
@@ -329,42 +276,39 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void InEdges()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            InEdges_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            InEdges_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
-        public void InEdges_Throws()
+        public void InEdgesUnFiltered_Throws()
         {
             var graph1 = new BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>();
-            var filteredGraph1 = new FilteredBidirectionalGraph
+            var filteredGraph1 = graph1.FilteredBiDir
             <
                 EquatableTestVertex,
                 Edge<EquatableTestVertex>,
                 BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>
             >(
-                graph1,
                 _ => true,
                 _ => true);
             InEdges_NullThrows_Test(filteredGraph1);
             InEdges_Throws_Test(filteredGraph1);
+        }
 
+        [Test]
+        public void InEdges_Throws()
+        {
             var graph2 = new BidirectionalGraph<int, Edge<int>>();
-            var filteredGraph2 = new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                graph2,
+            var filteredGraph2 = graph2.FilteredBiDir<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
                 vertex => vertex < 4,
                 _ => true);
 
-            graph2.AddVertexRange(new[] { 1, 2, 3, 4, 5 });
+            graph2.AddVertexRange( 1, 2, 3, 4, 5 );
             // ReSharper disable ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph2.InEdges(4));
-            Assert.Throws<VertexNotFoundException>(() => filteredGraph2.InEdges(5));
+            Assert.IsNull(filteredGraph2.InEdges(4));
+            Assert.IsNull(filteredGraph2.InEdges(5));
             // ReSharper restore ReturnValueOfPureMethodIsNotUsed
         }
 
@@ -375,29 +319,21 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Degree()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            Degree_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            Degree_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void Degree_Throws()
         {
             var graph = new BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>();
-            var filteredGraph = new FilteredBidirectionalGraph
+            var filteredGraph = graph.FilteredBiDir
             <
                 EquatableTestVertex,
                 Edge<EquatableTestVertex>,
                 BidirectionalGraph<EquatableTestVertex, Edge<EquatableTestVertex>>
-            >(
-                graph,
-                _ => true,
-                _ => true);
+            >(_ => true, _ => true);
             Degree_Throws_Test(filteredGraph);
         }
 
@@ -408,91 +344,73 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void TryGetEdge()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            TryGetEdge_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            TryGetEdge_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
         public void TryGetEdge_Throws()
         {
-            var filteredGraph = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            var filteredGraph = new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
             TryGetEdge_Throws_Test(filteredGraph);
         }
 
         [Test]
-        public void TryGetEdges()
+        public void GetEdges()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            TryGetEdges_Test(
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            GetEdges_Test(
                 graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+                (vertexPredicate, edgePredicate)
+                    => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
-        public void TryGetEdges_Throws()
+        public void GetEdges_Throws()
         {
-            var filteredGraph = new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            var filteredGraph =
+                new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                    .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                 _ => true,
                 _ => true);
-            TryGetEdges_Throws_Test(filteredGraph);
+            GetEdges_Throws_Test(filteredGraph);
         }
 
         [Test]
-        public void TryGetOutEdges()
+        public void GetOutEdges()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            TryGetOutEdges_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            GetOutEdges_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
-        public void TryGetOutEdges_Throws()
+        public void GetOutEdges_Throws()
         {
-            TryGetOutEdges_Throws_Test(
-                new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                    new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            GetOutEdges_Throws_Test(new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                     _ => true,
                     _ => true));
         }
 
         [Test]
-        public void TryGetInEdges()
+        public void GetInEdges()
         {
-            var graph = new BidirectionalGraph<int, Edge<int>>();
-            TryGetInEdges_Test(
-                graph,
-                (vertexPredicate, edgePredicate) =>
-                    new FilteredBidirectionalGraph<int, Edge<int>, BidirectionalGraph<int, Edge<int>>>(
-                        graph,
-                        vertexPredicate,
-                        edgePredicate));
+            var graph = new BidirectionalGraph<int, IEdge<int>>();
+            GetInEdges_Test(graph, (vertexPredicate, edgePredicate)
+                => graph.FilteredBiDir(vertexPredicate, edgePredicate));
         }
 
         [Test]
-        public void TryGetInEdges_Throws()
+        public void GetInEdges_Throws()
         {
-            TryGetInEdges_Throws_Test(
-                new FilteredBidirectionalGraph<TestVertex, Edge<TestVertex>, BidirectionalGraph<TestVertex, Edge<TestVertex>>>(
-                    new BidirectionalGraph<TestVertex, Edge<TestVertex>>(),
+            GetInEdges_Throws_Test(
+                    new BidirectionalGraph<TestVertex, IEdge<TestVertex>>()
+                        .FilteredBiDir<TestVertex, IEdge<TestVertex>, BidirectionalGraph<TestVertex, IEdge<TestVertex>>>(
                     _ => true,
                     _ => true));
         }

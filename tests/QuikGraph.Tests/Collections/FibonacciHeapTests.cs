@@ -182,15 +182,15 @@ namespace QuikGraph.Tests.Collections
         [Test]
         public void Constructor()
         {
-            AssertHeapBaseProperties(new FibonacciHeap<int, Edge<int>>());
+            AssertHeapBaseProperties(new FibonacciHeap<int, IEdge<int>>());
 
-            AssertHeapBaseProperties(new FibonacciHeap<int, Edge<int>>(HeapDirection.Increasing));
-            AssertHeapBaseProperties(new FibonacciHeap<int, Edge<int>>(HeapDirection.Decreasing),
+            AssertHeapBaseProperties(new FibonacciHeap<int, IEdge<int>>(HeapDirection.Increasing));
+            AssertHeapBaseProperties(new FibonacciHeap<int, IEdge<int>>(HeapDirection.Decreasing),
                 HeapDirection.Decreasing);
 
             Comparison<int> comparer = (x, y) => x.CompareTo(y);
-            AssertHeapProperties(new FibonacciHeap<int, Edge<int>>(HeapDirection.Increasing, comparer), comparer);
-            AssertHeapProperties(new FibonacciHeap<int, Edge<int>>(HeapDirection.Decreasing, comparer), comparer,
+            AssertHeapProperties(new FibonacciHeap<int, IEdge<int>>(HeapDirection.Increasing, comparer), comparer);
+            AssertHeapProperties(new FibonacciHeap<int, IEdge<int>>(HeapDirection.Decreasing, comparer), comparer,
                 HeapDirection.Decreasing);
 
             #region Local functions
@@ -223,9 +223,9 @@ namespace QuikGraph.Tests.Collections
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new FibonacciHeap<int, Edge<int>>(HeapDirection.Increasing, null));
+                () => new FibonacciHeap<int, IEdge<int>>(HeapDirection.Increasing, null));
             Assert.Throws<ArgumentNullException>(
-                () => new FibonacciHeap<int, Edge<int>>(HeapDirection.Decreasing, null));
+                () => new FibonacciHeap<int, IEdge<int>>(HeapDirection.Decreasing, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }

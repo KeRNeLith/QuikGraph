@@ -11,15 +11,15 @@ namespace QuikGraph.Tests.Events
         [Test]
         public void Constructor()
         {
-            var edge = new Edge<int>(1, 2);
+            var edge = Edge.Create(1, 2);
 
-            var args = new UndirectedEdgeEventArgs<int, Edge<int>>(edge, false);
+            var args = new UndirectedEdgeEventArgs<int, IEdge<int>>(edge, false);
             Assert.IsFalse(args.Reversed);
             Assert.AreSame(edge, args.Edge);
             Assert.AreEqual(1, args.Source);
             Assert.AreEqual(2, args.Target);
 
-            args = new UndirectedEdgeEventArgs<int, Edge<int>>(edge, true);
+            args = new UndirectedEdgeEventArgs<int, IEdge<int>>(edge, true);
             Assert.IsTrue(args.Reversed);
             Assert.AreSame(edge, args.Edge);
             Assert.AreEqual(2, args.Source);
@@ -32,9 +32,9 @@ namespace QuikGraph.Tests.Events
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedEdgeEventArgs<int, Edge<int>>(null, false));
+                () => new UndirectedEdgeEventArgs<int, IEdge<int>>(null, false));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedEdgeEventArgs<int, Edge<int>>(null, true));
+                () => new UndirectedEdgeEventArgs<int, IEdge<int>>(null, true));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }

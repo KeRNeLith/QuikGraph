@@ -17,7 +17,7 @@ namespace QuikGraph
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedEdgeEventArgs{TVertex, TEdge}"/> class.
+        /// Initializes a new <see cref="UndirectedEdgeEventArgs{TVertex, TEdge}"/> class.
         /// </summary>
         /// <param name="edge">The edge.</param>
         /// <param name="reversed">Indicates if the edge should be reversed or not.</param>

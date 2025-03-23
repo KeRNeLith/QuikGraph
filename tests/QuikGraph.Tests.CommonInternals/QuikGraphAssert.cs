@@ -65,7 +65,7 @@ namespace QuikGraph.Tests
             public Exception Exception { get; }
 
             /// <summary>
-            /// Initializes a new instance of the structure.
+            /// Initializes a new structure.
             /// </summary>
             /// <param name="exception">The exception object.</param>
             public CatchResult([CanBeNull] Exception exception)

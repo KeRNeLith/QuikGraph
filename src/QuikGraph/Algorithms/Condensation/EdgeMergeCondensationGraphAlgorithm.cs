@@ -5,19 +5,14 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.Condensation
 {
-    /// <summary>
-    /// Algorithm that condensate edges of a graph.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class EdgeMergeCondensationGraphAlgorithm<TVertex, TEdge> : AlgorithmBase<IBidirectionalGraph<TVertex, TEdge>>
+    /// <summary> Condensates edges of a graph. </summary>
+    public sealed class EdgeMergeCondensationGraphAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IBidirectionalGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeMergeCondensationGraphAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="EdgeMergeCondensationGraphAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="condensedGraph">Graph that will contains the condensation of the <paramref name="visitedGraph"/>.</param>
+        /// <param name="condensedGraph">Graph that will contain the condensation of the <paramref name="visitedGraph"/>.</param>
         /// <param name="vertexPredicate">Vertex predicate used to filter the vertices to put in the condensed graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="condensedGraph"/> is <see langword="null"/>.</exception>
@@ -25,7 +20,7 @@ namespace QuikGraph.Algorithms.Condensation
         public EdgeMergeCondensationGraphAlgorithm(
             [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
             [NotNull] IMutableBidirectionalGraph<TVertex, MergedEdge<TVertex, TEdge>> condensedGraph,
-            [NotNull] VertexPredicate<TVertex> vertexPredicate)
+            [NotNull] Func<TVertex, bool> vertexPredicate)
             : base(visitedGraph)
         {
             CondensedGraph = condensedGraph ?? throw new ArgumentNullException(nameof(condensedGraph));
@@ -42,7 +37,7 @@ namespace QuikGraph.Algorithms.Condensation
         /// Vertex predicate used to filter the vertices to put in the condensed graph.
         /// </summary>
         [NotNull]
-        public VertexPredicate<TVertex> VertexPredicate { get; }
+        public Func<TVertex, bool> VertexPredicate { get; }
 
         #region AlgorithmBase<TGraph>
 
@@ -96,15 +91,15 @@ namespace QuikGraph.Algorithms.Condensation
             // Add condensed edges
             foreach (MergedEdge<TVertex, TEdge> inEdge in inEdges)
             {
-                if (EqualityComparer<TVertex>.Default.Equals(inEdge.Source, vertex))
+                if (VisitedGraph.AreVerticesEqual(inEdge.Source, vertex))
                     continue;
 
                 foreach (MergedEdge<TVertex, TEdge> outEdge in outEdges)
                 {
-                    if (EqualityComparer<TVertex>.Default.Equals(outEdge.Target, vertex))
+                    if (VisitedGraph.AreVerticesEqual(outEdge.Target, vertex))
                         continue;
 
-                    var newEdge = MergedEdge<TVertex, TEdge>.Merge(inEdge, outEdge);
+                    var newEdge = inEdge.Merge(outEdge);
                     CondensedGraph.AddEdge(newEdge);
                 }
             }

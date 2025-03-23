@@ -15,7 +15,7 @@ namespace QuikGraph.Predicates
         private readonly IBidirectionalGraph<TVertex, TEdge> _visitedGraph;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="IsolatedVertexPredicate{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="IsolatedVertexPredicate{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to consider.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
@@ -32,13 +32,13 @@ namespace QuikGraph.Predicates
         /// <returns>True if the vertex is isolated, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
         [Pure]
-        public bool Test([NotNull] TVertex vertex)
+        public bool TestIsEdgesEmpty([NotNull] TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _visitedGraph.IsInEdgesEmpty(vertex)
-                   && _visitedGraph.IsOutEdgesEmpty(vertex);
+            return (_visitedGraph.IsInEdgesEmpty(vertex) ?? true)
+                   && (_visitedGraph.IsOutEdgesEmpty(vertex) ?? true);
         }
     }
 }

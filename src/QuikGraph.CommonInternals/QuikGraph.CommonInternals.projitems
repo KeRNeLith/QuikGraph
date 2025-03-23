@@ -10,9 +10,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Compatibility\StringUtils.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Externs\JetBrains.Annotations.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Signing\PublicKey.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DisposableHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MathUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Externs\" />
   </ItemGroup>
 </Project>

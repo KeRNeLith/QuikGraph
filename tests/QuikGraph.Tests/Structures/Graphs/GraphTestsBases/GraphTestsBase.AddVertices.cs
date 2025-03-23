@@ -26,24 +26,24 @@ namespace QuikGraph.Tests.Structures
             var vertex1 = new TestVertex("1");
             Assert.IsTrue(graph.AddVertex(vertex1));
             Assert.AreEqual(1, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1 });
+            graph.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             var vertex2 = new TestVertex("2");
             Assert.IsTrue(graph.AddVertex(vertex2));
             Assert.AreEqual(2, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph.AddVertex(vertex1));
             Assert.AreEqual(2, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             var otherVertex1 = new TestVertex("1");
             Assert.IsTrue(graph.AddVertex(otherVertex1));
             Assert.AreEqual(3, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2, otherVertex1 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2, otherVertex1 });
         }
 
         protected static void AddVertex_Clusters_Test<TEdge>(
@@ -58,48 +58,48 @@ namespace QuikGraph.Tests.Structures
             // Vertex 1
             var vertex1 = new TestVertex("1");
             Assert.IsTrue(graph1.AddVertex(vertex1));
-            AssertHasVertices(graph1, new[] { vertex1 });
+            graph1.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             var vertex2 = new TestVertex("2");
             Assert.IsTrue(graph1.AddVertex(vertex2));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph1.AddVertex(vertex1));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             var otherVertex1 = new TestVertex("1");
             Assert.IsTrue(graph1.AddVertex(otherVertex1));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2, otherVertex1 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2, otherVertex1 });
 
             // Graph with parent
             AssertNoVertex(parent2);
             AssertNoVertex(graph2);
 
             Assert.IsTrue(graph2.AddVertex(vertex1));
-            AssertHasVertices(parent2, new[] { vertex1 });
-            AssertHasVertices(graph2, new[] { vertex1 });
+            parent2.AssertHasVertices(new[] { vertex1 });
+            graph2.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             Assert.IsTrue(parent2.AddVertex(vertex2));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1 });
 
             Assert.IsTrue(graph2.AddVertex(vertex2));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph2.AddVertex(vertex1));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             Assert.IsTrue(graph2.AddVertex(otherVertex1));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2, otherVertex1 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2, otherVertex1 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2, otherVertex1 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2, otherVertex1 });
         }
 
         protected static void AddVertex_Throws_Test<TVertex>(
@@ -138,24 +138,24 @@ namespace QuikGraph.Tests.Structures
             var vertex1 = new EquatableTestVertex("1");
             Assert.IsTrue(graph.AddVertex(vertex1));
             Assert.AreEqual(1, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1 });
+            graph.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             var vertex2 = new EquatableTestVertex("2");
             Assert.IsTrue(graph.AddVertex(vertex2));
             Assert.AreEqual(2, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph.AddVertex(vertex1));
             Assert.AreEqual(2, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             var otherVertex1 = new EquatableTestVertex("1");
             Assert.IsFalse(graph.AddVertex(otherVertex1));
             Assert.AreEqual(2, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2 });
         }
 
         protected static void AddVertex_EquatableVertex_Clusters_Test<TEdge>(
@@ -170,48 +170,48 @@ namespace QuikGraph.Tests.Structures
             // Vertex 1
             var vertex1 = new EquatableTestVertex("1");
             Assert.IsTrue(graph1.AddVertex(vertex1));
-            AssertHasVertices(graph1, new[] { vertex1 });
+            graph1.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             var vertex2 = new EquatableTestVertex("2");
             Assert.IsTrue(graph1.AddVertex(vertex2));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph1.AddVertex(vertex1));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             var otherVertex1 = new EquatableTestVertex("1");
             Assert.IsFalse(graph1.AddVertex(otherVertex1));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2 });
+            graph1.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Graph with parent
             AssertNoVertex(parent2);
             AssertNoVertex(graph2);
 
             Assert.IsTrue(graph2.AddVertex(vertex1));
-            AssertHasVertices(parent2, new[] { vertex1 });
-            AssertHasVertices(graph2, new[] { vertex1 });
+            parent2.AssertHasVertices(new[] { vertex1 });
+            graph2.AssertHasVertices(new[] { vertex1 });
 
             // Vertex 2
             Assert.IsTrue(parent2.AddVertex(vertex2));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1 });
 
             Assert.IsTrue(graph2.AddVertex(vertex2));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Vertex 1 bis
             Assert.IsFalse(graph2.AddVertex(vertex1));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2 });
 
             // Other "Vertex 1"
             Assert.IsFalse(graph2.AddVertex(otherVertex1));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2 });
+            parent2.AssertHasVertices(new[] { vertex1, vertex2 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2 });
         }
 
         protected static void AddVertexRange_Test(
@@ -231,15 +231,15 @@ namespace QuikGraph.Tests.Structures
             var vertex1 = new TestVertex("1");
             var vertex2 = new TestVertex("2");
             var vertex3 = new TestVertex("3");
-            Assert.AreEqual(3, graph.AddVertexRange(new[] { vertex1, vertex2, vertex3 }));
+            Assert.AreEqual(3, graph.AddVertexRange( vertex1, vertex2, vertex3 ));
             Assert.AreEqual(3, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2, vertex3 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2, vertex3 });
 
             // Vertex 1, 4
             var vertex4 = new TestVertex("4");
-            Assert.AreEqual(1, graph.AddVertexRange(new[] { vertex1, vertex4 }));
+            Assert.AreEqual(1, graph.AddVertexRange( vertex1, vertex4 ));
             Assert.AreEqual(4, vertexAdded);
-            AssertHasVertices(graph, new[] { vertex1, vertex2, vertex3, vertex4 });
+            graph.AssertHasVertices(new[] { vertex1, vertex2, vertex3, vertex4 });
         }
 
         protected static void AddVertexRange_Clusters_Test<TEdge>(
@@ -255,31 +255,31 @@ namespace QuikGraph.Tests.Structures
             var vertex1 = new TestVertex("1");
             var vertex2 = new TestVertex("2");
             var vertex3 = new TestVertex("3");
-            Assert.AreEqual(3, graph1.AddVertexRange(new[] { vertex1, vertex2, vertex3 }));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2, vertex3 });
+            Assert.AreEqual(3, graph1.AddVertexRange( vertex1, vertex2, vertex3 ));
+            graph1.AssertHasVertices(new[] { vertex1, vertex2, vertex3 });
 
             // Vertex 1, 4
             var vertex4 = new TestVertex("4");
-            Assert.AreEqual(1, graph1.AddVertexRange(new[] { vertex1, vertex4 }));
-            AssertHasVertices(graph1, new[] { vertex1, vertex2, vertex3, vertex4 });
+            Assert.AreEqual(1, graph1.AddVertexRange( vertex1, vertex4 ));
+            graph1.AssertHasVertices(new[] { vertex1, vertex2, vertex3, vertex4 });
 
             // Graph with parent
             AssertNoVertex(parent2);
             AssertNoVertex(graph2);
 
             // Vertex 1, 2, 3
-            Assert.AreEqual(3, graph2.AddVertexRange(new[] { vertex1, vertex2, vertex3 }));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2, vertex3 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2, vertex3 });
+            Assert.AreEqual(3, graph2.AddVertexRange( vertex1, vertex2, vertex3 ));
+            parent2.AssertHasVertices(new[] { vertex1, vertex2, vertex3 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2, vertex3 });
 
             // Vertex 1, 4
-            Assert.AreEqual(1, parent2.AddVertexRange(new[] { vertex1, vertex4 }));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2, vertex3, vertex4 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2, vertex3 });
+            Assert.AreEqual(1, parent2.AddVertexRange( vertex1, vertex4 ));
+            parent2.AssertHasVertices(new[] { vertex1, vertex2, vertex3, vertex4 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2, vertex3 });
 
-            Assert.AreEqual(1, graph2.AddVertexRange(new[] { vertex1, vertex4 }));
-            AssertHasVertices(parent2, new[] { vertex1, vertex2, vertex3, vertex4 });
-            AssertHasVertices(graph2, new[] { vertex1, vertex2, vertex3, vertex4 });
+            Assert.AreEqual(1, graph2.AddVertexRange( vertex1, vertex4 ));
+            parent2.AssertHasVertices(new[] { vertex1, vertex2, vertex3, vertex4 });
+            graph2.AssertHasVertices(new[] { vertex1, vertex2, vertex3, vertex4 });
         }
 
         protected static void AddVertexRange_Throws_Test(
@@ -303,7 +303,7 @@ namespace QuikGraph.Tests.Structures
             // Vertex 1, 2, 3
             var vertex1 = new TestVertex("1");
             var vertex3 = new TestVertex("3");
-            Assert.Throws<ArgumentNullException>(() => graph.AddVertexRange(new[] { vertex1, null, vertex3 }));
+            Assert.Throws<ArgumentNullException>(() => graph.AddVertexRange( vertex1, null, vertex3 ));
             AssertNoVertex(graph);
             Assert.AreEqual(0, vertexAdded);
         }
@@ -321,7 +321,7 @@ namespace QuikGraph.Tests.Structures
             // Vertex 1, 2, 3
             var vertex1 = new TestVertex("1");
             var vertex3 = new TestVertex("3");
-            Assert.Throws<ArgumentNullException>(() => graph.AddVertexRange(new[] { vertex1, null, vertex3 }));
+            Assert.Throws<ArgumentNullException>(() => graph.AddVertexRange( vertex1, null, vertex3 ));
             AssertNoVertex(graph);
         }
 
@@ -343,7 +343,7 @@ namespace QuikGraph.Tests.Structures
             IVertexSet<int> graph = createGraph();
 
             wrappedGraph.AddVertex(1);
-            AssertHasVertices(graph, new[] { 1 });  // Graph is updated
+            graph.AssertHasVertices(new[] { 1 });  // Graph is updated
         }
 
         #endregion

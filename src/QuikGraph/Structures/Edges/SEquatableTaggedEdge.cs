@@ -19,8 +19,17 @@ namespace QuikGraph
     [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}:{" + nameof(Tag) + "}")]
     public struct SEquatableTaggedEdge<TVertex, TTag> : IEdge<TVertex>, ITagged<TTag>, IEquatable<SEquatableTaggedEdge<TVertex, TTag>>
     {
+        /// <inheritdoc />
+        public static Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private static Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="SEquatableTaggedEdge{TVertex, TTag}"/> struct.
+        /// Initializes a new <see cref="SEquatableTaggedEdge{TVertex, TTag}"/> struct.
         /// </summary>
         /// <param name="source">The source vertex.</param>
         /// <param name="target">The target vertex.</param>
@@ -86,8 +95,8 @@ namespace QuikGraph
         /// <inheritdoc />
         public bool Equals(SEquatableTaggedEdge<TVertex, TTag> other)
         {
-            return EqualityComparer<TVertex>.Default.Equals(Source, other.Source)
-                   && EqualityComparer<TVertex>.Default.Equals(Target, other.Target);
+            return AreVerticesEqual(Source, other.Source)
+                   && AreVerticesEqual(Target, other.Target);
         }
 
         /// <inheritdoc />
@@ -106,7 +115,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.TaggedEdgeFormatString, Source, Target, Tag?.ToString() ?? "no tag");
+            return string.Format(EdgeFormats.Tagged, Source, Target, Tag?.ToString() ?? "no tag");
         }
     }
 }

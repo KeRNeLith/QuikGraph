@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 #if SUPPORTS_AGGRESSIVE_INLINING
 using System.Runtime.CompilerServices;
@@ -9,9 +8,7 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Base class for all graph algorithm requiring a starting vertex (root).
-    /// </summary>
+    /// <summary> Base class for all graph algorithm requiring a starting vertex <see cref="SetRootVertex(TVertex)"/> (root). </summary>
     /// <remarks>Requires a starting vertex (root).</remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TGraph">Graph type.</typeparam>
@@ -21,21 +18,24 @@ namespace QuikGraph.Algorithms
     public abstract class RootedAlgorithmBase<TVertex, TGraph> : AlgorithmBase<TGraph>
         where TGraph : IImplicitVertexSet<TVertex>
     {
+        /// <summary> Reference (or Copy in case of struct) of the Root Vertex </summary>
         [CanBeNull]
         private TVertex _root;
 
+        /// <summary> Needs a separate Flag to support Nullability for structs </summary>
+        /// <remarks> Because <typeparamref name="TVertex"/> can be a struct and often is the default Value. </remarks>
         private bool _hasRootVertex;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RootedAlgorithmBase{TVertex,TGraph}"/> class.
+        /// Initializes a new <see cref="RootedAlgorithmBase{TVertex,TGraph}"/> class.
         /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <param name="visitedGraph">Graph to visit.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         protected RootedAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] TGraph visitedGraph)
-            : base(host, visitedGraph)
+            [NotNull] TGraph visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
         }
 
@@ -58,17 +58,13 @@ namespace QuikGraph.Algorithms
             return false;
         }
 
-        /// <summary>
-        /// Sets the root vertex.
-        /// </summary>
-        /// <param name="root">Root vertex.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="root"/> is <see langword="null"/>.</exception>
+        /// <summary> Sets the root vertex and raises <see cref="RootVertexChanged"/>. </summary>
         public void SetRootVertex([NotNull] TVertex root)
         {
             if (root == null)
                 throw new ArgumentNullException(nameof(root));
 
-            bool changed = !_hasRootVertex || !EqualityComparer<TVertex>.Default.Equals(_root, root);
+            bool changed = !_hasRootVertex || !VisitedGraph.AreVerticesEqual(_root, root);
             _root = root;
             _hasRootVertex = true;
 
@@ -78,9 +74,8 @@ namespace QuikGraph.Algorithms
             }
         }
 
-        /// <summary>
-        /// Clears the root vertex.
-        /// </summary>
+        /// <summary> Clears the root vertex. </summary>
+        /// <remarks> needs a separate Method, because struct defaults can be valid Values </remarks>
         public void ClearRootVertex()
         {
             bool hasRoot = _hasRootVertex;
@@ -93,9 +88,7 @@ namespace QuikGraph.Algorithms
             }
         }
 
-        /// <summary>
-        /// Fired when the root vertex is changed.
-        /// </summary>
+        /// <summary> Fired when the root vertex is changed. </summary>
         public event EventHandler RootVertexChanged;
 
         /// <summary>
@@ -123,7 +116,7 @@ namespace QuikGraph.Algorithms
         {
             if (!TryGetRootVertex(out TVertex root))
                 throw new InvalidOperationException("Root vertex not set.");
-            AssertRootInGraph(root);
+            RootShouldBeInGraph(root);
             return root;
         }
 
@@ -137,16 +130,13 @@ namespace QuikGraph.Algorithms
 #if SUPPORTS_AGGRESSIVE_INLINING
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
-        protected void AssertRootInGraph([NotNull] TVertex root)
+        protected void RootShouldBeInGraph([NotNull] TVertex root)
         {
             if (!VisitedGraph.ContainsVertex(root))
-                throw new VertexNotFoundException("Root vertex is not part of the graph.");
+                throw new Exception("Root vertex is not part of the graph.");
         }
 
-        /// <summary>
-        /// Runs the algorithm with the given <paramref name="root"/> vertex.
-        /// </summary>
-        /// <param name="root">Root vertex.</param>
+        /// <summary> <see cref="SetRootVertex"/> to <paramref name="root"/> and runs the algorithm with it. </summary>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="root"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <see cref="AlgorithmBase{TGraph}.VisitedGraph"/>.</exception>
         /// <exception cref="T:System.InvalidOperationException">Something went wrong when running the algorithm.</exception>

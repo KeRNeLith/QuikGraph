@@ -17,7 +17,7 @@ namespace QuikGraph
     public class UndirectedEdge<TVertex> : IUndirectedEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedEdge{TVertex}"/> class.
+        /// Initializes a new <see cref="UndirectedEdge{TVertex}"/> class.
         /// </summary>
         /// <param name="source">The source vertex.</param>
         /// <param name="target">The target vertex.</param>
@@ -48,7 +48,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.UndirectedEdgeFormatString, Source, Target);
+            return string.Format(EdgeFormats.Undirected, Source, Target);
         }
     }
 }

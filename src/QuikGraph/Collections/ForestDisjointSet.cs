@@ -49,7 +49,7 @@ namespace QuikGraph.Collections
         private readonly Dictionary<T, Element> _elements;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ForestDisjointSet{T}"/> class.
+        /// Initializes a new <see cref="ForestDisjointSet{T}"/> class.
         /// </summary>
         public ForestDisjointSet()
         {
@@ -58,7 +58,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ForestDisjointSet{T}"/> class.
+        /// Initializes a new <see cref="ForestDisjointSet{T}"/> class.
         /// </summary>
         /// <param name="capacity">Element capacity.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is negative or <see cref="F:int.MaxValue"/>.</exception>

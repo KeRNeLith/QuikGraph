@@ -19,7 +19,7 @@ namespace QuikGraph.Algorithms.Observers
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EdgePredecessorRecorderObserver{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="EdgePredecessorRecorderObserver{TVertex,TEdge}"/> class.
         /// </summary>
         public EdgePredecessorRecorderObserver()
             : this(new Dictionary<TEdge, TEdge>())
@@ -27,7 +27,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EdgePredecessorRecorderObserver{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="EdgePredecessorRecorderObserver{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="edgesPredecessors">Edges predecessors.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgesPredecessors"/> is <see langword="null"/>.</exception>

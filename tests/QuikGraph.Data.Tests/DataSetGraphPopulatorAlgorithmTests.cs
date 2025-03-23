@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using NUnit.Framework;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+using QuikGraph.Tests.Algorithms;
 using static QuikGraph.Data.Tests.GraphTestHelpers;
 using static QuikGraph.Tests.GraphTestHelpers;
 
@@ -28,7 +28,7 @@ namespace QuikGraph.Data.Tests
                 IMutableVertexAndEdgeSet<DataTable, DataRelationEdge> g,
                 DataSet set)
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 Assert.AreSame(set, algo.DataSet);
             }
 
@@ -78,8 +78,8 @@ namespace QuikGraph.Data.Tests
             algorithm = new DataSetGraphPopulatorAlgorithm(graph, dataSet);
             algorithm.Compute();
 
-            AssertHasVertices(graph, new[]{ customers, orders });
-            AssertNoEdge(graph);
+            graph.AssertHasVertices(customers, orders);
+            graph.AssertNoEdge();
 
             // Table with relations
             dataSet = new DataSet();
@@ -110,14 +110,14 @@ namespace QuikGraph.Data.Tests
             algorithm = new DataSetGraphPopulatorAlgorithm(graph, dataSet);
             algorithm.Compute();
 
-            AssertHasVertices(graph, new[]{ addresses, customers, orders });
+            graph.AssertHasVertices(addresses, customers, orders);
             AssertHasRelations(
                 graph,
-                new[]
+                new DataRelationEdge[]
                 {
-                    new DataRelationEdge(customerOrders),
-                    new DataRelationEdge(customersAddresses),
-                    new DataRelationEdge(warehousesAddresses)
+                    new (customerOrders),
+                    new (customersAddresses),
+                    new (warehousesAddresses)
                 });
         }
     }

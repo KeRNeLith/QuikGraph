@@ -1,48 +1,42 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.TopologicalSort;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
 using static QuikGraph.Tests.QuikGraphUnitTestsHelpers;
 
 namespace QuikGraph.Tests.Algorithms
 {
-    /// <summary>
-    /// Tests for <see cref="TopologicalSortAlgorithm{TVertex,TEdge}"/>.
-    /// </summary>
+    /// <summary> Tests for <see cref="TopologicalSortAlgorithm{TVertex,TEdge}"/>. </summary>
     [TestFixture]
     internal sealed class TopologicalSortAlgorithmTests
     {
-        #region Test helpers
 
-        private static void RunTopologicalSortAndCheck<TVertex, TEdge>([NotNull] IVertexListGraph<TVertex, TEdge> graph)
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetAdjacencyGraphs_All))]
+        public static void RunTopologicalSortAndCheck<TVertex, TEdge>([NotNull] IVertexListGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new TopologicalSortAlgorithm<TVertex, TEdge>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeTopologicalSortAlgorithm();
 
             Assert.IsNotNull(algorithm.SortedVertices);
             Assert.AreEqual(graph.VertexCount, algorithm.SortedVertices.Length);
         }
 
-        #endregion
-
         [Test]
         public void Constructor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateTopologicalSortAlgorithm();
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph, -10);
+            algorithm = graph.CreateTopologicalSortAlgorithm(-10);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph, 0);
+            algorithm = graph.CreateTopologicalSortAlgorithm(0);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph, 10);
+            algorithm = graph.CreateTopologicalSortAlgorithm(10);
             AssertAlgorithmProperties(algorithm, graph);
 
             #region Local function
@@ -52,7 +46,7 @@ namespace QuikGraph.Tests.Algorithms
                 IVertexListGraph<TVertex, TEdge> g)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 Assert.IsNull(algo.SortedVertices);
             }
 
@@ -65,19 +59,18 @@ namespace QuikGraph.Tests.Algorithms
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new TopologicalSortAlgorithm<int, Edge<int>>(null));
+                () => TopologicalSortAlgorithm.CreateTopologicalSortAlgorithm<int, IEdge<int>>(null));
         }
 
         [Test]
         public void OneTwo()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             graph.AddVertex(1);
             graph.AddVertex(2);
-            graph.AddEdge(new Edge<int>(1, 2));
+            graph.AddEdge(Edge.Create(1, 2));
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph, graph.VertexCount);
-            algorithm.Compute();
+            var algorithm = graph.ComputeTopologicalSortAlgorithm(graph.VertexCount);
 
             CollectionAssert.AreEqual(
                 new[] { 1, 2 },
@@ -88,15 +81,14 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void TwoOne()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
 
             // Deliberately adding 1 and then 2, before adding edge (2, 1).
             graph.AddVertex(1);
             graph.AddVertex(2);
-            graph.AddEdge(new Edge<int>(2, 1));
+            graph.AddEdge(Edge.Create(2, 1));
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph, graph.VertexCount);
-            algorithm.Compute();
+            var algorithm = graph.ComputeTopologicalSortAlgorithm(graph.VertexCount);
 
             CollectionAssert.AreEqual(
                 new[] { 2, 1 },
@@ -106,22 +98,20 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void SimpleGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3),
-                new Edge<int>(2, 6),
-                new Edge<int>(2, 8),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 5),
-                new Edge<int>(5, 6),
-                new Edge<int>(7, 5),
-                new Edge<int>(7, 8)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3),
+                Edge.Create(2, 6),
+                Edge.Create(2, 8),
+                Edge.Create(4, 2),
+                Edge.Create(4, 5),
+                Edge.Create(5, 6),
+                Edge.Create(7, 5),
+                Edge.Create(7, 8)
+            );
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeTopologicalSortAlgorithm();
 
             CollectionAssert.AreEqual(
                 new[] { 7, 4, 5, 1, 2, 8, 6, 3 },
@@ -131,20 +121,18 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void ForestGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(0, 1),
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(3, 4),
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(0, 1),
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(3, 4),
 
-                new Edge<int>(5, 6)
-            });
+                Edge.Create(5, 6)
+            );
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph);
-            algorithm.Compute();
+            var algorithm = graph.ComputeTopologicalSortAlgorithm();
 
             CollectionAssert.AreEqual(
                 new[] { 5, 6, 0, 1, 2, 3, 4 },
@@ -154,49 +142,40 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void GraphWithSelfEdge_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(0, 1),
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(2, 2),
-                new Edge<int>(3, 4)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(0, 1),
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(2, 2),
+                Edge.Create(3, 4)
+            );
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(graph);
-            Assert.Throws<NonAcyclicGraphException>(() => algorithm.Compute());
-        }
-
-        [Test]
-        public void TopologicalSort()
-        {
-            foreach (AdjacencyGraph<string, Edge<string>> graph in TestGraphFactory.GetAdjacencyGraphs_All())
-                RunTopologicalSortAndCheck(graph);
+            var algorithm = graph.CreateTopologicalSortAlgorithm();
+            Assert.Throws<CyclicGraphException>(algorithm.Compute);
         }
 
         [Test]
         public void TopologicalSort_DCT8()
         {
-            AdjacencyGraph<string, Edge<string>> graph = TestGraphFactory.LoadGraph(GetGraphFilePath("DCT8.graphml"));
+            var graph = TestGraphFactory.LoadGraph(GetGraphFilePath("DCT8.graphml"));
             RunTopologicalSortAndCheck(graph);
         }
 
         [Test]
         public void TopologicalSort_Throws()
         {
-            var cyclicGraph = new AdjacencyGraph<int, Edge<int>>();
-            cyclicGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3),
-                new Edge<int>(1, 4),
-                new Edge<int>(3, 1)
-            });
+            var cyclicGraph = new AdjacencyGraph<int, IEdge<int>>();
+            cyclicGraph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3),
+                Edge.Create(1, 4),
+                Edge.Create(3, 1)
+            );
 
-            var algorithm = new TopologicalSortAlgorithm<int, Edge<int>>(cyclicGraph);
-            Assert.Throws<NonAcyclicGraphException>(() => algorithm.Compute());
+            var algorithm = cyclicGraph.CreateTopologicalSortAlgorithm();
+            Assert.Throws<CyclicGraphException>(algorithm.Compute);
         }
 
         #region Test classes
@@ -250,7 +229,7 @@ namespace QuikGraph.Tests.Algorithms
             The first occurrence of 'n' comes before 1 occurrence of 's'.
             */
 
-            var graph = new AdjacencyGraph<Letter, Edge<Letter>>();
+            var graph = new AdjacencyGraph<Letter, IEdge<Letter>>();
 
             // A more generalized algorithm would handle duplicate letters automatically.
             // This is the quick and dirty solution.
@@ -264,34 +243,33 @@ namespace QuikGraph.Tests.Algorithms
             var t = new Letter('t');
             var v = new Letter('v');
 
-            graph.AddVertexRange(new List<Letter> { e1, e2, s, i1, i2, n, t, v });
+            graph.AddVertexRange(e1, e2, s, i1, i2, n, t, v );
 
-            graph.AddEdge(new Edge<Letter>(e1, s));
-            graph.AddEdge(new Edge<Letter>(i1, n));
-            graph.AddEdge(new Edge<Letter>(i1, i2));
-            graph.AddEdge(new Edge<Letter>(n, e1));
-            graph.AddEdge(new Edge<Letter>(n, e2));
-            graph.AddEdge(new Edge<Letter>(e1, e2));
-            graph.AddEdge(new Edge<Letter>(i1, v));
-            graph.AddEdge(new Edge<Letter>(n, e1));
-            graph.AddEdge(new Edge<Letter>(n, v));
-            graph.AddEdge(new Edge<Letter>(i1, s));
-            graph.AddEdge(new Edge<Letter>(t, s));
-            graph.AddEdge(new Edge<Letter>(v, s));
-            graph.AddEdge(new Edge<Letter>(v, e1));
-            graph.AddEdge(new Edge<Letter>(v, e2));
-            graph.AddEdge(new Edge<Letter>(t, e1));
-            graph.AddEdge(new Edge<Letter>(t, e2));
-            graph.AddEdge(new Edge<Letter>(i1, e1));
-            graph.AddEdge(new Edge<Letter>(i1, e2));
-            graph.AddEdge(new Edge<Letter>(v, t));
-            graph.AddEdge(new Edge<Letter>(n, t));
-            graph.AddEdge(new Edge<Letter>(v, i2));
-            graph.AddEdge(new Edge<Letter>(i1, t));
-            graph.AddEdge(new Edge<Letter>(n, s));
+            graph.AddEdge(Edge.Create(e1, s));
+            graph.AddEdge(Edge.Create(i1, n));
+            graph.AddEdge(Edge.Create(i1, i2));
+            graph.AddEdge(Edge.Create(n, e1));
+            graph.AddEdge(Edge.Create(n, e2));
+            graph.AddEdge(Edge.Create(e1, e2));
+            graph.AddEdge(Edge.Create(i1, v));
+            graph.AddEdge(Edge.Create(n, e1));
+            graph.AddEdge(Edge.Create(n, v));
+            graph.AddEdge(Edge.Create(i1, s));
+            graph.AddEdge(Edge.Create(t, s));
+            graph.AddEdge(Edge.Create(v, s));
+            graph.AddEdge(Edge.Create(v, e1));
+            graph.AddEdge(Edge.Create(v, e2));
+            graph.AddEdge(Edge.Create(t, e1));
+            graph.AddEdge(Edge.Create(t, e2));
+            graph.AddEdge(Edge.Create(i1, e1));
+            graph.AddEdge(Edge.Create(i1, e2));
+            graph.AddEdge(Edge.Create(v, t));
+            graph.AddEdge(Edge.Create(n, t));
+            graph.AddEdge(Edge.Create(v, i2));
+            graph.AddEdge(Edge.Create(i1, t));
+            graph.AddEdge(Edge.Create(n, s));
 
-            var sort = new TopologicalSortAlgorithm<Letter, Edge<Letter>>(graph);
-            sort.Compute();
+            var sort = graph.ComputeTopologicalSortAlgorithm();
 
             var builder = new StringBuilder();
             foreach (Letter item in sort.SortedVertices)

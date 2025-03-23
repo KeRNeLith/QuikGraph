@@ -12,20 +12,20 @@ namespace QuikGraph
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
-    public class NonAcyclicGraphException : QuikGraphException
+    public class CyclicGraphException : QuikGraphException
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="NonAcyclicGraphException"/> class.
+        /// Initializes a new instance of <see cref="CyclicGraphException"/> class.
         /// </summary>
-        public NonAcyclicGraphException()
+        public CyclicGraphException()
             : base("The graph contains at least one cycle.")
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of <see cref="NonAcyclicGraphException"/> class.
+        /// Initializes a new instance of <see cref="CyclicGraphException"/> class.
         /// </summary>
-        public NonAcyclicGraphException([NotNull] string message, [CanBeNull] Exception innerException = null)
+        public CyclicGraphException([NotNull] string message, [CanBeNull] Exception innerException = null)
             : base(message, innerException)
         {
         }
@@ -34,7 +34,7 @@ namespace QuikGraph
         /// <summary>
         /// Constructor used during runtime serialization.
         /// </summary>
-        protected NonAcyclicGraphException(SerializationInfo info, StreamingContext context)
+        protected CyclicGraphException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }

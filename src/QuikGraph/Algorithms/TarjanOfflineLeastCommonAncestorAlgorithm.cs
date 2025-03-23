@@ -8,9 +8,18 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Offline least common ancestor in a rooted tree.
-    /// </summary>
+    /// <inheritdoc cref="CreateTarjanOfflineLeastCommonAncestorAlgorithm"/>
+    public static class TarjanOfflineLeastCommonAncestorAlgorithm
+    {
+        /// <summary> Creates a <see cref="TarjanOfflineLeastCommonAncestorAlgorithm{TVertex, TEdge}"/> </summary>
+        public static TarjanOfflineLeastCommonAncestorAlgorithm<TVertex, TEdge>
+            CreateTarjanOfflineLeastCommonAncestorAlgorithm<TVertex, TEdge>(
+            [NotNull] this IVertexListGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new TarjanOfflineLeastCommonAncestorAlgorithm<TVertex, TEdge>(visitedGraph);
+    }
+
+    /// <summary> Offline least common ancestor in a rooted tree. </summary>
     /// <remarks>
     /// Reference:
     /// Gabow, H. N. and Tarjan, R. E. 1983. A linear-time algorithm for a special case 
@@ -35,26 +44,15 @@ namespace QuikGraph.Algorithms
             new Dictionary<SEquatableEdge<TVertex>, TVertex>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TarjanOfflineLeastCommonAncestorAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="TarjanOfflineLeastCommonAncestorAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public TarjanOfflineLeastCommonAncestorAlgorithm(
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph)
-            : this(null, visitedGraph)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TarjanOfflineLeastCommonAncestorAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public TarjanOfflineLeastCommonAncestorAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph)
-            : base(host, visitedGraph)
+        internal TarjanOfflineLeastCommonAncestorAlgorithm(
+            [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
         }
 
@@ -77,10 +75,7 @@ namespace QuikGraph.Algorithms
             var graph = _pairs.ToAdjacencyGraph();
             var disjointSet = new ForestDisjointSet<TVertex>();
             var verticesAncestors = new Dictionary<TVertex, TVertex>();
-            var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(
-                this, 
-                VisitedGraph, 
-                new Dictionary<TVertex, GraphColor>(VisitedGraph.VertexCount));
+            var dfs = VisitedGraph.CreateDepthFirstSearchAlgorithm(null, null, this);
 
             dfs.InitializeVertex += vertex => disjointSet.MakeSet(vertex);
             dfs.DiscoverVertex += vertex => verticesAncestors[vertex] = vertex;
@@ -111,22 +106,18 @@ namespace QuikGraph.Algorithms
 
         #endregion
 
-        /// <summary>
-        /// Tries to get vertices pairs if set.
-        /// </summary>
-        /// <param name="pairs">Vertices pairs if set.</param>
-        /// <returns>True if vertex pairs were set, false otherwise.</returns>
+        /// <summary> The vertex-pairs if set. </summary>
         [Pure]
-        [ContractAnnotation("=> true, pairs:notnull;=> false, pairs:null")]
-        public bool TryGetVertexPairs(out IEnumerable<SEquatableEdge<TVertex>> pairs)
-        {
-            pairs = _pairs;
-            return pairs != null;
-        }
+        [CanBeNull]
+        public IEnumerable<SEquatableEdge<TVertex>> VertexPairs() => _pairs;
 
-        /// <summary>
-        /// Sets vertices pairs.
-        /// </summary>
+        /// <summary> Sets vertices pairs. </summary>
+        /// <param name="pairs">Vertices pairs.</param>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="pairs"/> is <see langword="null"/>.</exception>
+        /// <exception cref="T:System.ArgumentException"><paramref name="pairs"/> is empty or any vertex from pairs is not part of <see cref="AlgorithmBase{TGraph}.VisitedGraph"/>.</exception>
+        public void SetVertexPairs([NotNull] params SEquatableEdge<TVertex>[] pairs) => SetVertexPairs(pairs.AsEnumerable());
+
+        /// <summary> Sets vertices pairs. </summary>
         /// <param name="pairs">Vertices pairs.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="pairs"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentException"><paramref name="pairs"/> is empty or any vertex from pairs is not part of <see cref="AlgorithmBase{TGraph}.VisitedGraph"/>.</exception>

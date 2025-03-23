@@ -21,7 +21,7 @@ namespace QuikGraph.Serialization
         where TGraph : IMutableVertexAndEdgeListGraph<TVertex, TEdge>, new()
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmlSerializableGraph{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="XmlSerializableGraph{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
         public XmlSerializableGraph()
             : this(new TGraph())
@@ -29,7 +29,7 @@ namespace QuikGraph.Serialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="XmlSerializableGraph{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="XmlSerializableGraph{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
         /// <param name="graph">Graph to serialize.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>

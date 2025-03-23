@@ -13,7 +13,7 @@ namespace QuikGraph.Data
     public class DataSetGraphvizAlgorithm : GraphvizAlgorithm<DataTable, DataRelationEdge>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSetGraphvizAlgorithm"/> class.
+        /// Initializes a new <see cref="DataSetGraphvizAlgorithm"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to convert to DOT.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
@@ -24,7 +24,7 @@ namespace QuikGraph.Data
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DataSetGraphvizAlgorithm"/> class.
+        /// Initializes a new <see cref="DataSetGraphvizAlgorithm"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to convert to DOT.</param>
         /// <param name="imageType">Target output image type.</param>

@@ -20,14 +20,14 @@ namespace QuikGraph.Utils
         private readonly byte[] _uint32Buffer = new byte[4];
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryptoRandom"/> class.
+        /// Initializes a new <see cref="CryptoRandom"/> class.
         /// </summary>
         public CryptoRandom()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CryptoRandom"/> class.
+        /// Initializes a new <see cref="CryptoRandom"/> class.
         /// </summary>
         /// <param name="ignoredSeed">Seed is ignored, just to keep same API as <see cref="T:System.Random"/>.</param>
         // ReSharper disable once UnusedParameter.Local

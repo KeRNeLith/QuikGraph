@@ -9,7 +9,7 @@ namespace QuikGraph.Petri
     internal sealed class Arc<TToken> : Edge<IPetriVertex>, IArc<TToken>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Arc{TToken}"/> class.
+        /// Initializes a new <see cref="Arc{TToken}"/> class.
         /// </summary>
         /// <param name="place">Place (Source).</param>
         /// <param name="transition">Transition (Target).</param>
@@ -24,7 +24,7 @@ namespace QuikGraph.Petri
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Arc{TToken}"/> class.
+        /// Initializes a new <see cref="Arc{TToken}"/> class.
         /// </summary>
         /// <param name="transition">Transition (Source).</param>
         /// <param name="place">Place (Target).</param>

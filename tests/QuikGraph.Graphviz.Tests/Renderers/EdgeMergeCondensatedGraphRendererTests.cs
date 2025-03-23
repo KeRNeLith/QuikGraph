@@ -15,8 +15,8 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void Constructor()
         {
-            var graph = new AdjacencyGraph<int, MergedEdge<int, Edge<int>>>();
-            var algorithm = new EdgeMergeCondensatedGraphRenderer<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, MergedEdge<int, IEdge<int>>>();
+            var algorithm = new EdgeMergeCondensatedGraphRenderer<int, IEdge<int>>(graph);
             Assert.AreSame(graph, algorithm.VisitedGraph);
             Assert.IsNotNull(algorithm.Graphviz);
         }
@@ -26,7 +26,7 @@ namespace QuikGraph.Graphviz.Tests
         {
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => new EdgeMergeCondensatedGraphRenderer<int, Edge<int>>(null));
+            Assert.Throws<ArgumentNullException>(() => new EdgeMergeCondensatedGraphRenderer<int, IEdge<int>>(null));
         }
 
         [NotNull, ItemNotNull]
@@ -36,7 +36,7 @@ namespace QuikGraph.Graphviz.Tests
             get
             {
                 // Empty graph
-                var graph = new AdjacencyGraph<int, MergedEdge<int, Edge<int>>>();
+                var graph = new AdjacencyGraph<int, MergedEdge<int, IEdge<int>>>();
                 yield return new TestCaseData(
                     graph,
                     @"digraph G {" + Environment.NewLine +
@@ -45,46 +45,46 @@ namespace QuikGraph.Graphviz.Tests
                     @"}");
 
                 // Not empty graph
-                graph = new AdjacencyGraph<int, MergedEdge<int, Edge<int>>>();
-                graph.AddVertexRange(new[] { 4, 8 });
+                graph = new AdjacencyGraph<int, MergedEdge<int, IEdge<int>>>();
+                graph.AddVertexRange(4, 8 );
 
-                var edge12 = new Edge<int>(1, 2);
-                var edge13 = new Edge<int>(1, 3);
-                var edge23 = new Edge<int>(2, 3);
-                var edge38 = new Edge<int>(3, 8);
-                var edge42 = new Edge<int>(4, 2);
-                var edge43 = new Edge<int>(4, 3);
-                var edge44 = new Edge<int>(4, 4);
-                var edge45 = new Edge<int>(4, 5);
-                var edge57 = new Edge<int>(5, 7);
-                var edge71 = new Edge<int>(7, 1);
-                var edge82 = new Edge<int>(8, 2);
+                var edge12 = Edge.Create(1, 2);
+                var edge13 = Edge.Create(1, 3);
+                var edge23 = Edge.Create(2, 3);
+                var edge38 = Edge.Create(3, 8);
+                var edge42 = Edge.Create(4, 2);
+                var edge43 = Edge.Create(4, 3);
+                var edge44 = Edge.Create(4, 4);
+                var edge45 = Edge.Create(4, 5);
+                var edge57 = Edge.Create(5, 7);
+                var edge71 = Edge.Create(7, 1);
+                var edge82 = Edge.Create(8, 2);
 
-                var mergeEdge1 = new MergedEdge<int, Edge<int>>(8, 8);
+                var mergeEdge1 = new MergedEdge<int, IEdge<int>>(8, 8);
                 mergeEdge1.Edges.Add(edge82);
                 mergeEdge1.Edges.Add(edge23);
                 mergeEdge1.Edges.Add(edge38);
 
-                var mergeEdge2 = new MergedEdge<int, Edge<int>>(4, 4);
+                var mergeEdge2 = new MergedEdge<int, IEdge<int>>(4, 4);
                 mergeEdge2.Edges.Add(edge44);
 
-                var mergeEdge3 = new MergedEdge<int, Edge<int>>(4, 8);
+                var mergeEdge3 = new MergedEdge<int, IEdge<int>>(4, 8);
                 mergeEdge3.Edges.Add(edge43);
                 mergeEdge3.Edges.Add(edge38);
 
-                var mergeEdge4 = new MergedEdge<int, Edge<int>>(4, 8);
+                var mergeEdge4 = new MergedEdge<int, IEdge<int>>(4, 8);
                 mergeEdge4.Edges.Add(edge42);
                 mergeEdge4.Edges.Add(edge23);
                 mergeEdge4.Edges.Add(edge38);
 
-                var mergeEdge5 = new MergedEdge<int, Edge<int>>(4, 8);
+                var mergeEdge5 = new MergedEdge<int, IEdge<int>>(4, 8);
                 mergeEdge5.Edges.Add(edge45);
                 mergeEdge5.Edges.Add(edge57);
                 mergeEdge5.Edges.Add(edge71);
                 mergeEdge5.Edges.Add(edge13);
                 mergeEdge5.Edges.Add(edge38);
 
-                var mergeEdge6 = new MergedEdge<int, Edge<int>>(4, 8);
+                var mergeEdge6 = new MergedEdge<int, IEdge<int>>(4, 8);
                 mergeEdge6.Edges.Add(edge45);
                 mergeEdge6.Edges.Add(edge57);
                 mergeEdge6.Edges.Add(edge71);
@@ -92,11 +92,10 @@ namespace QuikGraph.Graphviz.Tests
                 mergeEdge6.Edges.Add(edge23);
                 mergeEdge6.Edges.Add(edge38);
 
-                graph.AddEdgeRange(new[]
-                {
+                graph.AddEdgeRange(
                     mergeEdge1, mergeEdge2, mergeEdge3,
                     mergeEdge4, mergeEdge5, mergeEdge6
-                });
+                );
                 yield return new TestCaseData(
                     graph,
                     @"digraph G {" + Environment.NewLine +
@@ -116,7 +115,7 @@ namespace QuikGraph.Graphviz.Tests
 
         [TestCaseSource(nameof(GenerateTestCases))]
         public void Generate(
-            [NotNull] AdjacencyGraph<int, MergedEdge<int, Edge<int>>> graph,
+            [NotNull] AdjacencyGraph<int, MergedEdge<int, IEdge<int>>> graph,
             [NotNull] string expectedDot)
         {
             var dotEngine = new TestDotEngine
@@ -124,7 +123,7 @@ namespace QuikGraph.Graphviz.Tests
                 ExpectedDot = expectedDot
             };
 
-            var algorithm = new EdgeMergeCondensatedGraphRenderer<int, Edge<int>>(graph);
+            var algorithm = new EdgeMergeCondensatedGraphRenderer<int, IEdge<int>>(graph);
             algorithm.Generate(dotEngine, "NotSaved.dot");
         }
 
@@ -136,37 +135,34 @@ namespace QuikGraph.Graphviz.Tests
             const string vertex3 = "\"Vertex3\"\nΣη← ♠\\[]()";
             const string vertex4 = "Vertex4∴∞⇐ℜΩ÷嗷娪";
 
-            var graph = new AdjacencyGraph<string, MergedEdge<string, Edge<string>>>();
-            graph.AddVertexRange(new[] { vertex3, vertex4 });
+            var graph = new AdjacencyGraph<string, MergedEdge<string, IEdge<string>>>();
+            graph.AddVertexRange(vertex3, vertex4 );
 
-            var edge12 = new Edge<string>(vertex1, vertex2);
-            var edge24 = new Edge<string>(vertex2, vertex4);
-            var edge31 = new Edge<string>(vertex3, vertex1);
-            var edge32 = new Edge<string>(vertex3, vertex2);
-            var edge33 = new Edge<string>(vertex3, vertex3);
-            var edge41 = new Edge<string>(vertex4, vertex1);
+            var edge12 = Edge.Create(vertex1, vertex2);
+            var edge24 = Edge.Create(vertex2, vertex4);
+            var edge31 = Edge.Create(vertex3, vertex1);
+            var edge32 = Edge.Create(vertex3, vertex2);
+            var edge33 = Edge.Create(vertex3, vertex3);
+            var edge41 = Edge.Create(vertex4, vertex1);
 
-            var mergeEdge1 = new MergedEdge<string, Edge<string>>(vertex4, vertex4);
+            var mergeEdge1 = new MergedEdge<string, IEdge<string>>(vertex4, vertex4);
             mergeEdge1.Edges.Add(edge41);
             mergeEdge1.Edges.Add(edge12);
             mergeEdge1.Edges.Add(edge24);
 
-            var mergeEdge2 = new MergedEdge<string, Edge<string>>(vertex3, vertex3);
+            var mergeEdge2 = new MergedEdge<string, IEdge<string>>(vertex3, vertex3);
             mergeEdge2.Edges.Add(edge33);
 
-            var mergeEdge3 = new MergedEdge<string, Edge<string>>(vertex3, vertex4);
+            var mergeEdge3 = new MergedEdge<string, IEdge<string>>(vertex3, vertex4);
             mergeEdge3.Edges.Add(edge32);
             mergeEdge3.Edges.Add(edge24);
 
-            var mergeEdge4 = new MergedEdge<string, Edge<string>>(vertex3, vertex4);
+            var mergeEdge4 = new MergedEdge<string, IEdge<string>>(vertex3, vertex4);
             mergeEdge4.Edges.Add(edge31);
             mergeEdge4.Edges.Add(edge12);
             mergeEdge4.Edges.Add(edge24);
 
-            graph.AddEdgeRange(new[]
-            {
-                mergeEdge1, mergeEdge2, mergeEdge3, mergeEdge4
-            });
+            graph.AddEdgeRange(mergeEdge1, mergeEdge2, mergeEdge3, mergeEdge4);
 
             const string expectedVertex1 = @"Vertex1&/<>@~|";
             const string expectedVertex2 = @"Vertex2æéèêë£¤¶ÀÁÂÃÄÅ";
@@ -189,7 +185,7 @@ namespace QuikGraph.Graphviz.Tests
                 ExpectedDot = expectedDot
             };
 
-            var algorithm = new EdgeMergeCondensatedGraphRenderer<string, Edge<string>>(graph);
+            var algorithm = new EdgeMergeCondensatedGraphRenderer<string, IEdge<string>>(graph);
             algorithm.Generate(dotEngine, "NotSaved.dot");
         }
     }

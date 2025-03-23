@@ -14,8 +14,11 @@ namespace QuikGraph.Algorithms.RandomWalks
         , ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomWalkAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="RandomWalkAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
@@ -25,7 +28,7 @@ namespace QuikGraph.Algorithms.RandomWalks
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomWalkAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="RandomWalkAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeChain">Edge chain strategy to use.</param>
@@ -34,7 +37,7 @@ namespace QuikGraph.Algorithms.RandomWalks
         public RandomWalkAlgorithm(
             [NotNull] IImplicitGraph<TVertex, TEdge> visitedGraph,
             [NotNull] IEdgeChain<TVertex, TEdge> edgeChain)
-            : base(null, visitedGraph)
+            : base(visitedGraph, null)
         {
             _edgeChain = edgeChain ?? throw new ArgumentNullException(nameof(edgeChain));
         }
@@ -56,7 +59,7 @@ namespace QuikGraph.Algorithms.RandomWalks
         /// Predicate to prematurely ends the walk.
         /// </summary>
         [CanBeNull]
-        public EdgePredicate<TVertex, TEdge> EndPredicate { get; set; }
+        public Func<TEdge, bool> EndPredicate { get; set; }
 
         /// <summary>
         /// Fired on a starting vertex once before the start of the walk from it.
@@ -124,7 +127,7 @@ namespace QuikGraph.Algorithms.RandomWalks
         /// <exception cref="VertexNotFoundException"><paramref name="root"/> is not part of <see cref="AlgorithmBase{TGraph}.VisitedGraph"/>.</exception>
         public void Generate([NotNull] TVertex root, int walkCount)
         {
-            AssertRootInGraph(root);
+            RootShouldBeInGraph(root);
 
             int count = 0;
             TVertex current = root;

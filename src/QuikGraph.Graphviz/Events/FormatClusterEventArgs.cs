@@ -14,7 +14,7 @@ namespace QuikGraph.Graphviz
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeEventArgs{TVertex, TEdge}"/> class.
+        /// Initializes a new <see cref="EdgeEventArgs{TVertex, TEdge}"/> class.
         /// </summary>
         /// <param name="clusteredGraph">Graph to format.</param>
         /// <param name="graphFormat">Graph format.</param>

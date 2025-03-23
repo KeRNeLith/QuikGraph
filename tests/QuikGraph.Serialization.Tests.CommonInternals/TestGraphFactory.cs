@@ -24,9 +24,7 @@ namespace QuikGraph.Tests
             return SlowTestRate;
         }
 
-        /// <summary>
-        /// Gets graph ML file paths.
-        /// </summary>
+        /// <summary> Gets all graph ML file paths, optionally <paramref name="filter"/>ed. </summary>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<string> GetGraphMLFilePaths(
@@ -43,41 +41,37 @@ namespace QuikGraph.Tests
             throw new AssertionException("GraphML folder must exist.");
         }
 
-        /// <summary>
-        /// Creates an adjacency graph from the given file.
-        /// </summary>
+        /// <summary> Creates an adjacency graph from the <paramref name="graphMLFilePath"/>. </summary>
         [Pure]
         [NotNull]
-        public static AdjacencyGraph<string, Edge<string>> LoadGraph([NotNull] string graphMLFilePath)
+        public static AdjacencyGraph<string, IEdge<string>> LoadGraph([NotNull] string graphMLFilePath)
         {
-            var graph = new AdjacencyGraph<string, Edge<string>>();
+            var graph = new AdjacencyGraph<string, IEdge<string>>();
             using (var reader = new StreamReader(graphMLFilePath))
             {
                 graph.DeserializeFromGraphML(
                     reader,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target));
+                    (source, target, _) => Edge.Create(source, target));
             }
-
+            graph.Id = Path.GetFileNameWithoutExtension(graphMLFilePath);
             return graph;
         }
 
-        /// <summary>
-        /// Creates a bidirectional graph from the given file.
-        /// </summary>
+        /// <summary> Creates a bidirectional graph from the <paramref name="graphMLFilePath"/>>. </summary>
         [Pure]
         [NotNull]
-        public static BidirectionalGraph<string, Edge<string>> LoadBidirectionalGraph([NotNull] string graphMLFilePath)
+        public static BidirectionalGraph<string, IEdge<string>> LoadBidirectionalGraph([NotNull] string graphMLFilePath)
         {
-            var graph = new BidirectionalGraph<string, Edge<string>>();
+            var graph = new BidirectionalGraph<string, IEdge<string>>();
             using (var reader = new StreamReader(graphMLFilePath))
             {
                 graph.DeserializeFromGraphML(
                     reader,
                     id => id,
-                    (source, target, _) => new Edge<string>(source, target));
+                    (source, target, _) => Edge.Create(source, target));
             }
-
+            graph.Id = Path.GetFileNameWithoutExtension(graphMLFilePath);
             return graph;
         }
 
@@ -86,45 +80,38 @@ namespace QuikGraph.Tests
         /// </summary>
         [Pure]
         [NotNull]
-        public static UndirectedGraph<string, Edge<string>> LoadUndirectedGraph([NotNull] string graphMLFilePath)
+        public static UndirectedGraph<string, IEdge<string>> LoadUndirectedGraph([NotNull] string graphMLFilePath)
         {
-            AdjacencyGraph<string, Edge<string>> graph = LoadGraph(graphMLFilePath);
-            var undirectedGraph = new UndirectedGraph<string, Edge<string>>();
+            AdjacencyGraph<string, IEdge<string>> graph = LoadGraph(graphMLFilePath);
+            var undirectedGraph = new UndirectedGraph<string, IEdge<string>>();
             undirectedGraph.AddVerticesAndEdgeRange(graph.Edges);
+            undirectedGraph.Id = Path.GetFileNameWithoutExtension(graphMLFilePath);
             return undirectedGraph;
         }
 
-        /// <summary>
-        /// Creates adjacency graphs (filterable).
-        /// </summary>
+        /// <summary> Creates adjacency graphs (filterable). </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        private static IEnumerable<AdjacencyGraph<string, Edge<string>>> GetAdjacencyGraphsInternal(
+        private static IEnumerable<AdjacencyGraph<string, IEdge<string>>> GetAdjacencyGraphsInternal(
             [CanBeNull, InstantHandle] Func<string, int, bool> filter = null)
         {
-            yield return new AdjacencyGraph<string, Edge<string>>();
+            yield return new AdjacencyGraph<string, IEdge<string>>();
             foreach (string graphMLFilePath in GetGraphMLFilePaths(filter))
             {
                 yield return LoadGraph(graphMLFilePath);
             }
         }
 
-        /// <summary>
-        /// Creates adjacency graphs.
-        /// </summary>
+        /// <summary> Creates adjacency graphs. </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<AdjacencyGraph<string, Edge<string>>> GetAdjacencyGraphs_All()
-        {
-            return GetAdjacencyGraphsInternal();
-        }
+        public static IEnumerable<AdjacencyGraph<string, IEdge<string>>> GetAdjacencyGraphs_All()
+            => GetAdjacencyGraphsInternal();
 
-        /// <summary>
-        /// Creates adjacency graphs (version manageable with define for slow tests).
-        /// </summary>
+        /// <summary> Creates adjacency graphs (version manageable with define for slow tests). </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<AdjacencyGraph<string, Edge<string>>> GetAdjacencyGraphs_SlowTests(int rate = -1)
+        public static IEnumerable<AdjacencyGraph<string, IEdge<string>>> GetAdjacencyGraphs_SlowTests(int rate = -1)
         {
 #if !FULL_SLOW_TESTS_RUN
             int r = GetSlowTestRate(rate);
@@ -137,37 +124,28 @@ namespace QuikGraph.Tests
             );
         }
 
-        /// <summary>
-        /// Creates bidirectional graphs (filterable).
-        /// </summary>
+        /// <summary> Creates bidirectional graphs (filterable). </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        private static IEnumerable<BidirectionalGraph<string, Edge<string>>> GetBidirectionalGraphsInternal(
+        private static IEnumerable<BidirectionalGraph<string, IEdge<string>>> GetBidirectionalGraphsInternal(
             [CanBeNull, InstantHandle] Func<string, int, bool> filter = null)
         {
-            yield return new BidirectionalGraph<string, Edge<string>>();
+            yield return new BidirectionalGraph<string, IEdge<string>>();
             foreach (string graphMLFilePath in GetGraphMLFilePaths(filter))
             {
                 yield return LoadBidirectionalGraph(graphMLFilePath);
             }
         }
 
-        /// <summary>
-        /// Creates bidirectional graphs.
-        /// </summary>
+        /// <summary> Creates bidirectional graphs. </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<BidirectionalGraph<string, Edge<string>>> GetBidirectionalGraphs_All()
-        {
-            return GetBidirectionalGraphsInternal();
-        }
+        public static IEnumerable<BidirectionalGraph<string, IEdge<string>>> GetBidirectionalGraphs_All() => GetBidirectionalGraphsInternal();
 
-        /// <summary>
-        /// Creates bidirectional graphs (version manageable with define for slow tests).
-        /// </summary>
+        /// <summary> Creates bidirectional graphs (version manageable with define for slow tests). </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<BidirectionalGraph<string, Edge<string>>> GetBidirectionalGraphs_SlowTests(int rate = -1)
+        public static IEnumerable<BidirectionalGraph<string, IEdge<string>>> GetBidirectionalGraphs_SlowTests(int rate = -1)
         {
 #if !FULL_SLOW_TESTS_RUN
             int r = GetSlowTestRate(rate);
@@ -180,37 +158,31 @@ namespace QuikGraph.Tests
             );
         }
 
-        /// <summary>
-        /// Creates undirected graphs (filterable).
-        /// </summary>
+        /// <summary> Creates undirected graphs (filterable). </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        private static IEnumerable<UndirectedGraph<string, Edge<string>>> GetUndirectedGraphsInternal(
+        private static IEnumerable<IUndirectedGraph<string, IEdge<string>>> GetUndirectedGraphsInternal(
             [CanBeNull, InstantHandle] Func<string, int, bool> filter = null)
         {
-            yield return new UndirectedGraph<string, Edge<string>>();
+            yield return new UndirectedGraph<string, IEdge<string>>();
             foreach (string graphMLFilePath in GetGraphMLFilePaths(filter))
             {
                 yield return LoadUndirectedGraph(graphMLFilePath);
             }
         }
 
-        /// <summary>
-        /// Creates undirected graphs.
-        /// </summary>
+        /// <summary> Creates undirected graphs. </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<UndirectedGraph<string, Edge<string>>> GetUndirectedGraphs_All()
-        {
-            return GetUndirectedGraphsInternal();
-        }
+        public static IEnumerable<IUndirectedGraph<string, IEdge<string>>> GetUndirectedGraphs_All()
+            => GetUndirectedGraphsInternal();
 
         /// <summary>
         /// Creates undirected graphs (version manageable with define for slow tests).
         /// </summary>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<UndirectedGraph<string, Edge<string>>> GetUndirectedGraphs_SlowTests(int rate = -1)
+        public static IEnumerable<IUndirectedGraph<string, IEdge<string>>> GetUndirectedGraphs_SlowTests(int rate = -1)
         {
 #if !FULL_SLOW_TESTS_RUN
             int r = GetSlowTestRate(rate);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -26,15 +27,24 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeListGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="EdgeListGraph{TVertex,TEdge}"/> class.
         /// </summary>
         public EdgeListGraph()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeListGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="EdgeListGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="isDirected">Indicates if the graph is directed.</param>
         /// <param name="allowParallelEdges">Indicates if parallel edges are allowed.</param>
@@ -86,7 +96,7 @@ namespace QuikGraph
                 throw new ArgumentNullException(nameof(vertex));
 
             return Edges.Any(
-                edge => EqualityComparer<TVertex>.Default.Equals(edge.Source, vertex) || EqualityComparer<TVertex>.Default.Equals(edge.Target, vertex));
+                edge => AreVerticesEqual(edge.Source, vertex) || AreVerticesEqual(edge.Target, vertex));
         }
 
         #endregion
@@ -122,8 +132,8 @@ namespace QuikGraph
 
             return _edges.Keys
                 .Any(e => IsDirected
-                    ? e.SortedVertexEqualityInternal(source, target)
-                    : e.UndirectedVertexEqualityInternal(source, target));
+                    ? e.SortedVertexEqualityInternal(source, target, AreVerticesEqual)
+                    : e.UndirectedVertexEqualityInternal(source, target, AreVerticesEqual));
         }
 
         #endregion
@@ -136,14 +146,18 @@ namespace QuikGraph
         /// <param name="edge">The edge to add.</param>
         /// <returns>True if the edge was added, false otherwise.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edge"/> is <see langword="null"/>.</exception>
-        public bool AddVerticesAndEdge([NotNull] TEdge edge)
-        {
-            return AddEdge(edge);
-        }
+        public bool AddVerticesAndEdge([NotNull] TEdge edge) => AddEdge(edge);
 
-        /// <summary>
-        /// Adds a set of edges (and it's vertices if necessary).
-        /// </summary>
+        /// <summary> Adds a set of edges (and it's vertices if necessary). </summary>
+        /// <param name="edges">Edges to add.</param>
+        /// <returns>The number of edges added.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// <paramref name="edges"/> is <see langword="null"/> or at least one of them is <see langword="null"/>.
+        /// </exception>
+        public int AddVerticesAndEdgeRange([NotNull, ItemNotNull] params TEdge[] edges)
+            => AddVerticesAndEdgeRange(edges.AsEnumerable());
+
+        /// <summary> Adds a set of edges (and it's vertices if necessary). </summary>
         /// <param name="edges">Edges to add.</param>
         /// <returns>The number of edges added.</returns>
         /// <exception cref="T:System.ArgumentNullException">
@@ -179,6 +193,9 @@ namespace QuikGraph
 
             return true;
         }
+
+        /// <inheritdoc />
+        public int AddEdgeRange(params TEdge[] edges) => AddEdgeRange(edges.AsEnumerable());
 
         /// <inheritdoc />
         public int AddEdgeRange(IEnumerable<TEdge> edges)
@@ -252,13 +269,13 @@ namespace QuikGraph
         }
 
         /// <inheritdoc />
-        public int RemoveEdgeIf(EdgePredicate<TVertex, TEdge> predicate)
+        public int RemoveEdgeIf(Func<TEdge, bool> predicate)
         {
             if (predicate is null)
                 throw new ArgumentNullException(nameof(predicate));
 
-            var edgesToRemove = new EdgeList<TVertex, TEdge>();
-            edgesToRemove.AddRange(Edges.Where(edge => predicate(edge)));
+            var edgesToRemove = new EdgeList<TEdge>();
+            edgesToRemove.AddRange(Edges.Where(predicate));
 
             foreach (TEdge edge in edgesToRemove)
             {

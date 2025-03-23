@@ -20,7 +20,7 @@ namespace QuikGraph
     public struct STaggedEdge<TVertex, TTag> : IEdge<TVertex>, ITagged<TTag>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="STaggedEdge{TVertex, TTag}"/> struct.
+        /// Initializes a new <see cref="STaggedEdge{TVertex, TTag}"/> struct.
         /// </summary>
         /// <param name="source">The source vertex.</param>
         /// <param name="target">The target vertex.</param>
@@ -79,7 +79,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.TaggedEdgeFormatString, Source, Target, Tag?.ToString() ?? "no tag");
+            return string.Format(EdgeFormats.Tagged, Source, Target, Tag?.ToString() ?? "no tag");
         }
     }
 }

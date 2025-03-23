@@ -38,7 +38,7 @@ namespace QuikGraph.Collections
         private KeyValuePair<TPriority, TValue>[] _items;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="BinaryHeap{TPriority,TValue}"/> class.
         /// </summary>
         public BinaryHeap()
             : this(DefaultCapacity, Comparer<TPriority>.Default.Compare)
@@ -46,7 +46,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="BinaryHeap{TPriority,TValue}"/> class.
         /// </summary>
         /// <param name="capacity">Heap capacity.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is negative.</exception>
@@ -56,7 +56,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="BinaryHeap{TPriority,TValue}"/> class.
         /// </summary>
         /// <param name="priorityComparison">Priority comparer.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="priorityComparison"/> is <see langword="null"/>.</exception>
@@ -66,7 +66,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryHeap{TPriority,TValue}"/> class.
+        /// Initializes a new <see cref="BinaryHeap{TPriority,TValue}"/> class.
         /// </summary>
         /// <param name="capacity">Heap capacity.</param>
         /// <param name="priorityComparison">Priority comparer.</param>
@@ -442,7 +442,7 @@ namespace QuikGraph.Collections
         /// </summary>
         /// <returns>True if the heap is consistent, false otherwise.</returns>
         [Pure]
-        internal bool IsConsistent()
+        public bool IsConsistent()
         {
             int wrong = -1;
 

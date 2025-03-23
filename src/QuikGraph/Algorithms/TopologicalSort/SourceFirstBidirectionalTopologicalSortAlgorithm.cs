@@ -6,12 +6,22 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.TopologicalSort
 {
-    /// <summary>
-    /// Topological sort algorithm (can be performed on an acyclic bidirectional graph).
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class SourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge> : AlgorithmBase<IBidirectionalGraph<TVertex, TEdge>>
+    /// <inheritdoc cref="CreateSourceFirstBidirectionalTopologicalSortAlgorithm"/>
+    public static class SourceFirstBidirectionalTopologicalSortAlgorithm
+    {
+        /// <summary> Creates a new <see cref="SourceFirstBidirectionalTopologicalSortAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static SourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge>
+            CreateSourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge>(
+            [NotNull] this IBidirectionalGraph<TVertex, TEdge> visitedGraph,
+            TopologicalSortDirection direction = TopologicalSortDirection.Forward,
+            int capacity = -1) where TEdge : IEdge<TVertex>
+            => new SourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge>(visitedGraph,direction, capacity);
+
+    }
+
+    /// <summary> Topological sort algorithm (can be performed on an acyclic bidirectional graph). </summary>
+    public sealed class SourceFirstBidirectionalTopologicalSortAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IBidirectionalGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         [NotNull]
@@ -22,31 +32,15 @@ namespace QuikGraph.Algorithms.TopologicalSort
         [NotNull, ItemNotNull]
         private readonly IList<TVertex> _sortedVertices;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceFirstBidirectionalTopologicalSortAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="capacity">Sorted vertices capacity.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public SourceFirstBidirectionalTopologicalSortAlgorithm(
-            [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
-            int capacity = -1)
-            : this(visitedGraph, TopologicalSortDirection.Forward, capacity)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SourceFirstBidirectionalTopologicalSortAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="SourceFirstBidirectionalTopologicalSortAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="direction">Sort direction.</param>
         /// <param name="capacity">Sorted vertices capacity.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         public SourceFirstBidirectionalTopologicalSortAlgorithm(
             [NotNull] IBidirectionalGraph<TVertex, TEdge> visitedGraph,
-            TopologicalSortDirection direction,
-            int capacity = -1)
-            : base(visitedGraph)
+            TopologicalSortDirection direction = TopologicalSortDirection.Forward,
+            int capacity = -1) : base(visitedGraph)
         {
             _direction = direction;
             _heap = new BinaryQueue<TVertex, int>(vertex => InDegrees[vertex]);
@@ -86,8 +80,8 @@ namespace QuikGraph.Algorithms.TopologicalSort
 
             foreach (TEdge edge in VisitedGraph.Edges)
             {
-                if (edge.IsSelfEdge())
-                    throw new NonAcyclicGraphException();
+                if (edge.IsSelfEdge(VisitedGraph.AreVerticesEqual))
+                    throw new CyclicGraphException();
 
                 TVertex successor = _direction == TopologicalSortDirection.Forward
                     ? edge.Target
@@ -125,7 +119,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
 
                 TVertex vertex = _heap.Dequeue();
                 if (InDegrees[vertex] != 0)
-                    throw new NonAcyclicGraphException();
+                    throw new CyclicGraphException();
 
                 _sortedVertices.Add(vertex);
                 OnVertexAdded(vertex);

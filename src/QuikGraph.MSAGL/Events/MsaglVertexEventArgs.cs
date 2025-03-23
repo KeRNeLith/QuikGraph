@@ -12,7 +12,7 @@ namespace QuikGraph.MSAGL
     public class MsaglVertexEventArgs<TVertex> : VertexEventArgs<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MsaglVertexEventArgs{TVertex}"/> class.
+        /// Initializes a new <see cref="MsaglVertexEventArgs{TVertex}"/> class.
         /// </summary>
         /// <param name="vertex">Concerned vertex.</param>
         /// <param name="node">Concerned <see cref="T:Microsoft.Msagl.Drawing.Node"/>.</param>

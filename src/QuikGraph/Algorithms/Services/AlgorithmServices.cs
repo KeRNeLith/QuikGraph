@@ -12,7 +12,7 @@ namespace QuikGraph.Algorithms.Services
         private readonly IAlgorithmComponent _host;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AlgorithmServices"/> class.
+        /// Initializes a new <see cref="AlgorithmServices"/> class.
         /// </summary>
         /// <param name="host">Algorithm host.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="host"/> is <see langword="null"/>.</exception>

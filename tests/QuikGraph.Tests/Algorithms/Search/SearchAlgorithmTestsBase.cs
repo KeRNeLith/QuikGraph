@@ -110,14 +110,14 @@ namespace QuikGraph.Tests.Algorithms.Search
             algorithm = createAlgorithm();
             algorithm.SetRootVertex(vertex1);
             algorithm.SetTargetVertex(vertex1);
-            Assert.Throws<VertexNotFoundException>(algorithm.Compute);
+            Assert.Throws<Exception>(algorithm.Compute);
 
             const int vertex2 = 2;
             graph.AddVertex(vertex1);
             algorithm = createAlgorithm();
             algorithm.SetRootVertex(vertex1);
             algorithm.SetTargetVertex(vertex2);
-            Assert.Throws<VertexNotFoundException>(algorithm.Compute);
+            Assert.Throws<Exception>(algorithm.Compute);
         }
 
         protected static void ComputeWithRootAndTarget_Test<TGraph>(

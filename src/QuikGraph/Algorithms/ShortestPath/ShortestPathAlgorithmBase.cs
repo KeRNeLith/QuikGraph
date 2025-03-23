@@ -7,9 +7,7 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.ShortestPath
 {
-    /// <summary>
-    /// Base class for all shortest path finder algorithms.
-    /// </summary>
+    /// <summary> Base class for all shortest path finder algorithms. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
     /// <typeparam name="TGraph">Graph type.</typeparam>
@@ -21,46 +19,33 @@ namespace QuikGraph.Algorithms.ShortestPath
         where TEdge : IEdge<TVertex>
         where TGraph : IVertexSet<TVertex>
     {
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => (IGraph<TVertex, TEdge>)base.VisitedGraph;
+
         /// <summary>
         /// Vertices distances.
         /// </summary>
         private IDictionary<TVertex, double> _distances;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ShortestPathAlgorithmBase{TVertex,TEdge,TGraph}"/> class.
+        /// Initializes a new <see cref="ShortestPathAlgorithmBase{TVertex,TEdge,TGraph}"/> class.
         /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        protected ShortestPathAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] TGraph visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights)
-            : this(host, visitedGraph, edgeWeights, DistanceRelaxers.ShortestDistance)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ShortestPathAlgorithmBase{TVertex,TEdge,TGraph}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
         protected ShortestPathAlgorithmBase(
-            [CanBeNull] IAlgorithmComponent host,
             [NotNull] TGraph visitedGraph,
             [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : base(host, visitedGraph)
+            [CanBeNull] IAlgorithmComponent host = null,
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null)
+            : base(visitedGraph, host)
         {
             Weights = edgeWeights ?? throw new ArgumentNullException(nameof(edgeWeights));
-            DistanceRelaxer = distanceRelaxer ?? throw new ArgumentNullException(nameof(distanceRelaxer));
+            DistanceRelaxer = distanceRelaxer ?? DistanceRelaxers.ShortestDistance;
         }
 
         /// <summary>
@@ -107,7 +92,7 @@ namespace QuikGraph.Algorithms.ShortestPath
         {
             bool vertexFound = TryGetDistance(vertex, out double distance);
             if (!vertexFound)
-                throw new VertexNotFoundException($"No recorded distance for vertex {vertex}.");
+                return double.NaN;
             return distance;
         }
 
@@ -160,11 +145,11 @@ namespace QuikGraph.Algorithms.ShortestPath
         #region IVertexColorizerAlgorithm<TVertex>
 
         /// <inheritdoc />
-        public GraphColor GetVertexColor(TVertex vertex)
+        public GraphColor? GetVertexColor(TVertex vertex)
         {
             if (VerticesColors.TryGetValue(vertex, out GraphColor color))
                 return color;
-            throw new VertexNotFoundException();
+            return null;
         }
 
         #endregion

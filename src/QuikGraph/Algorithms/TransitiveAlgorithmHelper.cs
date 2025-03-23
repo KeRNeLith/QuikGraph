@@ -17,7 +17,7 @@ namespace QuikGraph.Algorithms
         where TEdge : IEdge<TVertex>
     {
         [NotNull]
-        private readonly BidirectionalGraph<TVertex, TEdge> _graph;
+        private readonly IMutableBidirectionalGraph<TVertex, TEdge> _graph;
 
         internal TransitiveAlgorithmHelper([NotNull] BidirectionalGraph<TVertex, TEdge> initialGraph)
         {
@@ -39,16 +39,8 @@ namespace QuikGraph.Algorithms
         /// Runs through the graph and calls <paramref name="action"/>
         /// for each couple of indirect ancestor vertex of a given vertex.
         /// </summary>
-        public void InternalCompute(
-            [NotNull, InstantHandle]
-            Action
-            <
-                BidirectionalGraph<TVertex, TEdge>,
-                TVertex,
-                TVertex,
-                bool,
-                TEdge
-            > action)
+        public void InternalCompute([NotNull, InstantHandle]
+            Action<IMutableBidirectionalGraph<TVertex, TEdge>, TVertex, TVertex, bool, TEdge> action)
         {
             // Iterate in topological order, track indirect ancestors and remove edges from them to the visited vertex
             var verticesAncestors = new Dictionary<TVertex, HashSet<TVertex>>();

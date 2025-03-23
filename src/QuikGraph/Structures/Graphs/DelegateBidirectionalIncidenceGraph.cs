@@ -5,16 +5,14 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// A delegate-based directed bidirectional graph data structure.
-    /// </summary>
+    /// <summary> A delegate-based directed bidirectional graph data structure. </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
     public class DelegateBidirectionalIncidenceGraph<TVertex, TEdge> : DelegateIncidenceGraph<TVertex, TEdge>, IBidirectionalIncidenceGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateBidirectionalIncidenceGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="DelegateBidirectionalIncidenceGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="tryGetOutEdges">Getter of out-edges.</param>
         /// <param name="tryGetInEdges">Getter of in-edges.</param>
@@ -26,8 +24,8 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetOutEdges"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetInEdges"/> is <see langword="null"/>.</exception>
         public DelegateBidirectionalIncidenceGraph(
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetInEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetInEdges,
             bool allowParallelEdges = true)
             : base(tryGetOutEdges, allowParallelEdges)
         {
@@ -38,21 +36,12 @@ namespace QuikGraph
         /// Getter of in-edges.
         /// </summary>
         [NotNull]
-        private readonly TryFunc<TVertex, IEnumerable<TEdge>> _tryGetInEdgesFunc;
+        private readonly Func<TVertex, IEnumerable<TEdge>> _tryGetInEdgesFunc;
 
         #region IBidirectionalImplicitGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsInEdgesEmpty(TVertex vertex)
-        {
-            return !InEdges(vertex).Any();
-        }
-
-        /// <inheritdoc />
-        public int InDegree(TVertex vertex)
-        {
-            return InEdges(vertex).Count();
-        }
+        public int? InDegree(TVertex vertex) => InEdges(vertex)?.Count();
 
         /// <inheritdoc />
         public IEnumerable<TEdge> InEdges(TVertex vertex)
@@ -60,31 +49,24 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            if (_tryGetInEdgesFunc(vertex, out IEnumerable<TEdge> inEdges))
-                return inEdges;
-            throw new VertexNotFoundException();
-        }
-
-        /// <inheritdoc />
-        public bool TryGetInEdges(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (vertex == null)
-                throw new ArgumentNullException(nameof(vertex));
-
-            return _tryGetInEdgesFunc(vertex, out edges);
+            return _tryGetInEdgesFunc(vertex);
         }
 
         /// <inheritdoc />
         public TEdge InEdge(TVertex vertex, int index)
         {
-            return InEdges(vertex).ElementAt(index);
+            var inEdges = InEdges(vertex);
+
+            if (inEdges == null)
+            {
+                return default(TEdge);
+            }
+
+            return inEdges.ElementAt(index);
         }
 
         /// <inheritdoc />
-        public int Degree(TVertex vertex)
-        {
-            return InDegree(vertex) + OutDegree(vertex);
-        }
+        public int? Degree(TVertex vertex) => InDegree(vertex) + OutDegree(vertex);
 
         #endregion
     }

@@ -21,18 +21,6 @@ namespace QuikGraph.Collections
     {
     }
 
-    /// <summary>
-    /// Represents a strongly-typed, read-only collection of elements.
-    /// </summary>
-    /// <typeparam name="T">Element type.</typeparam>
-    public interface IReadOnlyCollection<T> : IEnumerable<T>
-    {
-        /// <summary>
-        /// Gets the number of elements in the collection.
-        /// </summary>
-        int Count { get; }
-    }
-
     internal delegate bool TreeWalkPredicate<T>(SortedSet<T>.Node node);
 
     internal enum TreeRotation
@@ -78,7 +66,7 @@ namespace QuikGraph.Collections
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortedSet{T}"/> class.
+        /// Initializes a new <see cref="SortedSet{T}"/> class.
         /// </summary>
         public SortedSet()
         {
@@ -86,7 +74,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortedSet{T}"/> class
+        /// Initializes a new <see cref="SortedSet{T}"/> class
         /// using the given <paramref name="comparer"/>, or <see cref="Comparer{T}.Default"/> otherwise.
         /// </summary>
         /// <param name="comparer"><see cref="Comparer{T}"/> to use.</param>
@@ -96,7 +84,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortedSet{T}"/> class
+        /// Initializes a new <see cref="SortedSet{T}"/> class
         /// with given <paramref name="collection"/>.
         /// </summary>
         /// <param name="collection">Initial elements to add.</param>
@@ -107,7 +95,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SortedSet{T}"/> class
+        /// Initializes a new <see cref="SortedSet{T}"/> class
         /// with given <paramref name="collection"/>.
         /// Uses the given <paramref name="comparer"/>, or <see cref="Comparer{T}.Default"/> otherwise.
         /// </summary>
@@ -1459,7 +1447,7 @@ namespace QuikGraph.Collections
         {
             get
             {
-                T ret = default(T);
+                var ret = default(T);
                 InOrderTreeWalk(n =>
                 {
                     ret = n.Item;
@@ -1476,7 +1464,7 @@ namespace QuikGraph.Collections
         {
             get
             {
-                T ret = default(T);
+                var ret = default(T);
                 InOrderTreeWalk(n =>
                 {
                     ret = n.Item;

@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using QuikGraph.Algorithms.MinimumSpanningTree;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
 {
@@ -14,34 +14,34 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
         [Test]
         public void Constructor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(graph, _ => 1.0);
-            AssertAlgorithmState(algorithm, graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateKruskalMinimumSpanningTreeAlgorithm(_ => 1.0);
+            algorithm.AssertAlgorithmState(graph);
 
-            algorithm = new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, graph, _ => 1.0);
-            AssertAlgorithmState(algorithm, graph);
+            algorithm = graph.CreateKruskalMinimumSpanningTreeAlgorithm(_ => 1.0, null);
+            algorithm.AssertAlgorithmState(graph);
         }
 
         [Test]
         public void Constructor_Throws()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            UndirectedGraph<int, IEdge<int>> graph = new (), nullGraph = null;
 
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, _ => 1.0));
+                () => nullGraph.CreateKruskalMinimumSpanningTreeAlgorithm(_ => 1.0));
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(graph, null));
+                () => graph.CreateKruskalMinimumSpanningTreeAlgorithm(null));
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, null));
+                () => nullGraph.CreateKruskalMinimumSpanningTreeAlgorithm(null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, null, _ => 1.0));
+                () => nullGraph.CreateKruskalMinimumSpanningTreeAlgorithm(_ => 1.0, null));
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, graph, null));
+                () => graph.CreateKruskalMinimumSpanningTreeAlgorithm(null, null));
             Assert.Throws<ArgumentNullException>(
-                () => new KruskalMinimumSpanningTreeAlgorithm<int, Edge<int>>(null, null, null));
+                () => nullGraph.CreateKruskalMinimumSpanningTreeAlgorithm(null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -67,13 +67,6 @@ namespace QuikGraph.Tests.Algorithms.MinimumSpanningTree
 
             graph = GetUndirectedCompleteGraph(400);
             KruskalSpanningTree(graph, x => x.Tag);
-        }
-
-        [Test]
-        public void KruskalMinimumSpanningTree()
-        {
-            foreach (UndirectedGraph<string, Edge<string>> graph in TestGraphFactory.GetUndirectedGraphs_All())
-                Kruskal(graph);
         }
     }
 }

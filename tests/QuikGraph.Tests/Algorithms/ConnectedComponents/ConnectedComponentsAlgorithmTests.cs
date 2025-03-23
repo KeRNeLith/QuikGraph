@@ -1,10 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.ConnectedComponents;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.ConnectedComponents
 {
@@ -23,7 +23,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
             var algorithm = new ConnectedComponentsAlgorithm<TVertex, TEdge>(graph);
             algorithm.Compute();
 
-            Assert.AreEqual(graph.VertexCount, algorithm.Components.Count);
+            Assert.AreEqual(graph.VertexCount, algorithm.ComponentIndex.Count);
             if (graph.VertexCount == 0)
             {
                 Assert.IsTrue(algorithm.ComponentCount == 0);
@@ -32,7 +32,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
 
             Assert.Positive(algorithm.ComponentCount);
             Assert.LessOrEqual(algorithm.ComponentCount, graph.VertexCount);
-            foreach (KeyValuePair<TVertex, int> pair in algorithm.Components)
+            foreach (KeyValuePair<TVertex, int> pair in algorithm.ComponentIndex)
             {
                 Assert.GreaterOrEqual(pair.Value, 0);
                 Assert.IsTrue(pair.Value < algorithm.ComponentCount, $"{pair.Value} < {algorithm.ComponentCount}");
@@ -42,7 +42,7 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
             {
                 foreach (TEdge edge in graph.AdjacentEdges(vertex))
                 {
-                    Assert.AreEqual(algorithm.Components[edge.Source], algorithm.Components[edge.Target]);
+                    Assert.AreEqual(algorithm.ComponentIndex[edge.Source], algorithm.ComponentIndex[edge.Target]);
                 }
             }
         }
@@ -52,15 +52,15 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void Constructor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            var graph = new UndirectedGraph<int, IEdge<int>>();
             var components = new Dictionary<int, int>();
-            var algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(graph, components);
+            algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph, components);
             AssertAlgorithmProperties(algorithm, graph);
 
-            algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(null, graph, components);
+            algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph, components, null);
             AssertAlgorithmProperties(algorithm, graph);
 
             #region Local function
@@ -70,9 +70,9 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                 IUndirectedGraph<TVertex, TEdge> g)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 Assert.AreEqual(0, algo.ComponentCount);
-                CollectionAssert.IsEmpty(algo.Components);
+                CollectionAssert.IsEmpty(algo.ComponentIndex);
             }
 
             #endregion
@@ -81,27 +81,25 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void Constructor_Throws()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
+            var graph = new UndirectedGraph<int, IEdge<int>>();
             var components = new Dictionary<int, int>();
 
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null));
+                () => new ConnectedComponentsAlgorithm<int, IEdge<int>>(null));
 
+            _ = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph, null);
             Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(graph, null));
+                () => new ConnectedComponentsAlgorithm<int, IEdge<int>>(null, components));
             Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null, components));
-            Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null, null));
+                () => new ConnectedComponentsAlgorithm<int, IEdge<int>>(null, null));
 
+            _ = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph, null, null);
             Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null, graph, null));
+                () => new ConnectedComponentsAlgorithm<int, IEdge<int>>(null, components, null));
             Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null, null, components));
-            Assert.Throws<ArgumentNullException>(
-                () => new ConnectedComponentsAlgorithm<int, Edge<int>>(null, null, null));
+                () => new ConnectedComponentsAlgorithm<int, IEdge<int>>(null, null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -109,17 +107,16 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
         [Test]
         public void OneComponent()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3)
-            });
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3)
+            );
 
-            var algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph);
             algorithm.Compute();
 
             Assert.AreEqual(1, algorithm.ComponentCount);
@@ -131,27 +128,26 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [3] = 0,
                     [4] = 0
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
         }
 
         [Test]
         public void TwoComponents()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3),
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3),
 
-                new Edge<int>(5, 6),
-                new Edge<int>(5, 7),
-                new Edge<int>(7, 6)
-            });
+                Edge.Create(5, 6),
+                Edge.Create(5, 7),
+                Edge.Create(7, 6)
+            );
 
-            var algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph);
             algorithm.Compute();
 
             Assert.AreEqual(2, algorithm.ComponentCount);
@@ -166,30 +162,29 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [6] = 1,
                     [7] = 1
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
         }
 
         [Test]
         public void MultipleComponents()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 3),
-                new Edge<int>(4, 2),
-                new Edge<int>(4, 3),
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 3),
+                Edge.Create(4, 2),
+                Edge.Create(4, 3),
 
-                new Edge<int>(5, 6),
-                new Edge<int>(5, 7),
-                new Edge<int>(7, 6),
+                Edge.Create(5, 6),
+                Edge.Create(5, 7),
+                Edge.Create(7, 6),
 
-                new Edge<int>(8, 9)
-            });
+                Edge.Create(8, 9)
+            );
             graph.AddVertex(10);
 
-            var algorithm = new ConnectedComponentsAlgorithm<int, Edge<int>>(graph);
+            var algorithm = new ConnectedComponentsAlgorithm<int, IEdge<int>>(graph);
             algorithm.Compute();
 
             Assert.AreEqual(4, algorithm.ComponentCount);
@@ -207,20 +202,17 @@ namespace QuikGraph.Tests.Algorithms.ConnectedComponents
                     [9] = 2,
                     [10] = 3
                 },
-                algorithm.Components);
+                algorithm.ComponentIndex);
         }
 
-        [Test]
         [Category(TestCategories.LongRunning)]
-        public void ConnectedComponents()
+        [TestCaseSource(typeof(TestGraphFactory), nameof(TestGraphFactory.GetUndirectedGraphs_SlowTests), new object[] { 10 })]
+        public void ConnectedComponents(UndirectedGraph<string, IEdge<string>> graph)
         {
-            foreach (UndirectedGraph<string, Edge<string>> graph in TestGraphFactory.GetUndirectedGraphs_SlowTests(10))
+            while (graph.EdgeCount > 0)
             {
-                while (graph.EdgeCount > 0)
-                {
-                    RunConnectedComponentsAndCheck(graph);
-                    graph.RemoveEdge(graph.Edges.First());
-                }
+                RunConnectedComponentsAndCheck(graph);
+                graph.RemoveEdge(graph.Edges.First());
             }
         }
     }

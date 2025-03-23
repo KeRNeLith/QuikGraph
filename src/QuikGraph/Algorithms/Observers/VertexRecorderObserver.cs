@@ -17,7 +17,7 @@ namespace QuikGraph.Algorithms.Observers
     public sealed class VertexRecorderObserver<TVertex> : IObserver<IVertexTimeStamperAlgorithm<TVertex>>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexRecorderObserver{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexRecorderObserver{TVertex}"/> class.
         /// </summary>
         public VertexRecorderObserver()
         {
@@ -25,7 +25,7 @@ namespace QuikGraph.Algorithms.Observers
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexRecorderObserver{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexRecorderObserver{TVertex}"/> class.
         /// </summary>
         /// <param name="vertices">Set of vertices.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertices"/> is <see langword="null"/>.</exception>

@@ -24,7 +24,7 @@ namespace QuikGraph.Serialization
         private readonly EdgeIdentity<TVertex, TEdge> _edgeIdentity;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DirectedGraphMLAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="DirectedGraphMLAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="vertexIdentity">Vertex identity method.</param>

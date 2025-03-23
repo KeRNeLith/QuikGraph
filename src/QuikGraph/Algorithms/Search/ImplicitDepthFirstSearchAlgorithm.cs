@@ -6,38 +6,35 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.Search
 {
-    /// <summary>
-    /// A depth first search algorithm for implicit directed graphs.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <inheritdoc cref="CreateImplicitDepthFirstSearchAlgorithm"/>
+    public static class ImplicitDepthFirstSearchAlgorithm
+    {
+        /// <summary> Creates a new <see cref="ImplicitDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static ImplicitDepthFirstSearchAlgorithm<TVertex, TEdge>
+            CreateImplicitDepthFirstSearchAlgorithm<TVertex, TEdge>(
+            [NotNull] this IIncidenceGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new ImplicitDepthFirstSearchAlgorithm<TVertex, TEdge>(visitedGraph, host);
+    }
+
+    /// <summary> Depth first search algorithm for implicit directed graphs. </summary>
     public sealed class ImplicitDepthFirstSearchAlgorithm<TVertex, TEdge>
         : RootedAlgorithmBase<TVertex, IIncidenceGraph<TVertex, TEdge>>
         , IVertexPredecessorRecorderAlgorithm<TVertex, TEdge>
         , IVertexTimeStamperAlgorithm<TVertex>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImplicitDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public ImplicitDepthFirstSearchAlgorithm(
-            [NotNull] IIncidenceGraph<TVertex, TEdge> visitedGraph)
-            : this(null, visitedGraph)
-        {
-        }
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImplicitDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
+        /// <summary> Creates a new <see cref="ImplicitDepthFirstSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public ImplicitDepthFirstSearchAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] IIncidenceGraph<TVertex, TEdge> visitedGraph)
-            : base(host, visitedGraph)
+        internal ImplicitDepthFirstSearchAlgorithm(
+            [NotNull] IIncidenceGraph<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host= null)
+            : base(visitedGraph, host)
         {
         }
 

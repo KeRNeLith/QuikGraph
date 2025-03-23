@@ -16,8 +16,8 @@ namespace QuikGraph.Tests.Predicates
         {
             Assert.DoesNotThrow(
                 // ReSharper disable once ObjectCreationAsStatement
-                () => new InDictionaryVertexPredicate<int, Edge<int>>(
-                    new Dictionary<int, Edge<int>>()));
+                () => new InDictionaryVertexPredicate<int, IEdge<int>>(
+                    new Dictionary<int, IEdge<int>>()));
         }
 
         [Test]
@@ -61,8 +61,8 @@ namespace QuikGraph.Tests.Predicates
         [Test]
         public void Predicate_Throws()
         {
-            var predicate = new InDictionaryVertexPredicate<TestVertex, Edge<TestVertex>>(
-                new Dictionary<TestVertex, Edge<TestVertex>>());
+            var predicate = new InDictionaryVertexPredicate<TestVertex, IEdge<TestVertex>>(
+                new Dictionary<TestVertex, IEdge<TestVertex>>());
 
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             // ReSharper disable once AssignNullToNotNullAttribute

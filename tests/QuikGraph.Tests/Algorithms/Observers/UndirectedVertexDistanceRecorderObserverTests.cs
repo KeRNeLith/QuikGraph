@@ -16,14 +16,14 @@ namespace QuikGraph.Tests.Algorithms.Observers
         [Test]
         public void Constructor()
         {
-            Func<Edge<int>, double> edgeWeights = _ => 1.0;
-            var recorder = new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(edgeWeights);
+            Func<IEdge<int>, double> edgeWeights = _ => 1.0;
+            var recorder = new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(edgeWeights);
             Assert.AreSame(edgeWeights, recorder.EdgeWeights);
             Assert.IsNotNull(recorder.DistanceRelaxer);
             Assert.IsNotNull(recorder.Distances);
 
             var distances = new Dictionary<int, double>();
-            recorder = new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(
+            recorder = new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(
                 edgeWeights,
                 DistanceRelaxers.ShortestDistance,
                 distances);
@@ -38,20 +38,20 @@ namespace QuikGraph.Tests.Algorithms.Observers
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(null));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(null, DistanceRelaxers.ShortestDistance, new Dictionary<int, double>()));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(null, DistanceRelaxers.ShortestDistance, new Dictionary<int, double>()));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0, null, new Dictionary<int, double>()));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0, null, new Dictionary<int, double>()));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0, DistanceRelaxers.ShortestDistance, null));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0, DistanceRelaxers.ShortestDistance, null));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(null, null, new Dictionary<int, double>()));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(null, null, new Dictionary<int, double>()));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0, null, null));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0, null, null));
             Assert.Throws<ArgumentNullException>(
-                () => new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(null, null, null));
+                () => new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(null, null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -62,11 +62,11 @@ namespace QuikGraph.Tests.Algorithms.Observers
             // Undirected DFS is used for tests but result may change if using another search algorithm
             // or another starting point
             {
-                var recorder = new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0);
+                var recorder = new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0);
 
-                var graph = new UndirectedGraph<int, Edge<int>>();
+                var graph = new UndirectedGraph<int, IEdge<int>>();
 
-                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, IEdge<int>>(graph);
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();
@@ -76,12 +76,12 @@ namespace QuikGraph.Tests.Algorithms.Observers
             }
 
             {
-                var recorder = new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0);
+                var recorder = new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0);
 
-                var graph = new UndirectedGraph<int, Edge<int>>();
-                graph.AddVertexRange(new[] { 1, 2 });
+                var graph = new UndirectedGraph<int, IEdge<int>>();
+                graph.AddVertexRange( 1, 2 );
 
-                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, IEdge<int>>(graph);
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();
@@ -91,21 +91,20 @@ namespace QuikGraph.Tests.Algorithms.Observers
             }
 
             {
-                var recorder = new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0);
+                var recorder = new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0);
 
-                var edge12 = new Edge<int>(1, 2);
-                var edge14 = new Edge<int>(1, 4);
-                var edge31 = new Edge<int>(3, 1);
-                var edge33 = new Edge<int>(3, 3);
-                var edge34 = new Edge<int>(3, 4);
-                var edge42 = new Edge<int>(4, 2);
-                var graph = new UndirectedGraph<int, Edge<int>>();
-                graph.AddVerticesAndEdgeRange(new[]
-                {
+                var edge12 = Edge.Create(1, 2);
+                var edge14 = Edge.Create(1, 4);
+                var edge31 = Edge.Create(3, 1);
+                var edge33 = Edge.Create(3, 3);
+                var edge34 = Edge.Create(3, 4);
+                var edge42 = Edge.Create(4, 2);
+                var graph = new UndirectedGraph<int, IEdge<int>>();
+                graph.AddVerticesAndEdgeRange(
                     edge12, edge14, edge31, edge33, edge34, edge42
-                });
+                );
 
-                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = new UndirectedDepthFirstSearchAlgorithm<int, IEdge<int>>(graph);
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();
@@ -126,7 +125,7 @@ namespace QuikGraph.Tests.Algorithms.Observers
         [Test]
         public void Attach_Throws()
         {
-            Attach_Throws_Test(new UndirectedVertexDistanceRecorderObserver<int, Edge<int>>(_ => 1.0));
+            Attach_Throws_Test(new UndirectedVertexDistanceRecorderObserver<int, IEdge<int>>(_ => 1.0));
         }
     }
 }

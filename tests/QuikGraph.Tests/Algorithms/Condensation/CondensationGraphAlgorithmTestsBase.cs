@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.Condensation;
@@ -10,8 +10,6 @@ namespace QuikGraph.Tests.Algorithms.Condensation
     /// </summary>
     internal abstract class CondensationGraphAlgorithmTestsBase
     {
-        #region Test helpers
-
         protected static void CheckVertexCount<TVertex, TEdge>(
             [NotNull] IVertexSet<TVertex> graph,
             [NotNull] IVertexSet<AdjacencyGraph<TVertex, TEdge>> condensedGraph)
@@ -44,6 +42,5 @@ namespace QuikGraph.Tests.Algorithms.Condensation
             Assert.IsTrue(condensedGraph.IsDirectedAcyclicGraph());
         }
 
-        #endregion
     }
 }

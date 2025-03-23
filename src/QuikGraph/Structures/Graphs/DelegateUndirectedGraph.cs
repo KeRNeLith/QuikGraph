@@ -16,25 +16,32 @@ namespace QuikGraph
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="DelegateUndirectedGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="DelegateUndirectedGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="vertices">Graph vertices.</param>
         /// <param name="tryGetAdjacentEdges">Getter of adjacent edges.</param>
         /// <param name="allowParallelEdges">
         /// Indicates if parallel edges are allowed.
-        /// Note that get of edges is delegated so you may have bugs related
+        /// Note that get of edges is delegated, so you may have bugs related
         /// to parallel edges due to the delegated implementation.
         /// </param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertices"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetAdjacentEdges"/> is <see langword="null"/>.</exception>
         public DelegateUndirectedGraph(
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges,
             bool allowParallelEdges = true)
             : base(tryGetAdjacentEdges, allowParallelEdges)
         {
             _vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
         }
+
+        /// <inheritdoc cref="DelegateUndirectedGraph{TVertex,TEdge}"/>
+        public DelegateUndirectedGraph(
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges,
+            bool allowParallelEdges = true,
+            [NotNull, ItemNotNull] params TVertex[] vertices)
+            : this(vertices, tryGetAdjacentEdges, allowParallelEdges){}
 
         #region IVertexSet<TVertex>
 
@@ -71,7 +78,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public virtual IEnumerable<TEdge> Edges =>
             _vertices.SelectMany(
-                vertex => AdjacentEdges(vertex).Where(edge => EqualityComparer<TVertex>.Default.Equals(edge.Source, vertex)));
+                vertex => AdjacentEdges(vertex).Where(edge => AreVerticesEqual(edge.Source, vertex)));
 
         /// <inheritdoc />
         public bool ContainsEdge(TEdge edge)
@@ -79,7 +86,8 @@ namespace QuikGraph
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));
 
-            if (TryGetAdjacentEdges(edge.Source, out IEnumerable<TEdge> edges))
+            var edges = AdjacentEdges(edge.Source);
+            if (edges != null)
                 return edges.Any(e => EqualityComparer<TEdge>.Default.Equals(e, edge));
             return false;
         }
@@ -98,7 +106,7 @@ namespace QuikGraph
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
-            return _vertices.Any(v => EqualityComparer<TVertex>.Default.Equals(vertex, v));
+            return _vertices.Any(v => AreVerticesEqual(vertex, v));
         }
 
         #endregion
@@ -108,7 +116,7 @@ namespace QuikGraph
         private bool FilterEdges([NotNull] TEdge edge, [NotNull] TVertex vertex)
         {
             return IsInGraph(edge, vertex)
-                   && (EqualityComparer<TVertex>.Default.Equals(edge.Source, vertex) || EqualityComparer<TVertex>.Default.Equals(edge.Target, vertex));
+                   && (AreVerticesEqual(edge.Source, vertex) || AreVerticesEqual(edge.Target, vertex));
         }
 
         /// <summary>
@@ -123,7 +131,7 @@ namespace QuikGraph
             Debug.Assert(edge != null);
             Debug.Assert(vertex != null);
 
-            return ContainsVertexInternal(edge.GetOtherVertex(vertex));
+            return ContainsVertexInternal(edge.GetOtherVertex(vertex, AreVerticesEqual));
         }
 
         // Should override parent implementation since the provided delegate
@@ -145,30 +153,9 @@ namespace QuikGraph
         internal override IEnumerable<TEdge> AdjacentEdgesInternal(TVertex vertex)
         {
             if (!ContainsVertexInternal(vertex))
-                throw new VertexNotFoundException();
-            return base.AdjacentEdgesInternal(vertex).Where(edge => FilterEdges(edge, vertex));
+                return null;
+            return base.AdjacentEdgesInternal(vertex)?.Where(edge => FilterEdges(edge, vertex));
         }
-
-        /// <inheritdoc />
-        internal override bool TryGetAdjacentEdgesInternal(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (!ContainsVertexInternal(vertex))
-            {
-                edges = null;
-                return false;
-            }
-
-            // Ignore return because "vertex" exists in the graph
-            // so it should always return true.
-            base.TryGetAdjacentEdgesInternal(vertex, out IEnumerable<TEdge> unfilteredEdges);
-
-            edges = unfilteredEdges is null
-                ? Enumerable.Empty<TEdge>()
-                : unfilteredEdges.Where(edge => FilterEdges(edge, vertex));
-
-            return true;
-        }
-
         #endregion
     }
 }

@@ -3,49 +3,39 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.MaximumFlow
 {
-    /// <summary>
-    /// Algorithm that augment all vertices of a graph by adding edge between
-    /// all vertices from super source and to super sink.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <inheritdoc cref="CreateAllVerticesGraphAugmentorAlgorithm"/>/>
+    public static class AllVerticesGraphAugmentorAlgorithm
+    {
+        /// <summary> Creates a new <see cref="AllVerticesGraphAugmentorAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static AllVerticesGraphAugmentorAlgorithm<TVertex, TEdge>
+            CreateAllVerticesGraphAugmentorAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
+            [NotNull] VertexFactory<TVertex> vertexFactory,
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new AllVerticesGraphAugmentorAlgorithm<TVertex, TEdge>(visitedGraph, vertexFactory, edgeFactory, host);
+    }
+
+    /// <summary> Augments all vertices of a graph
+    /// by adding edge between all vertices from super source and to super sink. </summary>
     public sealed class AllVerticesGraphAugmentorAlgorithm<TVertex, TEdge>
         : GraphAugmentorAlgorithmBase<TVertex, TEdge, IMutableVertexAndEdgeSet<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AllVerticesGraphAugmentorAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="AllVerticesGraphAugmentorAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="vertexFactory">Vertex factory method.</param>
         /// <param name="edgeFactory">Edge factory method.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        public AllVerticesGraphAugmentorAlgorithm(
-            [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
-            [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-            : this(null, visitedGraph, vertexFactory, edgeFactory)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AllVerticesGraphAugmentorAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="vertexFactory">Vertex factory method.</param>
-        /// <param name="edgeFactory">Edge factory method.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexFactory"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        public AllVerticesGraphAugmentorAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal AllVerticesGraphAugmentorAlgorithm(
             [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
             [NotNull] VertexFactory<TVertex> vertexFactory,
-            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory)
-            : base(host, visitedGraph, vertexFactory, edgeFactory)
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, vertexFactory, edgeFactory, host)
         {
         }
 

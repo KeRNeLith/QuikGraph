@@ -39,7 +39,7 @@ namespace QuikGraph.Graphviz.Dot
         public bool IsEmpty =>  IsZero(Width) || IsZero(Height);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizSizeF"/> struct.
+        /// Initializes a new <see cref="GraphvizSizeF"/> struct.
         /// </summary>
         /// <param name="width">Width.</param>
         /// <param name="height">Height.</param>
@@ -111,7 +111,7 @@ namespace QuikGraph.Graphviz.Dot
         public bool IsEmpty => Width == 0 || Height == 0;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizSize"/> struct.
+        /// Initializes a new <see cref="GraphvizSize"/> struct.
         /// </summary>
         /// <param name="width">Width.</param>
         /// <param name="height">Height.</param>

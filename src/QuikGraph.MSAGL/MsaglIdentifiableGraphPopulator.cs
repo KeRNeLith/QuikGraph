@@ -16,7 +16,7 @@ namespace QuikGraph.MSAGL
         private readonly VertexIdentity<TVertex> _vertexIdentity;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MsaglIdentifiableGraphPopulator{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="MsaglIdentifiableGraphPopulator{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to convert to MSAGL graph.</param>
         /// <param name="vertexIdentity">Delegate that given a vertex return its identifier.</param>
@@ -37,7 +37,7 @@ namespace QuikGraph.MSAGL
         }
 
         /// <inheritdoc />
-        protected override Edge AddEdge(TEdge edge)
+        protected override Microsoft.Msagl.Drawing.Edge AddEdge(TEdge edge)
         {
             return MsaglGraph.AddEdge(
                 _vertexIdentity(edge.Source),

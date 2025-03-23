@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using JetBrains.Annotations;
@@ -18,14 +19,13 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphviz()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3),
-                new Edge<int>(3, 1)
-            });
-            graph.AddVertexRange(new[] { 4, 5 });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3),
+                Edge.Create(3, 1)
+            );
+            graph.AddVertexRange(4, 5);
 
             string expectedDot =
                 "digraph G {" + Environment.NewLine
@@ -46,30 +46,14 @@ namespace QuikGraph.Graphviz.Tests
         public void ToGraphviz_DelegateGraph()
         {
             int[] vertices = { 1, 2, 3, 4, 5 };
-            var graph = new DelegateVertexAndEdgeListGraph<int, Edge<int>>(
+            var graph = new DelegateVertexAndEdgeListGraph<int, IEdge<int>>(
                 vertices,
-                (int vertex, out IEnumerable<Edge<int>> outEdges) =>
+                vertex => vertex switch
                 {
-                    if (vertex == 1)
-                    {
-                        outEdges = new[] { new Edge<int>(1, 2), new Edge<int>(1, 3) };
-                        return true;
-                    }
-
-                    if (vertex == 2)
-                    {
-                        outEdges = new[] { new Edge<int>(2, 4) };
-                        return true;
-                    }
-
-                    if (vertex is 3 or 4 or 5)
-                    {
-                        outEdges = new Edge<int>[] { };
-                        return true;
-                    }
-
-                    outEdges = null;
-                    return false;
+                    1 => new[] { Edge.Create(1, 2), Edge.Create(1, 3) },
+                    2 => new[] { Edge.Create(2, 4) },
+                    3 or 4 or 5 => Enumerable.Empty<IEdge<int>>(),
+                    _ => null
                 });
 
             string expectedDot =
@@ -93,28 +77,12 @@ namespace QuikGraph.Graphviz.Tests
             int[] vertices = { 1, 2, 3, 4, 5 };
             var graph = new DelegateVertexAndEdgeListGraph<int, EquatableEdge<int>>(
                 vertices,
-                (int vertex, out IEnumerable<EquatableEdge<int>> outEdges) =>
+                vertex => vertex switch
                 {
-                    if (vertex == 1)
-                    {
-                        outEdges = new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(1, 3) };
-                        return true;
-                    }
-
-                    if (vertex == 2)
-                    {
-                        outEdges = new[] { new EquatableEdge<int>(2, 4) };
-                        return true;
-                    }
-
-                    if (vertex is 3 or 4 or 5)
-                    {
-                        outEdges = new EquatableEdge<int>[] { };
-                        return true;
-                    }
-
-                    outEdges = null;
-                    return false;
+                    1 => new[] { new EquatableEdge<int>(1, 2), new EquatableEdge<int>(1, 3) },
+                    2 => new[] { new EquatableEdge<int>(2, 4) },
+                    3 or 4 or 5 => new EquatableEdge<int>[] { },
+                    _ => null
                 });
 
             string expectedDot =
@@ -135,14 +103,13 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithEmptyInit()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3),
-                new Edge<int>(3, 1)
-            });
-            graph.AddVertexRange(new[] { 4, 5 });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3),
+                Edge.Create(3, 1)
+            );
+            graph.AddVertexRange(4, 5);
 
             string expectedDot =
                 "digraph G {" + Environment.NewLine
@@ -173,23 +140,21 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithInit()
         {
-            var wrappedGraph = new AdjacencyGraph<int, Edge<int>>();
-            wrappedGraph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 4)
-            });
+            var wrappedGraph = new AdjacencyGraph<int, IEdge<int>>();
+            wrappedGraph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 4)
+            );
             wrappedGraph.AddVertex(5);
-            var clusteredGraph = new ClusteredAdjacencyGraph<int, Edge<int>>(wrappedGraph);
-            ClusteredAdjacencyGraph<int, Edge<int>> subGraph1 = clusteredGraph.AddCluster();
-            subGraph1.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(6, 7),
-                new Edge<int>(7, 8)
-            });
-            ClusteredAdjacencyGraph<int, Edge<int>> subGraph2 = clusteredGraph.AddCluster();
-            subGraph2.AddVerticesAndEdge(new Edge<int>(9, 10));
+            var clusteredGraph = new ClusteredAdjacencyGraph<int, IEdge<int>>(wrappedGraph);
+            ClusteredAdjacencyGraph<int, IEdge<int>> subGraph1 = clusteredGraph.AddCluster();
+            subGraph1.AddVerticesAndEdgeRange(
+                Edge.Create(6, 7),
+                Edge.Create(7, 8)
+            );
+            ClusteredAdjacencyGraph<int, IEdge<int>> subGraph2 = clusteredGraph.AddCluster();
+            subGraph2.AddVerticesAndEdge(Edge.Create(9, 10));
             subGraph2.AddVertex(11);
 
             string expectedDot =
@@ -233,13 +198,12 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithInit2()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 4)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 4)
+            );
             graph.AddVertex(5);
 
             string expectedDot =
@@ -274,13 +238,12 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithInit_Record()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 4)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 4)
+            );
             graph.AddVertex(5);
 
             string expectedDot =
@@ -333,13 +296,12 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithInit_Record2()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(1, 3),
-                new Edge<int>(2, 4)
-            });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(1, 3),
+                Edge.Create(2, 4)
+            );
             graph.AddVertex(5);
 
             string expectedDot =
@@ -390,7 +352,7 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToGraphvizWithInit_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
             
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
             // ReSharper disable once AssignNullToNotNullAttribute
@@ -498,16 +460,15 @@ namespace QuikGraph.Graphviz.Tests
 
         [Pure]
         [NotNull]
-        private static AdjacencyGraph<int, Edge<int>> CreateTestGraph()
+        private static AdjacencyGraph<int, IEdge<int>> CreateTestGraph()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 3),
-                new Edge<int>(3, 1)
-            });
-            graph.AddVertexRange(new[] { 4, 5 });
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 3),
+                Edge.Create(3, 1)
+            );
+            graph.AddVertexRange(4, 5);
             return graph;
         }
 
@@ -522,7 +483,7 @@ namespace QuikGraph.Graphviz.Tests
                 new TestWebRequestCreate());
             TestWebRequestCreate.CreateTestRequest(expectedSvg);
 
-            AdjacencyGraph<int, Edge<int>> graph = CreateTestGraph();
+            AdjacencyGraph<int, IEdge<int>> graph = CreateTestGraph();
 
 #pragma warning disable CS0618
             Assert.AreEqual(expectedSvg, graph.ToSvg());
@@ -537,7 +498,7 @@ namespace QuikGraph.Graphviz.Tests
                 new TestWebRequestCreate());
             TestWebRequestCreate.CreateFailTestRequest();
 
-            AdjacencyGraph<int, Edge<int>> graph = CreateTestGraph();
+            AdjacencyGraph<int, IEdge<int>> graph = CreateTestGraph();
 
 #pragma warning disable CS0618
             Assert.IsEmpty(graph.ToSvg());
@@ -553,7 +514,7 @@ namespace QuikGraph.Graphviz.Tests
                 new TestWebRequestCreate());
             TestWebRequestCreate.CreateTestRequest(expectedSvg);
 
-            AdjacencyGraph<int, Edge<int>> graph = CreateTestGraph();
+            AdjacencyGraph<int, IEdge<int>> graph = CreateTestGraph();
 
 #pragma warning disable CS0618
             Assert.AreEqual(
@@ -568,7 +529,7 @@ namespace QuikGraph.Graphviz.Tests
         [Test]
         public void ToSvgWithInit_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
 
 #pragma warning disable CS0618
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
@@ -585,7 +546,7 @@ namespace QuikGraph.Graphviz.Tests
                 new TestWebRequestCreate());
             TestWebRequestCreate.CreateFailTestRequest();
 
-            AdjacencyGraph<int, Edge<int>> graph = CreateTestGraph();
+            AdjacencyGraph<int, IEdge<int>> graph = CreateTestGraph();
 
 #pragma warning disable CS0618
             Assert.IsEmpty(

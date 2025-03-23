@@ -1,11 +1,11 @@
-namespace QuikGraph.Tests.Algorithms
+﻿namespace QuikGraph.Tests.Algorithms
 {
-    /// <summary>
-    /// Represents a pair source and target vertices.
+    /// <summary> AKA KeyValuePair;
+    /// Represents a pair source and target vertex Indices.
     /// </summary>
-    internal readonly struct Vertices
+    internal readonly struct VerticesPair
     {
-        public Vertices(int source, int target)
+        public VerticesPair(int source, int target)
         {
             Source = source;
             Target = target;

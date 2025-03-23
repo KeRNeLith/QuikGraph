@@ -1,3 +1,4 @@
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
@@ -83,7 +84,14 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertHasVertices<TVertex>(
-            [NotNull] IVertexSet<TVertex> graph,
+            [NotNull] this IVertexSet<TVertex> graph,
+            [NotNull, ItemNotNull] params TVertex[] vertices)
+        {
+            graph.AssertHasVertices(vertices.AsEnumerable());
+        }
+
+        public static void AssertHasVertices<TVertex>(
+            [NotNull] this IVertexSet<TVertex> graph,
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices)
         {
             TVertex[] vertexArray = vertices.ToArray();
@@ -95,21 +103,21 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertNoVertices<TVertex>(
-            [NotNull] IImplicitVertexSet<TVertex> graph,
+            [NotNull] this IImplicitVertexSet<TVertex> graph,
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices)
         {
             AssertImplicitHasVertices(graph, vertices, false);
         }
 
         public static void AssertHasVertices<TVertex>(
-            [NotNull] IImplicitVertexSet<TVertex> graph,
+            [NotNull] this IImplicitVertexSet<TVertex> graph,
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices)
         {
             AssertImplicitHasVertices(graph, vertices, true);
         }
 
         private static void AssertImplicitHasVertices<TVertex>(
-            [NotNull] IImplicitVertexSet<TVertex> graph,
+            [NotNull] this IImplicitVertexSet<TVertex> graph,
             [NotNull, ItemNotNull] IEnumerable<TVertex> vertices,
             bool expectedContains)
         {
@@ -126,7 +134,7 @@ namespace QuikGraph.Tests
 
         #region Edges helpers
 
-        public static void AssertNoEdge<TVertex, TEdge>([NotNull] IEdgeSet<TVertex, TEdge> graph)
+        public static void AssertNoEdge<TVertex, TEdge>([NotNull] this IEdgeSet<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
             Assert.IsTrue(graph.IsEdgesEmpty);
@@ -135,7 +143,15 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertHasEdges<TVertex, TEdge>(
-            [NotNull] IEdgeSet<TVertex, TEdge> graph,
+            [NotNull] this IEdgeSet<TVertex, TEdge> graph,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            graph.AssertHasEdges(edges.AsEnumerable());
+        }
+
+        public static void AssertHasEdges<TVertex, TEdge>(
+            [NotNull] this IEdgeSet<TVertex, TEdge> graph,
             [NotNull, ItemNotNull] IEnumerable<TEdge> edges)
             where TEdge : IEdge<TVertex>
         {
@@ -148,7 +164,15 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertHasEdges<TVertex, TEdge>(
-            [NotNull] IEdgeSet<TVertex, SReversedEdge<TVertex, TEdge>> graph,
+            [NotNull] this IEdgeSet<TVertex, SReversedEdge<TVertex, TEdge>> graph,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            graph.AssertHasEdges(edges.AsEnumerable());
+        }
+
+        public static void AssertHasEdges<TVertex, TEdge>(
+            [NotNull] this IEdgeSet<TVertex, SReversedEdge<TVertex, TEdge>> graph,
             [NotNull, ItemNotNull] IEnumerable<TEdge> edges)
             where TEdge : IEdge<TVertex>
         {
@@ -158,16 +182,16 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertSameReversedEdge(
-            [NotNull] Edge<int> edge,
-            SReversedEdge<int, Edge<int>> reversedEdge)
+            [NotNull] IEdge<int> edge,
+            SReversedEdge<int, IEdge<int>> reversedEdge)
         {
-            Assert.AreEqual(new SReversedEdge<int, Edge<int>>(edge), reversedEdge);
+            Assert.AreEqual(new SReversedEdge<int, IEdge<int>>(edge), reversedEdge);
             Assert.AreSame(edge, reversedEdge.OriginalEdge);
         }
 
         public static void AssertSameReversedEdges(
-            [NotNull, ItemNotNull] IEnumerable<Edge<int>> edges,
-            [NotNull] IEnumerable<SReversedEdge<int, Edge<int>>> reversedEdges)
+            [NotNull, ItemNotNull] IEnumerable<IEdge<int>> edges,
+            [NotNull] IEnumerable<SReversedEdge<int, IEdge<int>>> reversedEdges)
         {
             var edgesArray = edges.ToArray();
             var reversedEdgesArray = reversedEdges.ToArray();
@@ -185,14 +209,14 @@ namespace QuikGraph.Tests
             where TEdge : IEdge<TVertex>
         {
             AssertNoVertex(graph);
-            AssertNoEdge(graph);
+            graph.AssertNoEdge();
         }
 
         public static void AssertEmptyGraph<TVertex>(
             [NotNull] CompressedSparseRowGraph<TVertex> graph)
         {
             AssertNoVertex(graph);
-            AssertNoEdge(graph);
+            graph.AssertNoEdge();
         }
 
         public static void AssertNoInEdge<TVertex, TEdge>([NotNull] IBidirectionalIncidenceGraph<TVertex, TEdge> graph, [NotNull] TVertex vertex)
@@ -201,6 +225,15 @@ namespace QuikGraph.Tests
             Assert.IsTrue(graph.IsInEdgesEmpty(vertex));
             Assert.AreEqual(0, graph.InDegree(vertex));
             CollectionAssert.IsEmpty(graph.InEdges(vertex));
+        }
+
+        public static void AssertHasInEdges<TVertex, TEdge>(
+            [NotNull] IBidirectionalIncidenceGraph<TVertex, TEdge> graph,
+            [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            AssertHasInEdges(graph, vertex, edges.AsEnumerable());
         }
 
         public static void AssertHasInEdges<TVertex, TEdge>(
@@ -215,6 +248,15 @@ namespace QuikGraph.Tests
             Assert.IsFalse(graph.IsInEdgesEmpty(vertex));
             Assert.AreEqual(edgeArray.Length, graph.InDegree(vertex));
             CollectionAssert.AreEquivalent(edgeArray, graph.InEdges(vertex));
+        }
+
+        public static void AssertHasReversedInEdges<TVertex, TEdge>(
+            [NotNull] IBidirectionalIncidenceGraph<TVertex, SReversedEdge<TVertex, TEdge>> graph,
+            [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            AssertHasReversedInEdges(graph, vertex, edges.AsEnumerable());
         }
 
         public static void AssertHasReversedInEdges<TVertex, TEdge>(
@@ -244,6 +286,15 @@ namespace QuikGraph.Tests
         public static void AssertHasOutEdges<TVertex, TEdge>(
             [NotNull] IImplicitGraph<TVertex, TEdge> graph,
             [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            AssertHasOutEdges(graph, vertex, edges.AsEnumerable());
+        }
+
+        public static void AssertHasOutEdges<TVertex, TEdge>(
+            [NotNull] IImplicitGraph<TVertex, TEdge> graph,
+            [NotNull] TVertex vertex,
             [NotNull, ItemNotNull] IEnumerable<TEdge> edges)
             where TEdge : IEdge<TVertex>
         {
@@ -253,6 +304,15 @@ namespace QuikGraph.Tests
             Assert.IsFalse(graph.IsOutEdgesEmpty(vertex));
             Assert.AreEqual(edgeArray.Length, graph.OutDegree(vertex));
             CollectionAssert.AreEquivalent(edgeArray, graph.OutEdges(vertex));
+        }
+
+        public static void AssertHasReversedOutEdges<TVertex, TEdge>(
+            [NotNull] IImplicitGraph<TVertex, SReversedEdge<TVertex, TEdge>> graph,
+            [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] params TEdge[] edges)
+            where TEdge : IEdge<TVertex>
+        {
+            AssertHasReversedOutEdges(graph, vertex, edges.AsEnumerable());
         }
 
         public static void AssertHasReversedOutEdges<TVertex, TEdge>(
@@ -282,7 +342,16 @@ namespace QuikGraph.Tests
         }
 
         public static void AssertHasAdjacentEdges<TVertex, TEdge>(
-            [NotNull] IImplicitUndirectedGraph<TVertex, TEdge> graph,
+            [NotNull] this IImplicitUndirectedGraph<TVertex, TEdge> graph,
+            [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] params TEdge[] edges)    // If not set => equals the count of edges
+            where TEdge : IEdge<TVertex>
+        {
+            graph.AssertHasAdjacentEdges(vertex, edges.AsEnumerable());
+        }
+
+        public static void AssertHasAdjacentEdges<TVertex, TEdge>(
+            [NotNull] this IImplicitUndirectedGraph<TVertex, TEdge> graph,
             [NotNull] TVertex vertex,
             [NotNull, ItemNotNull] IEnumerable<TEdge> edges,
             int degree = -1)    // If not set => equals the count of edges

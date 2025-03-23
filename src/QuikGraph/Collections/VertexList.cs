@@ -19,14 +19,14 @@ namespace QuikGraph.Collections
 #endif
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexList{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexList{TVertex}"/> class.
         /// </summary>
         public VertexList()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexList{TVertex}"/> class.
+        /// Initializes a new <see cref="VertexList{TVertex}"/> class.
         /// </summary>
         /// <param name="capacity">List capacity.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is negative.</exception>

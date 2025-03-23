@@ -13,19 +13,19 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void Construction()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AssertGraphProperties(graph);
 
-            graph = new EdgeListGraph<int, Edge<int>>(false, false);
+            graph = new EdgeListGraph<int, IEdge<int>>(false, false);
             AssertGraphProperties(graph, false, false);
 
-            graph = new EdgeListGraph<int, Edge<int>>(false, true);
+            graph = new EdgeListGraph<int, IEdge<int>>(false, true);
             AssertGraphProperties(graph, false);
 
-            graph = new EdgeListGraph<int, Edge<int>>(true, false);
+            graph = new EdgeListGraph<int, IEdge<int>>(true, false);
             AssertGraphProperties(graph, parallelEdges: false);
 
-            graph = new EdgeListGraph<int, Edge<int>>(true, true);
+            graph = new EdgeListGraph<int, IEdge<int>>(true, true);
             AssertGraphProperties(graph);
 
             #region Local function
@@ -49,8 +49,8 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddEdge_ParallelEdges()
         {
-            var directedGraph = new EdgeListGraph<int, Edge<int>>(true, true);
-            var undirectedGraph = new EdgeListGraph<int, Edge<int>>(false, true);
+            var directedGraph = new EdgeListGraph<int, IEdge<int>>(true, true);
+            var undirectedGraph = new EdgeListGraph<int, IEdge<int>>(false, true);
             AddEdge_ParallelEdges_EdgesOnly_Test(
                 directedGraph,
                 undirectedGraph,
@@ -71,8 +71,8 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddEdge_NoParallelEdges()
         {
-            var directedGraph = new EdgeListGraph<int, Edge<int>>(true, false);
-            var undirectedGraph = new EdgeListGraph<int, Edge<int>>(false, false);
+            var directedGraph = new EdgeListGraph<int, IEdge<int>>(true, false);
+            var undirectedGraph = new EdgeListGraph<int, IEdge<int>>(false, false);
             AddEdge_NoParallelEdges_EdgesOnly_Test(
                 directedGraph,
                 undirectedGraph,
@@ -93,21 +93,21 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddEdge_Throws()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AddEdge_Throws_EdgesOnly_Test(graph);
         }
 
         [Test]
         public void AddEdgeRange()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>(true, false);
+            var graph = new EdgeListGraph<int, IEdge<int>>(true, false);
             AddEdgeRange_EdgesOnly_Test(graph);
         }
 
         [Test]
         public void AddEdgeRange_Throws()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AddEdgeRange_Throws_EdgesOnly_Test(graph);
         }
 
@@ -118,8 +118,8 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddVerticesAndEdge_ParallelEdges()
         {
-            var directedGraph = new EdgeListGraph<int, Edge<int>>(true, true);
-            var undirectedGraph = new EdgeListGraph<int, Edge<int>>(false, true);
+            var directedGraph = new EdgeListGraph<int, IEdge<int>>(true, true);
+            var undirectedGraph = new EdgeListGraph<int, IEdge<int>>(false, true);
             AddEdge_ParallelEdges_EdgesOnly_Test(
                 directedGraph,
                 undirectedGraph,
@@ -140,8 +140,8 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddVerticesAndEdge_NoParallelEdges()
         {
-            var directedGraph = new EdgeListGraph<int, Edge<int>>(true, false);
-            var undirectedGraph = new EdgeListGraph<int, Edge<int>>(false, false);
+            var directedGraph = new EdgeListGraph<int, IEdge<int>>(true, false);
+            var undirectedGraph = new EdgeListGraph<int, IEdge<int>>(false, false);
             AddEdge_NoParallelEdges_EdgesOnly_Test(
                 directedGraph,
                 undirectedGraph,
@@ -162,21 +162,21 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void AddVerticesAndEdge_Throws()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AddVerticesAndEdge_Throws_EdgesOnly_Test(graph);
         }
 
         [Test]
         public void AddVerticesAndEdgeRange()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AddVerticesAndEdgeRange_EdgesOnly_Test(graph);
         }
 
         [Test]
         public void AddVerticesAndEdgeRange_Throws()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AddVerticesAndEdgeRange_Throws_EdgesOnly_Test(graph);
         }
 
@@ -187,21 +187,21 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void ContainsVertex()
         {
-            var graph = new EdgeListGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new EdgeListGraph<TestVertex, IEdge<TestVertex>>();
             ContainsVertex_OnlyEdges_Test(graph);
         }
 
         [Test]
         public void ContainsVertex_EquatableVertex()
         {
-            var graph = new EdgeListGraph<EquatableTestVertex, Edge<EquatableTestVertex>>();
+            var graph = new EdgeListGraph<EquatableTestVertex, IEdge<EquatableTestVertex>>();
             ContainsVertex_EquatableVertex_OnlyEdges_Test(graph);
         }
 
         [Test]
         public void ContainsVertex_Throws()
         {
-            var graph = new EdgeListGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new EdgeListGraph<TestVertex, IEdge<TestVertex>>();
             ContainsVertex_Throws_Test(graph);
         }
 
@@ -212,7 +212,7 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void ContainsEdge()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             ContainsEdge_EdgesOnly_Test(graph);
         }
 
@@ -226,7 +226,7 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void ContainsEdge_Throws()
         {
-            var graph = new EdgeListGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new EdgeListGraph<TestVertex, IEdge<TestVertex>>();
             ContainsEdge_NullThrows_Test(graph);
         }
 
@@ -237,7 +237,7 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void RemoveEdge()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             RemoveEdge_EdgesOnly_Test(graph);
         }
 
@@ -251,21 +251,21 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void RemoveEdge_Throws()
         {
-            var graph = new EdgeListGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new EdgeListGraph<TestVertex, IEdge<TestVertex>>();
             RemoveEdge_Throws_Test(graph);
         }
 
         [Test]
         public void RemoveEdgeIf()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             RemoveEdgeIf_EdgesOnly_Test(graph);
         }
 
         [Test]
         public void RemoveEdgeIf_Throws()
         {
-            var graph = new EdgeListGraph<TestVertex, Edge<TestVertex>>();
+            var graph = new EdgeListGraph<TestVertex, IEdge<TestVertex>>();
             RemoveEdgeIf_Throws_Test(graph);
         }
 
@@ -278,7 +278,7 @@ namespace QuikGraph.Tests.Structures
         {
             int edgesRemoved = 0;
 
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
             graph.EdgeRemoved += e =>
             {
@@ -293,9 +293,9 @@ namespace QuikGraph.Tests.Structures
             AssertEmptyGraph(graph);
             CheckCounter(0);
 
-            graph.AddVerticesAndEdge(new Edge<int>(1, 2));
-            graph.AddVerticesAndEdge(new Edge<int>(2, 3));
-            graph.AddVerticesAndEdge(new Edge<int>(3, 1));
+            graph.AddVerticesAndEdge(Edge.Create(1, 2));
+            graph.AddVerticesAndEdge(Edge.Create(2, 3));
+            graph.AddVerticesAndEdge(Edge.Create(3, 1));
 
             graph.Clear();
             AssertEmptyGraph(graph);
@@ -317,33 +317,33 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void Clone()
         {
-            var graph = new EdgeListGraph<int, Edge<int>>();
+            var graph = new EdgeListGraph<int, IEdge<int>>();
             AssertEmptyGraph(graph);
 
             var clonedGraph = graph.Clone();
             Assert.IsNotNull(clonedGraph);
             AssertEmptyGraph(clonedGraph);
 
-            clonedGraph = (EdgeListGraph<int, Edge<int>>)((ICloneable)graph).Clone();
+            clonedGraph = (EdgeListGraph<int, IEdge<int>>)((ICloneable)graph).Clone();
             Assert.IsNotNull(clonedGraph);
             AssertEmptyGraph(clonedGraph);
 
-            var edge1 = new Edge<int>(1, 2);
-            var edge2 = new Edge<int>(1, 3);
-            var edge3 = new Edge<int>(2, 3);
-            graph.AddVerticesAndEdgeRange(new[] { edge1, edge2, edge3 });
-            AssertHasVertices(graph, new[] { 1, 2, 3 });
-            AssertHasEdges(graph, new[] { edge1, edge2, edge3 });
+            var edge1 = Edge.Create(1, 2);
+            var edge2 = Edge.Create(1, 3);
+            var edge3 = Edge.Create(2, 3);
+            graph.AddVerticesAndEdgeRange( edge1, edge2, edge3 );
+            graph.AssertHasVertices(1, 2, 3 );
+            graph.AssertHasEdges(edge1, edge2, edge3 );
 
             clonedGraph = graph.Clone();
             Assert.IsNotNull(clonedGraph);
-            AssertHasVertices(clonedGraph, new[] { 1, 2, 3 });
-            AssertHasEdges(clonedGraph, new[] { edge1, edge2, edge3 });
+            clonedGraph.AssertHasVertices(1, 2, 3 );
+            clonedGraph.AssertHasEdges(edge1, edge2, edge3 );
 
-            clonedGraph = (EdgeListGraph<int, Edge<int>>)((ICloneable)graph).Clone();
+            clonedGraph = (EdgeListGraph<int, IEdge<int>>)((ICloneable)graph).Clone();
             Assert.IsNotNull(clonedGraph);
-            AssertHasVertices(clonedGraph, new[] { 1, 2, 3 });
-            AssertHasEdges(clonedGraph, new[] { edge1, edge2, edge3 });
+            clonedGraph.AssertHasVertices(1, 2, 3 );
+            clonedGraph.AssertHasEdges(edge1, edge2, edge3 );
         }
     }
 }

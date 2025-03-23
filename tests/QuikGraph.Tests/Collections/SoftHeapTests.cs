@@ -32,17 +32,17 @@ namespace QuikGraph.Tests.Collections
         public void Constructor()
         {
             AssertHeapBaseProperties(
-                new SoftHeap<int, Edge<int>>(ErrorRate, 10),
+                new SoftHeap<int, IEdge<int>>(ErrorRate, 10),
                 ErrorRate,
                 10);
             AssertHeapBaseProperties(
-                new SoftHeap<int, Edge<int>>(ErrorRate2, 42),
+                new SoftHeap<int, IEdge<int>>(ErrorRate2, 42),
                 ErrorRate2,
                 42);
 
             Comparison<int> comparer = (x, y) => x.CompareTo(y);
             AssertHeapProperties(
-                new SoftHeap<int, Edge<int>>(ErrorRate, 12, comparer),
+                new SoftHeap<int, IEdge<int>>(ErrorRate, 12, comparer),
                 ErrorRate,
                 12,
                 comparer);
@@ -337,7 +337,7 @@ namespace QuikGraph.Tests.Collections
             using (IEnumerator<KeyValuePair<double, int>> enumerator = heap.GetEnumerator())
             {
                 Assert.AreEqual(default(KeyValuePair<double, int>), enumerator.Current);
-                Assert.Throws<NotSupportedException>(() => enumerator.Reset());
+                Assert.Throws<NotSupportedException>(enumerator.Reset);
             }
         }
     }

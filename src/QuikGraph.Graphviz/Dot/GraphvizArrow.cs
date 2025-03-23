@@ -16,7 +16,7 @@ namespace QuikGraph.Graphviz.Dot
     public class GraphvizArrow
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizArrow"/> class.
+        /// Initializes a new <see cref="GraphvizArrow"/> class.
         /// </summary>
         /// <param name="shape">Arrow shape.</param>
         public GraphvizArrow(GraphvizArrowShape shape)
@@ -27,7 +27,7 @@ namespace QuikGraph.Graphviz.Dot
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizArrow"/> class.
+        /// Initializes a new <see cref="GraphvizArrow"/> class.
         /// </summary>
         /// <param name="shape">Arrow shape.</param>
         /// <param name="clipping">Arrow clipping.</param>

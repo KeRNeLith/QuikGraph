@@ -2,31 +2,23 @@
 using System;
 #endif
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace QuikGraph.Collections
 {
-    /// <summary>
-    /// Stores a list of edges.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Stores a list of edges and implements <see cref="IReadOnlyList{T}"/>. </summary>
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
-    public sealed class EdgeList<TVertex, TEdge> : List<TEdge>, IEdgeList<TVertex, TEdge>
-        where TEdge : IEdge<TVertex>
+    public sealed class EdgeList<TEdge> : List<TEdge>, IEdgeList<TEdge>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeList{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="EdgeList{TEdge}"/> class. </summary>
         public EdgeList()
         {
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EdgeList{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="EdgeList{TEdge}"/> class. </summary>
         /// <param name="capacity">List capacity.</param>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="capacity"/> is negative.</exception>
         public EdgeList(int capacity)
@@ -36,33 +28,27 @@ namespace QuikGraph.Collections
 
         /// <inheritdoc />
         /// <exception cref="T:System.ArgumentNullException"><paramref name="other"/> is <see langword="null"/>.</exception>
-        public EdgeList([NotNull] EdgeList<TVertex, TEdge> other)
+        public EdgeList([NotNull] EdgeList<TEdge> other)
             : base(other)
         {
         }
 
-        /// <summary>
-        /// Clones this edge list.
-        /// </summary>
-        /// <returns>Cloned list.</returns>
-        [NotNull]
-        public EdgeList<TVertex, TEdge> Clone()
+        /// <inheritdoc />
+        public EdgeList([CanBeNull] IEnumerable<TEdge> items)
+            : base(items ?? Enumerable.Empty<TEdge>())
         {
-            return new EdgeList<TVertex, TEdge>(this);
         }
 
+        /// <summary> Clones this edge list. </summary>
+        [NotNull]
+        public EdgeList<TEdge> Clone() => new EdgeList<TEdge>(this);
+
         /// <inheritdoc />
-        IEdgeList<TVertex, TEdge> IEdgeList<TVertex, TEdge>.Clone()
-        {
-            return Clone();
-        }
+        IEdgeList<TEdge> IEdgeList<TEdge>.Clone() => Clone();
 
 #if SUPPORTS_CLONEABLE
         /// <inheritdoc />
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
+        object ICloneable.Clone() => Clone();
 #endif
     }
 }

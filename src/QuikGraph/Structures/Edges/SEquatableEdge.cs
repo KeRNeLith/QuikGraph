@@ -16,10 +16,19 @@ namespace QuikGraph
 #endif
     [DebuggerDisplay("{" + nameof(Source) + "}->{" + nameof(Target) + "}")]
     [StructLayout(LayoutKind.Auto)]
-    public struct SEquatableEdge<TVertex> : IEdge<TVertex>, IEquatable<SEquatableEdge<TVertex>>
+    public class SEquatableEdge<TVertex> : IEdge<TVertex>, IEquatable<SEquatableEdge<TVertex>>
     {
+        /// <inheritdoc />
+        public static Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private static Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="SEquatableEdge{TVertex}"/> struct.
+        /// Initializes a new <see cref="SEquatableEdge{TVertex}"/> struct.
         /// </summary>
         /// <param name="source">The source vertex.</param>
         /// <param name="target">The target vertex.</param>
@@ -43,18 +52,12 @@ namespace QuikGraph
         public TVertex Target { get; }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
-        {
-            return obj is SEquatableEdge<TVertex> edge
-                   && Equals(edge);
-        }
+        public override bool Equals(object obj) => obj is SEquatableEdge<TVertex> edge && Equals(edge);
 
         /// <inheritdoc />
-        public bool Equals(SEquatableEdge<TVertex> other)
-        {
-            return EqualityComparer<TVertex>.Default.Equals(Source, other.Source)
-                   && EqualityComparer<TVertex>.Default.Equals(Target, other.Target);
-        }
+        public bool Equals(SEquatableEdge<TVertex> other) => other != null
+            && AreVerticesEqual(Source, other.Source)
+            && AreVerticesEqual(Target, other.Target);
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -72,7 +75,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.EdgeFormatString, Source, Target);
+            return string.Format(EdgeFormats.String, Source, Target);
         }
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using QuikGraph.Algorithms.Observers;
@@ -87,9 +87,9 @@ namespace QuikGraph.Tests.Algorithms.Observers
             {
                 var recorder = new VertexTimeStamperObserver<int>();
 
-                var graph = new AdjacencyGraph<int, Edge<int>>();
+                var graph = new AdjacencyGraph<int, IEdge<int>>();
 
-                var dfs = new DepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = graph.CreateDepthFirstSearchAlgorithm();
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();
@@ -102,10 +102,10 @@ namespace QuikGraph.Tests.Algorithms.Observers
             {
                 var recorder = new VertexTimeStamperObserver<int>();
 
-                var graph = new AdjacencyGraph<int, Edge<int>>();
-                graph.AddVertexRange(new[] {1, 2});
+                var graph = new AdjacencyGraph<int, IEdge<int>>();
+                graph.AddVertexRange(1, 2);
 
-                var dfs = new DepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = graph.CreateDepthFirstSearchAlgorithm();
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();
@@ -131,15 +131,14 @@ namespace QuikGraph.Tests.Algorithms.Observers
             {
                 var recorder = new VertexTimeStamperObserver<int>();
 
-                var graph = new AdjacencyGraph<int, Edge<int>>();
-                graph.AddVerticesAndEdgeRange(new[]
-                {
-                    new Edge<int>(1, 2),
-                    new Edge<int>(2, 2),
-                    new Edge<int>(3, 4)
-                });
+                var graph = new AdjacencyGraph<int, IEdge<int>>();
+                graph.AddVerticesAndEdgeRange(
+                    Edge.Create(1, 2),
+                    Edge.Create(2, 2),
+                    Edge.Create(3, 4)
+                );
 
-                var dfs = new DepthFirstSearchAlgorithm<int, Edge<int>>(graph);
+                var dfs = graph.CreateDepthFirstSearchAlgorithm();
                 using (recorder.Attach(dfs))
                 {
                     dfs.Compute();

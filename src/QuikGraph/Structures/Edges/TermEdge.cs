@@ -16,7 +16,7 @@ namespace QuikGraph
     public class TermEdge<TVertex> : ITermEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TermEdge{TVertex}"/> class
+        /// Initializes a new <see cref="TermEdge{TVertex}"/> class
         /// using source/target vertices and zero terminals.
         /// </summary>
         /// <param name="source">The source vertex.</param>
@@ -29,7 +29,7 @@ namespace QuikGraph
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TermEdge{TVertex}"/> class
+        /// Initializes a new <see cref="TermEdge{TVertex}"/> class
         /// using source/target vertices and source/target terminals.
         /// </summary>
         /// <param name="source">The source vertex.</param>
@@ -72,7 +72,7 @@ namespace QuikGraph
         /// <inheritdoc />
         public override string ToString()
         {
-            return string.Format(EdgeConstants.EdgeTerminalFormatString, Source, SourceTerminal, Target, TargetTerminal);
+            return string.Format(EdgeFormats.Terminal, Source, SourceTerminal, Target, TargetTerminal);
         }
     }
 }

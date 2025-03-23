@@ -18,7 +18,7 @@ namespace QuikGraph.Petri
         private Dictionary<ITransition<TToken>, TransitionBuffer> _transitionBuffers = new Dictionary<ITransition<TToken>, TransitionBuffer>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PetriNetSimulator{TToken}"/> class.
+        /// Initializes a new <see cref="PetriNetSimulator{TToken}"/> class.
         /// </summary>
         /// <param name="net">Petri net to simulate.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="net"/> is <see langword="null"/>.</exception>

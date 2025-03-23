@@ -3,9 +3,9 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// An incident graph with vertices of type <typeparamref name="TVertex"/>
-    /// and edges of type <typeparamref name="TEdge"/>.
+    /// <summary> A directed graph with <see cref="IImplicitGraph{TVertex,TEdge}.OutEdges"/> and Methods to efficiently query them.
+    /// and vertices of type <typeparamref name="TVertex"/>
+    /// edges of type <typeparamref name="TEdge"/>.
     /// </summary>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type.</typeparam>
@@ -36,20 +36,11 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="target"/> is <see langword="null"/>.</exception>
         [Pure]
         [ContractAnnotation("=> true, edge:notnull;=> false, edge:null")]
+        //[Obsolete("Not CoVariant => With [CanBeNull] Support use " + nameof(OutEdges))]
         bool TryGetEdge([NotNull] TVertex source, [NotNull] TVertex target, out TEdge edge);
 
-        /// <summary>
-        /// Tries to get edges that link
-        /// <paramref name="source"/> and <paramref name="target"/> vertices.
-        /// </summary>
-        /// <param name="source">Source vertex.</param>
-        /// <param name="target">Target vertex.</param>
-        /// <param name="edges">Edges found, otherwise <see langword="null"/>.</param>
-        /// <returns>True if at least an edge was found, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="target"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [ContractAnnotation("=> true, edges:notnull;=> false, edges:null")]
-        bool TryGetEdges([NotNull] TVertex source, [NotNull] TVertex target, [ItemNotNull] out IEnumerable<TEdge> edges);
+        /// <summary> Get all edges from <paramref name="source"/> to <paramref name="target"/> vertices. </summary>
+        [ItemNotNull]
+        IEnumerable<TEdge> GetEdges([NotNull] TVertex source, [NotNull] TVertex target);
     }
 }

@@ -6,11 +6,27 @@ using QuikGraph.Algorithms.Search;
 
 namespace QuikGraph.Algorithms.TopologicalSort
 {
-    /// <summary>
-    /// Topological sort algorithm (can be performed on an acyclic graph).
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <inheritdoc cref="CreateTopologicalSortAlgorithm"/>
+    public static class TopologicalSortAlgorithm
+    {
+        /// <summary> Creates a new topological sort algorithm for the <paramref name="visitedGraph"/>. </summary>
+        public static TopologicalSortAlgorithm<TVertex, TEdge> CreateTopologicalSortAlgorithm<TVertex, TEdge>(
+            [NotNull] this IVertexListGraph<TVertex, TEdge> visitedGraph,
+            int capacity = -1) where TEdge : IEdge<TVertex>
+            => new TopologicalSortAlgorithm<TVertex, TEdge>(visitedGraph, capacity);
+
+        /// <summary> Computes a new topological sort algorithm for the <paramref name="visitedGraph"/>. </summary>
+        public static TopologicalSortAlgorithm<TVertex, TEdge> ComputeTopologicalSortAlgorithm<TVertex, TEdge>(
+            [NotNull] this IVertexListGraph<TVertex, TEdge> visitedGraph,
+            int capacity = -1) where TEdge : IEdge<TVertex>
+        {
+            var ret = new TopologicalSortAlgorithm<TVertex, TEdge>(visitedGraph, capacity);
+            ret.Compute();
+            return ret;
+        }
+    }
+
+    /// <summary> Topological sort algorithm (can only be performed on an acyclic graph). </summary>
     public sealed class TopologicalSortAlgorithm<TVertex, TEdge>
         : AlgorithmBase<IVertexListGraph<TVertex, TEdge>>
         , IVertexTimeStamperAlgorithm<TVertex>
@@ -20,12 +36,12 @@ namespace QuikGraph.Algorithms.TopologicalSort
         private readonly IList<TVertex> _sortedVertices;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TopologicalSortAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="TopologicalSortAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="capacity">Sorted vertices capacity.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public TopologicalSortAlgorithm(
+        internal TopologicalSortAlgorithm(
             [NotNull] IVertexListGraph<TVertex, TEdge> visitedGraph,
             int capacity = -1)
             : base(visitedGraph)
@@ -44,7 +60,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         {
             Debug.Assert(edge != null);
 
-            throw new NonAcyclicGraphException();
+            throw new CyclicGraphException();
         }
 
         private void OnVertexFinished([NotNull] TVertex vertex)
@@ -71,10 +87,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
             DepthFirstSearchAlgorithm<TVertex, TEdge> dfs = null;
             try
             {
-                dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(
-                    this,
-                    VisitedGraph,
-                    new Dictionary<TVertex, GraphColor>(VisitedGraph.VertexCount));
+                dfs = VisitedGraph.CreateDepthFirstSearchAlgorithm(null, null, this);
                 dfs.BackEdge += OnBackEdge;
                 dfs.FinishVertex += OnVertexFinished;
                 dfs.DiscoverVertex += DiscoverVertex;

@@ -1,21 +1,20 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using QuikGraph.Algorithms.Exploration;
 
 namespace QuikGraph.Tests.Algorithms.Exploration
 {
-    internal sealed class TestTransitionFactory<TVertex> : ITransitionFactory<TVertex, Edge<TVertex>>
+    internal sealed class TestTransitionFactory<TVertex> : ITransitionFactory<TVertex, IEdge<TVertex>>
         where TVertex : CloneableTestVertex
     {
-        private readonly Dictionary<TVertex, List<Edge<TVertex>>> _edges =
-            new Dictionary<TVertex, List<Edge<TVertex>>>();
+        private readonly Dictionary<TVertex, List<IEdge<TVertex>>> _edges = new();
 
         public struct VertexEdgesSet
         {
             public VertexEdgesSet(
                 [NotNull] TVertex vertex,
-                [NotNull, ItemNotNull] IEnumerable<Edge<TVertex>> edges)
+                [NotNull, ItemNotNull] IEnumerable<IEdge<TVertex>> edges)
             {
                 Vertex = vertex;
                 Edges = edges;
@@ -25,12 +24,18 @@ namespace QuikGraph.Tests.Algorithms.Exploration
             public TVertex Vertex { get; }
 
             [NotNull, ItemNotNull]
-            public IEnumerable<Edge<TVertex>> Edges { get; }
+            public IEnumerable<IEdge<TVertex>> Edges { get; }
         }
 
         public TestTransitionFactory(
             [NotNull] TVertex vertex,
-            [NotNull, ItemNotNull] IEnumerable<Edge<TVertex>> edges)
+            [NotNull, ItemNotNull] params IEdge<TVertex>[] edges) : this(vertex,edges.AsEnumerable())
+        {
+        }
+
+        public TestTransitionFactory(
+            [NotNull] TVertex vertex,
+            [NotNull, ItemNotNull] IEnumerable<IEdge<TVertex>> edges)
         {
             AddEdgeSet(vertex, edges);
         }
@@ -45,7 +50,7 @@ namespace QuikGraph.Tests.Algorithms.Exploration
 
         private void AddEdgeSet(
             [NotNull] TVertex vertex,
-            [NotNull, ItemNotNull] IEnumerable<Edge<TVertex>> edges)
+            [NotNull, ItemNotNull] IEnumerable<IEdge<TVertex>> edges)
         {
             _edges.Add(vertex, edges.ToList());
         }
@@ -55,9 +60,6 @@ namespace QuikGraph.Tests.Algorithms.Exploration
             return _edges.ContainsKey(vertex);
         }
 
-        public IEnumerable<Edge<TVertex>> Apply(TVertex source)
-        {
-            return _edges[source];
-        }
+        public IEnumerable<IEdge<TVertex>> Apply(TVertex source) => _edges[source];
     }
 }

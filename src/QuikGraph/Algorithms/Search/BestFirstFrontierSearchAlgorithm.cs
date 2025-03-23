@@ -8,58 +8,51 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.Search
 {
-    /// <summary>
-    /// Best first frontier search algorithm.
-    /// </summary>
+    /// <inheritdoc cref="CreateBestFirstFrontierSearchAlgorithm"/>
+    public static class BestFirstFrontierSearchAlgorithm
+    {
+        /// <summary> Creates a new <see cref="BestFirstFrontierSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static BestFirstFrontierSearchAlgorithm<TVertex
+            , TEdge> CreateBestFirstFrontierSearchAlgorithm<TVertex, TEdge>(
+            [NotNull] this IBidirectionalIncidenceGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] Func<TEdge, double> edgeWeights,
+            [NotNull] IDistanceRelaxer distanceRelaxer,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new BestFirstFrontierSearchAlgorithm<TVertex, TEdge>(visitedGraph, edgeWeights, distanceRelaxer, host);
+
+    }
+    /// <summary> Best first frontier search algorithm. </summary>
     /// <remarks>
     /// Algorithm from Frontier Search, Korkf, Zhand, Thayer, Hohwald.
     /// </remarks>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
     public sealed class BestFirstFrontierSearchAlgorithm<TVertex, TEdge>
         : RootedSearchAlgorithmBase<TVertex, IBidirectionalIncidenceGraph<TVertex, TEdge>>
         , ITreeBuilderAlgorithm<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => base.VisitedGraph;
+
         [NotNull]
         private readonly Func<TEdge, double> _edgeWeights;
 
         [NotNull]
         private readonly IDistanceRelaxer _distanceRelaxer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BestFirstFrontierSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Initializes a new <see cref="BestFirstFrontierSearchAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that for a given edge provide its weight.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public BestFirstFrontierSearchAlgorithm(
-            [NotNull] IBidirectionalIncidenceGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : this(null, visitedGraph, edgeWeights, distanceRelaxer)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BestFirstFrontierSearchAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that for a given edge provide its weight.</param>
-        /// <param name="distanceRelaxer">Distance relaxer.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public BestFirstFrontierSearchAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal BestFirstFrontierSearchAlgorithm(
             [NotNull] IBidirectionalIncidenceGraph<TVertex, TEdge> visitedGraph,
             [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : base(host, visitedGraph)
+            [NotNull] IDistanceRelaxer distanceRelaxer,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
             _edgeWeights = edgeWeights ?? throw new ArgumentNullException(nameof(edgeWeights));
             _distanceRelaxer = distanceRelaxer ?? throw new ArgumentNullException(nameof(distanceRelaxer));
@@ -74,10 +67,10 @@ namespace QuikGraph.Algorithms.Search
             if (!TryGetTargetVertex(out TVertex target))
                 throw new InvalidOperationException("Target vertex not set.");
             if (!VisitedGraph.ContainsVertex(target))
-                throw new VertexNotFoundException("Target vertex is not part of the graph.");
+                throw new Exception("Target vertex is not part of the graph.");
 
             // Little shortcut
-            if (EqualityComparer<TVertex>.Default.Equals(root, target))
+            if (VisitedGraph.AreVerticesEqual(root, target))
             {
                 OnTargetReached();
                 return; // Found it
@@ -87,7 +80,7 @@ namespace QuikGraph.Algorithms.Search
 
             // (1) Place the initial node in Open, with all its operators marked unused
             open.Add(0, root);
-            Dictionary<TEdge, GraphColor> operators = VisitedGraph.OutEdges(root).ToDictionary(edge => edge, edge => GraphColor.White);
+            var operators = VisitedGraph.OutEdges(root).ToDictionary(edge => edge, edge => GraphColor.White);
 
             while (open.Count > 0)
             {
@@ -99,7 +92,7 @@ namespace QuikGraph.Algorithms.Search
                 TVertex n = entry.Value;
 
                 // (4) If node n is a target node, terminate with success
-                if (EqualityComparer<TVertex>.Default.Equals(n, target))
+                if (VisitedGraph.AreVerticesEqual(n, target))
                 {
                     OnTargetReached();
                     return;
@@ -135,7 +128,7 @@ namespace QuikGraph.Algorithms.Search
             [NotNull] BinaryHeap<double, TVertex> open)
         {
             // Skip self-edges
-            foreach (TEdge edge in VisitedGraph.OutEdges(n).Where(e => !e.IsSelfEdge()))
+            foreach (TEdge edge in VisitedGraph.OutEdges(n).Where(e => !e.IsSelfEdge(VisitedGraph.AreVerticesEqual)))
             {
                 bool hasColor = operators.TryGetValue(edge, out GraphColor edgeColor);
                 if (!hasColor || edgeColor == GraphColor.White)

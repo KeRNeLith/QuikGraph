@@ -17,7 +17,7 @@ namespace QuikGraph.MSAGL
         private Dictionary<TVertex, string> _verticesIds;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MsaglDefaultGraphPopulator{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="MsaglDefaultGraphPopulator{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to convert to MSAGL graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
@@ -82,7 +82,7 @@ namespace QuikGraph.MSAGL
         }
 
         /// <inheritdoc />
-        protected override Edge AddEdge(TEdge edge)
+        protected override Microsoft.Msagl.Drawing.Edge AddEdge(TEdge edge)
         {
             if (edge == null)
                 throw new ArgumentNullException(nameof(edge));

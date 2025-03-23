@@ -29,8 +29,17 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedBidirectionalGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="UndirectedBidirectionalGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="originalGraph">Bidirectional graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="originalGraph"/> is <see langword="null"/>.</exception>
@@ -139,27 +148,14 @@ namespace QuikGraph
 
         /// <inheritdoc />
         public IEnumerable<TEdge> AdjacentEdges(TVertex vertex)
-        {
-            return
-                OriginalGraph.OutEdges(vertex)
-                    .Concat(
-                        OriginalGraph.InEdges(vertex)
-                            // We skip self edges here since
-                            // We already got them out-edge run
-                            .Where(inEdge => !inEdge.IsSelfEdge()));
-        }
+            => (OriginalGraph.OutEdges(vertex) ?? Enumerable.Empty<TEdge>())
+                .Concat((OriginalGraph.InEdges(vertex) ?? Enumerable.Empty<TEdge>())
+                        // We skip self edges here since
+                        // We already got them out-edge run
+                        .Where(inEdge => !inEdge.IsSelfEdge(AreVerticesEqual)));
 
         /// <inheritdoc />
-        public int AdjacentDegree(TVertex vertex)
-        {
-            return OriginalGraph.Degree(vertex);
-        }
-
-        /// <inheritdoc />
-        public bool IsAdjacentEdgesEmpty(TVertex vertex)
-        {
-            return OriginalGraph.IsOutEdgesEmpty(vertex) && OriginalGraph.IsInEdgesEmpty(vertex);
-        }
+        public int? AdjacentDegree(TVertex vertex) => OriginalGraph.Degree(vertex);
 
         /// <summary>
         /// <see cref="AdjacentEdge"/> is not supported for this kind of graph.

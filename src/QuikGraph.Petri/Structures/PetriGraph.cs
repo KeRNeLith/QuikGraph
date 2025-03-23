@@ -10,7 +10,7 @@ namespace QuikGraph.Petri
     internal sealed class PetriGraph<TToken> : BidirectionalGraph<IPetriVertex, IArc<TToken>>, IPetriGraph<TToken>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PetriGraph{TToken}"/> class.
+        /// Initializes a new <see cref="PetriGraph{TToken}"/> class.
         /// </summary>
         public PetriGraph()
             : base(true)

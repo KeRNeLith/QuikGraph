@@ -28,7 +28,7 @@ namespace QuikGraph.Collections
         private readonly Dictionary<TVertex, FibonacciHeapCell<TDistance, TVertex>> _cells;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BinaryQueue{TVertex,TDistance}"/> class.
+        /// Initializes a new <see cref="BinaryQueue{TVertex,TDistance}"/> class.
         /// </summary>
         /// <param name="distanceFunc">Function that compute the distance for a given vertex.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceFunc"/> is <see langword="null"/>.</exception>
@@ -38,7 +38,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
+        /// Initializes a new <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
         /// </summary>
         /// <param name="capacity">Initial capacity.</param>
         /// <param name="values">Set of vertices (<see langword="null"/> if <paramref name="capacity"/> is 0).</param>
@@ -54,7 +54,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
+        /// Initializes a new <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
         /// </summary>
         /// <param name="capacity">Initial capacity.</param>
         /// <param name="values">Set of vertices (<see langword="null"/> if <paramref name="capacity"/> is 0).</param>
@@ -95,7 +95,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
+        /// Initializes a new <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
         /// </summary>
         /// <param name="values">Dictionary of vertices associates to their distance.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="values"/> is <see langword="null"/>.</exception>
@@ -106,7 +106,7 @@ namespace QuikGraph.Collections
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
+        /// Initializes a new <see cref="FibonacciQueue{TVertex,TDistance}"/> class.
         /// </summary>
         /// <param name="values">Dictionary of vertices associates to their distance.</param>
         /// <param name="distanceComparison">Comparer of distances.</param>

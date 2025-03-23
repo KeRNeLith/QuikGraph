@@ -9,12 +9,23 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.ShortestPath
 {
-    /// <summary>
-    /// Floyd-Warshall all shortest path algorithm.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public class FloydWarshallAllShortestPathAlgorithm<TVertex, TEdge> : AlgorithmBase<IVertexAndEdgeListGraph<TVertex, TEdge>>
+    /// <inheritdoc cref="CreateFloydWarshallAllShortestPathAlgorithm"/>
+    public static class FloydWarshallAllShortestPathAlgorithm
+    {
+        /// <summary> Creates a new <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static FloydWarshallAllShortestPathAlgorithm<TVertex, TEdge>
+            CreateFloydWarshallAllShortestPathAlgorithm<TVertex, TEdge>(
+            [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] Func<TEdge, double> edgeWeights,
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null,
+            [CanBeNull] IAlgorithmComponent host = null) where TEdge : IEdge<TVertex>
+            => new FloydWarshallAllShortestPathAlgorithm<TVertex
+                , TEdge>(visitedGraph, edgeWeights, distanceRelaxer, host);
+    }
+
+    /// <summary> Floyd-Warshall all shortest path algorithm.</summary>
+    public class FloydWarshallAllShortestPathAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IVertexAndEdgeListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         [NotNull]
@@ -77,55 +88,24 @@ namespace QuikGraph.Algorithms.ShortestPath
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        public FloydWarshallAllShortestPathAlgorithm(
-            [NotNull] IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights)
-            : this(visitedGraph, edgeWeights, DistanceRelaxers.ShortestDistance)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <param name="distanceRelaxer">Distance relaxer.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public FloydWarshallAllShortestPathAlgorithm(
-            [NotNull] IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
-            [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : this(null, visitedGraph, edgeWeights, distanceRelaxer)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FloydWarshallAllShortestPathAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
         /// <param name="host">Host to use if set, otherwise use this reference.</param>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
-        /// <param name="distanceRelaxer">Distance relaxer.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="distanceRelaxer"/> is <see langword="null"/>.</exception>
-        public FloydWarshallAllShortestPathAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
+        internal FloydWarshallAllShortestPathAlgorithm(
             [NotNull] IVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
             [NotNull] Func<TEdge, double> edgeWeights,
-            [NotNull] IDistanceRelaxer distanceRelaxer)
-            : base(host, visitedGraph)
+            [CanBeNull] IDistanceRelaxer distanceRelaxer = null,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
             _weights = edgeWeights ?? throw new ArgumentNullException(nameof(edgeWeights));
-            _distanceRelaxer = distanceRelaxer ?? throw new ArgumentNullException(nameof(distanceRelaxer));
+            _distanceRelaxer = distanceRelaxer ?? DistanceRelaxers.ShortestDistance;
             _data = new Dictionary<SEquatableEdge<TVertex>, VertexData>();
         }
 
@@ -156,55 +136,46 @@ namespace QuikGraph.Algorithms.ShortestPath
             return false;
         }
 
-        /// <summary>
-        /// Tries to get the path that links both <paramref name="source"/>
-        /// and <paramref name="target"/> vertices.
-        /// </summary>
-        /// <param name="source">Source vertex.</param>
-        /// <param name="target">Target vertex.</param>
-        /// <param name="path">The found path, otherwise <see langword="null"/>.</param>
-        /// <returns>True if a path linking both vertices was found, false otherwise.</returns>
+        /// <summary> Tries to get the path that links both <paramref name="source"/> and <paramref name="target"/> vertices. </summary>
+        /// <returns>The path linking both vertices, if found, otherwise <see langword="null"/>.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="target"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.InvalidOperationException">Failed to find a predecessor vertex while getting path.</exception>
-        [ContractAnnotation("=> true, path:notnull;=> false, path:null")]
-        public bool TryGetPath(
+        [CanBeNull]
+        public IEnumerable<TEdge> GetPath(
             [NotNull] TVertex source,
-            [NotNull] TVertex target,
-            out IEnumerable<TEdge> path)
+            [NotNull] TVertex target)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            if (EqualityComparer<TVertex>.Default.Equals(source, target))
+            if (VisitedGraph.AreVerticesEqual(source, target))
             {
-                path = null;
-                return false;
+                return null;
             }
 
-            return TryGetPathInternal(source, target, out path);
+            return GetPathInternal(source, target);
         }
 
         [ContractAnnotation("=> true, path:notnull;=> false, path:null")]
-        private bool TryGetPathInternal(
+        private IEnumerable<TEdge> GetPathInternal(
             [NotNull] TVertex source,
-            [NotNull] TVertex target,
-            out IEnumerable<TEdge> path)
+            [NotNull] TVertex target)
         {
 #if DEBUG && !NET20
             var set = new HashSet<TVertex> { source, target };
 #endif
 
-            var edges = new EdgeList<TVertex, TEdge>();
+            var edges = new EdgeList<TEdge>();
             var todo = new Stack<SEquatableEdge<TVertex>>();
             todo.Push(new SEquatableEdge<TVertex>(source, target));
             while (todo.Count > 0)
             {
                 SEquatableEdge<TVertex> current = todo.Pop();
 
-                Debug.Assert(!EqualityComparer<TVertex>.Default.Equals(current.Source, current.Target));
+                Debug.Assert(!VisitedGraph.AreVerticesEqual(current.Source, current.Target));
 
                 if (_data.TryGetValue(current, out VertexData data))
                 {
@@ -232,16 +203,14 @@ namespace QuikGraph.Algorithms.ShortestPath
                 else
                 {
                     // No path found
-                    path = null;
-                    return false;
+                    return null;
                 }
             }
 
             Debug.Assert(todo.Count == 0);
             Debug.Assert(edges.Count > 0);
 
-            path = edges;
-            return true;
+            return edges;
         }
 
         #region AlgorithmBase<TGraph>

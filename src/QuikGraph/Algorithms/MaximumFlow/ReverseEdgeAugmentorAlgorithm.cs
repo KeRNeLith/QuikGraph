@@ -6,6 +6,16 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.MaximumFlow
 {
+    /// <inheritdoc cref="CreateReversedEdgeAugmentorAlgorithm{TVertex,TEdge}"/>
+    public static class ReversedEdgeAugmentorAlgorithm
+    {
+        /// <summary> Creates a new ReversedEdgeAugmentorAlgorithm </summary>
+        public static ReversedEdgeAugmentorAlgorithm<TVertex, TEdge> CreateReversedEdgeAugmentorAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableVertexAndEdgeListGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] EdgeFactory<TVertex, TEdge> edgeFactory) where TEdge : IEdge<TVertex>
+            => new ReversedEdgeAugmentorAlgorithm<TVertex, TEdge>(visitedGraph, edgeFactory);
+    }
+
     /// <summary>
     /// Routines to add and remove auxiliary edges when using <see cref="EdmondsKarpMaximumFlowAlgorithm{TVertex, TEdge}"/> 
     /// or <see cref="MaximumBipartiteMatchingAlgorithm{TVertex,TEdge}.InternalCompute"/>. 
@@ -17,7 +27,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReversedEdgeAugmentorAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ReversedEdgeAugmentorAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeFactory">Edge factory method.</param>
@@ -88,7 +98,7 @@ namespace QuikGraph.Algorithms.MaximumFlow
 
             IEnumerable<TEdge> reversedEdges = VisitedGraph
                 .OutEdges(edge.Target)
-                .Where(reversedEdge => EqualityComparer<TVertex>.Default.Equals(reversedEdge.Target, edge.Source));
+                .Where(reversedEdge => VisitedGraph.AreVerticesEqual(reversedEdge.Target, edge.Source));
             foreach (TEdge reversedEdge in reversedEdges)
             {
                 foundReversedEdge = reversedEdge;

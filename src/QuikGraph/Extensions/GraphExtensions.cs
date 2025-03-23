@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
-using static QuikGraph.QuikGraphHelpers;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// Extensions for populating graph data structures.
-    /// </summary>
+    /// <summary> Extensions for populating graph data structures. </summary>
     public static class GraphExtensions
     {
         #region Delegate graphs
@@ -23,30 +21,8 @@ namespace QuikGraph
         [Pure]
         [NotNull]
         public static DelegateIncidenceGraph<TVertex, TEdge> ToDelegateIncidenceGraph<TVertex, TEdge>(
-            [NotNull] this TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
-            where TEdge : IEdge<TVertex>
-        {
-            return new DelegateIncidenceGraph<TVertex, TEdge>(tryGetOutEdges);
-        }
-
-        /// <summary>
-        /// Creates an instance of <see cref="DelegateIncidenceGraph{TVertex,TEdge}"/> from this getter of out-edges.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="getOutEdges">Getter of out-edges.</param>
-        /// <returns>A corresponding <see cref="DelegateIncidenceGraph{TVertex,TEdge}"/>.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="getOutEdges"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull]
-        public static DelegateIncidenceGraph<TVertex, TEdge> ToDelegateIncidenceGraph<TVertex, TEdge>(
-            [NotNull] this Func<TVertex, IEnumerable<TEdge>> getOutEdges)
-            where TEdge : IEdge<TVertex>
-        {
-            if (getOutEdges is null)
-                throw new ArgumentNullException(nameof(getOutEdges));
-            return ToDelegateIncidenceGraph(ToTryFunc(getOutEdges));
-        }
+            [NotNull] this Func<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
+            where TEdge : IEdge<TVertex> => new DelegateIncidenceGraph<TVertex, TEdge>(tryGetOutEdges);
 
         /// <summary>
         /// Wraps a dictionary into a vertex and edge list graph.
@@ -59,7 +35,8 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="dictionary"/> is <see langword="null"/>.</exception>
         [Pure]
         [NotNull]
-        public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge, TEdges>(
+        public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge,
+            TEdges>(
             [NotNull] this IDictionary<TVertex, TEdges> dictionary)
             where TEdge : IEdge<TVertex>
             where TEdges : IEnumerable<TEdge>
@@ -80,7 +57,8 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="keyValueToOutEdges"/> is <see langword="null"/>.</exception>
         [Pure]
         [NotNull]
-        public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge, TValue>(
+        public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge,
+            TValue>(
             [NotNull] this IDictionary<TVertex, TValue> dictionary,
 #if SUPPORTS_CONVERTER
             [NotNull] Converter<KeyValuePair<TVertex, TValue>, IEnumerable<TEdge>> keyValueToOutEdges)
@@ -96,16 +74,15 @@ namespace QuikGraph
 
             return new DelegateVertexAndEdgeListGraph<TVertex, TEdge>(
                 dictionary.Keys,
-                (TVertex key, out IEnumerable<TEdge> edges) =>
+                (TVertex key) =>
                 {
-                    if (dictionary.TryGetValue(key, out TValue value))
+                    if (!dictionary.TryGetValue(key, out TValue value))
                     {
-                        edges = keyValueToOutEdges(new KeyValuePair<TVertex, TValue>(key, value));
-                        return true;
+                        return null;
                     }
 
-                    edges = null;
-                    return false;
+                    var edges = keyValueToOutEdges(new KeyValuePair<TVertex, TValue>(key, value));
+                    return edges;
                 });
         }
 
@@ -124,33 +101,10 @@ namespace QuikGraph
         [NotNull]
         public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge>(
             [NotNull, ItemNotNull] this IEnumerable<TVertex> vertices,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetOutEdges)
             where TEdge : IEdge<TVertex>
         {
             return new DelegateVertexAndEdgeListGraph<TVertex, TEdge>(vertices, tryGetOutEdges);
-        }
-
-        /// <summary>
-        /// Creates an instance of <see cref="DelegateVertexAndEdgeListGraph{TVertex,TEdge}"/>
-        /// from given vertices and edge getter.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="vertices">Enumerable of vertices.</param>
-        /// <param name="getOutEdges">Getter of out-edges.</param>
-        /// <returns>A corresponding <see cref="DelegateVertexAndEdgeListGraph{TVertex,TEdge}"/>.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertices"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="getOutEdges"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull]
-        public static DelegateVertexAndEdgeListGraph<TVertex, TEdge> ToDelegateVertexAndEdgeListGraph<TVertex, TEdge>(
-            [NotNull, ItemNotNull] this IEnumerable<TVertex> vertices,
-            [NotNull] Func<TVertex, IEnumerable<TEdge>> getOutEdges)
-            where TEdge : IEdge<TVertex>
-        {
-            if (getOutEdges is null)
-                throw new ArgumentNullException(nameof(getOutEdges));
-            return ToDelegateVertexAndEdgeListGraph(vertices, ToTryFunc(getOutEdges));
         }
 
         /// <summary>
@@ -166,9 +120,10 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="tryGetInEdges"/> is <see langword="null"/>.</exception>
         [Pure]
         [NotNull]
-        public static DelegateBidirectionalIncidenceGraph<TVertex, TEdge> ToDelegateBidirectionalIncidenceGraph<TVertex, TEdge>(
-            [NotNull] this TryFunc<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetInEdges)
+        public static DelegateBidirectionalIncidenceGraph<TVertex, TEdge> ToDelegateBidirectionalIncidenceGraph<TVertex,
+            TEdge>(
+            [NotNull] this Func<TVertex, IEnumerable<TEdge>> tryGetOutEdges,
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetInEdges)
             where TEdge : IEdge<TVertex>
         {
             return new DelegateBidirectionalIncidenceGraph<TVertex, TEdge>(tryGetOutEdges, tryGetInEdges);
@@ -189,34 +144,9 @@ namespace QuikGraph
         [NotNull]
         public static DelegateUndirectedGraph<TVertex, TEdge> ToDelegateUndirectedGraph<TVertex, TEdge>(
             [NotNull, ItemNotNull] this IEnumerable<TVertex> vertices,
-            [NotNull] TryFunc<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges)
+            [NotNull] Func<TVertex, IEnumerable<TEdge>> tryGetAdjacentEdges)
             where TEdge : IEdge<TVertex>
-        {
-            return new DelegateUndirectedGraph<TVertex, TEdge>(vertices, tryGetAdjacentEdges);
-        }
-
-        /// <summary>
-        /// Creates an instance of <see cref="DelegateUndirectedGraph{TVertex,TEdge}"/>
-        /// from given vertices and edge getter.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="vertices">Enumerable of vertices.</param>
-        /// <param name="getAdjacentEdges">Getter of adjacent edges.</param>
-        /// <returns>A corresponding <see cref="DelegateUndirectedGraph{TVertex,TEdge}"/>.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertices"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="getAdjacentEdges"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull]
-        public static DelegateUndirectedGraph<TVertex, TEdge> ToDelegateUndirectedGraph<TVertex, TEdge>(
-            [NotNull, ItemNotNull] this IEnumerable<TVertex> vertices,
-            [NotNull] Func<TVertex, IEnumerable<TEdge>> getAdjacentEdges)
-            where TEdge : IEdge<TVertex>
-        {
-            if (getAdjacentEdges is null)
-                throw new ArgumentNullException(nameof(getAdjacentEdges));
-            return ToDelegateUndirectedGraph(vertices, ToTryFunc(getAdjacentEdges));
-        }
+            => new DelegateUndirectedGraph<TVertex, TEdge>(vertices, tryGetAdjacentEdges);
 
         #endregion
 
@@ -261,7 +191,7 @@ namespace QuikGraph
                 edgePairs.Add(new SEquatableEdge<TVertex>(sources[i], targets[i]));
             }
 
-            return ToAdjacencyGraph(edgePairs);
+            return ToAdjacencyGraph<TVertex, SEquatableEdge<TVertex>>(edgePairs);
         }
 
         /// <summary>
@@ -533,6 +463,87 @@ namespace QuikGraph
             return graph;
         }
 
+        /// <summary> Creates a new, 'simple' graph without parallel edges from the <paramref name="multiGraph"/>.</summary>
+        public static UndirectedGraph<TVertex, TEdge> RemoveParallelAndSelfEdges<TVertex, TEdge>(
+            this IUndirectedGraph<TVertex, TEdge> multiGraph) where TEdge : IEdge<TVertex>
+        {
+            var simpleGraph = new UndirectedGraph<TVertex, TEdge>(false, multiGraph?.EdgeEqualityComparer);
+            simpleGraph.AddVertexRange(multiGraph.Vertices);
+            simpleGraph.AddEdgeRange(multiGraph.Edges);
+            simpleGraph.RemoveEdgeIf(edge => edge.IsSelfEdge(multiGraph.AreVerticesEqual));
+            return simpleGraph;
+        }
+
+        /// <summary> Checks if the <paramref name="vertex"/> satisfies Dirac's theorem that deg(vertex) >= (|vertices| / 2). </summary>  
+        /// <remarks>
+        /// According to Dirac's theorem, a graph with |vertices| >= 3
+        /// that SatisfiesDiracTheorem for any vertex is Hamiltonian.
+        /// </remarks>
+        [Pure]
+        public static bool SatisfiesDiracTheorem<TVertex, TEdge>(this IUndirectedGraph<TVertex, TEdge> graph
+            , [NotNull] TVertex vertex) where TEdge : IEdge<TVertex>
+            => graph.AdjacentDegree(vertex) * 2 >= graph.VertexCount;
+
+        /// <summary> Checks if the <paramref name="simpleGraph"/> is Hamiltonian,
+        /// i.e. has a path that links all vertices and passes each only once. </summary>
+        /// <remarks>
+        /// The simpleGraph is a pre-processed Graph, to remove any duplicate and Self-Edges.
+        /// 
+        /// First checks Dirac's theorem, that a graph with |vertices| >= 3
+        /// that SatisfiesDiracTheorem for any vertex is Hamiltonian.
+        ///
+        /// If that fails it performs a brute-force Test for all Permutations. 
+        /// </remarks>
+        [Pure]
+        public static bool IsSimpleAndHamiltonian<TVertex, TEdge>(this IUndirectedGraph<TVertex, TEdge> simpleGraph) where TEdge : IEdge<TVertex>
+        {
+            var graphVertices = simpleGraph.Vertices.ToList();
+            int vertexCount = simpleGraph.VertexCount;
+            return vertexCount == 1
+                   || (vertexCount >= 3 && graphVertices.All(simpleGraph.SatisfiesDiracTheorem))
+                   || graphVertices.GetAllPermutations().Any(simpleGraph.ContainsPath);
+        }
+
+        /// <summary> Returns true if the <paramref name="graph"/> contains the <paramref name="path"/>. </summary>
+        [Pure]
+        public static bool ContainsPath<TVertex, TEdge>(this IImplicitUndirectedGraph<TVertex, TEdge> graph
+            , [NotNull, ItemNotNull] List<TVertex> path) where TEdge : IEdge<TVertex>
+        {
+            if (path.Count > 1)
+            {
+                path.Add(path[0]);      // Make cycle, not simple path
+            }
+
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                if (true != graph.AdjacentVertices(path[i])?.Contains(path[i + 1]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary> Returns the set of vertices adjacent to the given <paramref name="vertex"/>, except for itself. </summary>
+        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
+        [Pure]
+        [ItemNotNull]
+        [CanBeNull]
+        public static HashSet<TVertex> AdjacentVertices<TVertex, TEdge>(this IImplicitUndirectedGraph<TVertex, TEdge> graph
+            , TVertex vertex) where TEdge : IEdge<TVertex>
+        {
+            var adjacentEdges = graph.AdjacentEdges(vertex);
+            if (adjacentEdges is null)
+            {
+                return null;
+            }
+
+            var adjacentVertices = adjacentEdges.GetVertices<TVertex, TEdge>();
+            adjacentVertices.Remove(vertex);
+            return adjacentVertices;
+        }
+
         /// <summary>
         /// Converts a set of vertex pairs into an <see cref="UndirectedGraph{TVertex,TEdge}"/>.
         /// </summary>
@@ -588,5 +599,16 @@ namespace QuikGraph
         }
 
         #endregion
+
+        /// <summary> Params makes it easier to add Nodes via Code </summary>
+        public static int AddVerticesAndEdgeRange<TVertex, TEdge>(this IMutableVertexAndEdgeSet<TVertex, IEdge<TVertex>> graph
+            , params TEdge[] edges)
+            where TEdge : IEdge<TVertex> => graph.AddVerticesAndEdgeRange((IEnumerable<IEdge<TVertex>>)edges.AsEnumerable());
+
+        /// <summary> Params makes it easier to add Nodes via Code </summary>
+        public static int AddVerticesAndEdgeRange<TVertex, TEdge>(this IMutableVertexAndEdgeSet<TVertex, TEdge> graph
+            , params TEdge[] edges)
+            where TEdge : IEdge<TVertex> => graph.AddVerticesAndEdgeRange(edges.AsEnumerable());
+
     }
 }

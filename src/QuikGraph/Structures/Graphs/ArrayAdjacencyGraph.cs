@@ -6,15 +6,14 @@ using JetBrains.Annotations;
 
 namespace QuikGraph
 {
-    /// <summary>
-    /// Immutable directed graph data structure.
-    /// </summary>
+    /// <summary> Immutable, directed graph data structure for sparse Graphs. </summary>
     /// <remarks>
     /// It is efficient for large sparse graph representation
-    /// where out-edge need to be enumerated only.
+    /// where out-edges need to be enumerated only.
     /// </remarks>
     /// <typeparam name="TVertex">Vertex type.</typeparam>
     /// <typeparam name="TEdge">Edge type</typeparam>
+    /// <inheritdoc cref="IVertexAndEdgeListGraph{TVertex, TEdge}" />
 #if SUPPORTS_SERIALIZATION
     [Serializable]
 #endif
@@ -25,11 +24,17 @@ namespace QuikGraph
 #endif
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ArrayAdjacencyGraph{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        [CanBeNull]
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
+        /// <summary> Copy-Constructor from <paramref name="baseGraph"/>. </summary>
         /// <param name="baseGraph">Wrapped graph.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="baseGraph"/> is <see langword="null"/>.</exception>
         public ArrayAdjacencyGraph([NotNull] IVertexAndEdgeListGraph<TVertex, TEdge> baseGraph)
         {
             if (baseGraph is null)
@@ -40,9 +45,7 @@ namespace QuikGraph
             EdgeCount = baseGraph.EdgeCount;
             foreach (TVertex vertex in baseGraph.Vertices)
             {
-                _vertexOutEdges.Add(
-                    vertex,
-                    baseGraph.OutEdges(vertex).ToArray());
+                _vertexOutEdges.Add(vertex, baseGraph.OutEdges(vertex).ToArray());
             }
         }
 
@@ -104,30 +107,22 @@ namespace QuikGraph
         }
 
         /// <inheritdoc />
-        public bool ContainsEdge(TVertex source, TVertex target)
-        {
-            return TryGetEdge(source, target, out _);
-        }
+        public bool ContainsEdge(TVertex source, TVertex target) => TryGetEdge(source, target, out _);
 
         #endregion
 
         #region IImplicitGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(TVertex vertex)
-        {
-            return OutDegree(vertex) == 0;
-        }
-
-        /// <inheritdoc />
-        public int OutDegree(TVertex vertex)
+        public int? OutDegree(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_vertexOutEdges.TryGetValue(vertex, out TEdge[] edges))
                 return edges.Length;
-            throw new VertexNotFoundException();
+
+            return null;
         }
 
         /// <inheritdoc />
@@ -138,23 +133,8 @@ namespace QuikGraph
 
             if (_vertexOutEdges.TryGetValue(vertex, out TEdge[] edges))
                 return edges.AsEnumerable();
-            throw new VertexNotFoundException();
-        }
 
-        /// <inheritdoc />
-        public bool TryGetOutEdges(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (vertex == null)
-                throw new ArgumentNullException(nameof(vertex));
-
-            if (_vertexOutEdges.TryGetValue(vertex, out TEdge[] outEdges))
-            {
-                edges = outEdges.AsEnumerable();
-                return true;
-            }
-
-            edges = null;
-            return false;
+            return null;
         }
 
         /// <inheritdoc />
@@ -165,7 +145,8 @@ namespace QuikGraph
 
             if (_vertexOutEdges.TryGetValue(vertex, out TEdge[] outEdges))
                 return outEdges[index];
-            throw new VertexNotFoundException();
+
+            return default(TEdge);
         }
 
         #endregion
@@ -182,7 +163,7 @@ namespace QuikGraph
 
             if (_vertexOutEdges.TryGetValue(source, out TEdge[] outEdges))
             {
-                foreach (TEdge outEdge in outEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target)))
+                foreach (TEdge outEdge in outEdges.Where(outEdge => AreVerticesEqual(outEdge.Target, target)))
                 {
                     edge = outEdge;
                     return true;
@@ -193,8 +174,11 @@ namespace QuikGraph
             return false;
         }
 
+        /// <summary> Returns an empty Edge-Set </summary>
+        public IEnumerable<TEdge> Empty => Edge.Empty<TEdge>();
+
         /// <inheritdoc />
-        public bool TryGetEdges(TVertex source, TVertex target, out IEnumerable<TEdge> edges)
+        public IEnumerable<TEdge> GetEdges(TVertex source, TVertex target)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -203,12 +187,10 @@ namespace QuikGraph
 
             if (_vertexOutEdges.TryGetValue(source, out TEdge[] outEdges))
             {
-                edges = outEdges.Where(edge => EqualityComparer<TVertex>.Default.Equals(edge.Target, target));
-                return true;
+                return outEdges.Where(edge => AreVerticesEqual(edge.Target, target));
             }
 
-            edges = null;
-            return false;
+            return Empty;
         }
 
         #endregion

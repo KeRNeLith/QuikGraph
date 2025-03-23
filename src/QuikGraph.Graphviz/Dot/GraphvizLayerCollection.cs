@@ -15,14 +15,14 @@ namespace QuikGraph.Graphviz.Dot
     public class GraphvizLayerCollection : Collection<GraphvizLayer>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizLayerCollection"/> class.
+        /// Initializes a new <see cref="GraphvizLayerCollection"/> class.
         /// </summary>
         public GraphvizLayerCollection()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizLayerCollection"/> class.
+        /// Initializes a new <see cref="GraphvizLayerCollection"/> class.
         /// </summary>
         /// <param name="collection">The collection that is wrapped by the new collection.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>
@@ -32,7 +32,7 @@ namespace QuikGraph.Graphviz.Dot
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizLayerCollection"/> class.
+        /// Initializes a new <see cref="GraphvizLayerCollection"/> class.
         /// </summary>
         /// <param name="collection">The collection that is wrapped by the new collection.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>

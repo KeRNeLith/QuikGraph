@@ -72,30 +72,38 @@ namespace QuikGraph.Tests.Algorithms.TSP
         [Test]
         public void Comparison()
         {
-            var priority1 = new TaskPriority(1.0, 2);
-            var priority2 = new TaskPriority(1.0, 2);
-            var priority3 = new TaskPriority(2.0, 2);
-            var priority4 = new TaskPriority(1.0, 1);
+            var priority12A = new TaskPriority(1.0, 2);
 
-            Assert.IsFalse(priority1 < priority2);
-            Assert.IsTrue(priority1 <= priority2);
-            Assert.IsFalse(priority1 > priority2);
-            Assert.IsTrue(priority1 >= priority2);
+            Assert.IsTrue(priority12A >= null);
+            Assert.IsTrue(priority12A > null);
 
-            Assert.IsTrue(priority1 < priority3);
-            Assert.IsTrue(priority1 <= priority3);
-            Assert.IsFalse(priority1 > priority3);
-            Assert.IsFalse(priority1 >= priority3);
+            Assert.IsFalse(priority12A < null);
+            Assert.IsFalse(priority12A <= null);
 
-            Assert.IsTrue(priority1 < priority4);
-            Assert.IsTrue(priority1 <= priority4);
-            Assert.IsFalse(priority1 > priority4);
-            Assert.IsFalse(priority1 >= priority4);
+            var priority12B = new TaskPriority(1.0, 2);
 
-            Assert.IsFalse(priority1 < null);
-            Assert.IsFalse(priority1 <= null);
-            Assert.IsTrue(priority1 > null);
-            Assert.IsTrue(priority1 >= null);
+            Assert.IsTrue(priority12A <= priority12B);
+            Assert.IsTrue(priority12A >= priority12B);
+
+            Assert.IsFalse(priority12A < priority12B);
+            Assert.IsFalse(priority12A > priority12B);
+
+            var priority20 = new TaskPriority(2.0, 2);
+
+            Assert.IsTrue(priority12A < priority20);
+            Assert.IsTrue(priority12A <= priority20);
+
+            Assert.IsFalse(priority12A > priority20);
+            Assert.IsFalse(priority12A >= priority20);
+
+            var priority10 = new TaskPriority(1.0, 1);
+
+            Assert.IsTrue(priority12A < priority10);
+            Assert.IsTrue(priority12A <= priority10);
+
+            Assert.IsFalse(priority12A > priority10);
+            Assert.IsFalse(priority12A >= priority10);
+
         }
     }
 }

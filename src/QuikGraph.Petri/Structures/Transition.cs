@@ -9,7 +9,7 @@ namespace QuikGraph.Petri
     internal sealed class Transition<TToken> : ITransition<TToken>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Transition{Token}"/> class.
+        /// Initializes a new <see cref="Transition{Token}"/> class.
         /// </summary>
         /// <param name="name">Transition name.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>

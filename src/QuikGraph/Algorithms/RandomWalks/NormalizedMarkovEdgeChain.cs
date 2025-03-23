@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace QuikGraph.Algorithms.RandomWalks
@@ -14,16 +14,16 @@ namespace QuikGraph.Algorithms.RandomWalks
         /// <inheritdoc />
         public override bool TryGetSuccessor(IImplicitGraph<TVertex, TEdge> graph, TVertex vertex, out TEdge successor)
         {
-            int outDegree = graph.OutDegree(vertex);
-            if (outDegree > 0)
+            int? outDegree = graph.OutDegree(vertex);
+            if (!(outDegree > 0))
             {
-                int index = Rand.Next(0, outDegree);
-                successor = graph.OutEdge(vertex, index);
-                return true;
+                successor = default(TEdge);
+                return false;
             }
 
-            successor = default(TEdge);
-            return false;
+            int index = Rand.Next(0, outDegree.Value);
+            successor = graph.OutEdge(vertex, index);
+            return true;
         }
 
         /// <inheritdoc />

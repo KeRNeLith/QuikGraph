@@ -28,7 +28,7 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Graphviz</PackageId>
-    <PackageReleaseNotes>➟ Release 2.5.0
+    <PackageReleaseNotes>➟ Release 3.0.0
 Updates:
 - Deprecate ToSvg API (underlying web service is down).
 - Update package dependencies.

@@ -3,23 +3,41 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Algorithm that computes the transitive closure of a graph, which is another directed graph
-    /// with the same vertices and every reachable vertices by a given one linked by a single edge.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public class TransitiveClosureAlgorithm<TVertex, TEdge> : AlgorithmBase<IEdgeListGraph<TVertex, TEdge>>
+    /// <inheritdoc cref="CreateTransitiveClosureAlgorithm"/>
+    public static class TransitiveClosureAlgorithm
+    {
+        /// <summary> Creates a new <see cref="TransitiveClosureAlgorithm{TVertex,TEdge}"/>. </summary>
+        public static TransitiveClosureAlgorithm<TVertex, TEdge>
+            CreateTransitiveClosureAlgorithm<TVertex, TEdge>(
+            [NotNull] this IEdgeListGraph<TVertex, TEdge> visitedGraph,
+            [NotNull] Func<TVertex, TVertex, TEdge> edgeFactory) where TEdge : IEdge<TVertex>
+            => new TransitiveClosureAlgorithm<TVertex, TEdge>(visitedGraph,edgeFactory);
+
+        /// <inheritdoc cref="TransitiveClosureAlgorithm{TVertex,TEdge}.TransitiveClosure"/>
+        [Pure]
+        [NotNull]
+        public static BidirectionalGraph<TVertex, TEdge> ComputeTransitiveClosure<TVertex, TEdge>(
+            [NotNull] this IEdgeListGraph<TVertex, TEdge> graph,
+            [NotNull] Func<TVertex, TVertex, TEdge> edgeFactory)
+            where TEdge : IEdge<TVertex>
+        {
+            var algorithm = graph.CreateTransitiveClosureAlgorithm(edgeFactory);
+            algorithm.Compute();
+            return algorithm.TransitiveClosure;
+        }
+    }
+
+    /// <inheritdoc cref="TransitiveClosure"/>
+    public class TransitiveClosureAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IEdgeListGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TransitiveClosureAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="TransitiveClosureAlgorithm{TVertex,TEdge}"/>. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <param name="edgeFactory">Function that create an edge between the 2 given vertices.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        public TransitiveClosureAlgorithm(
+        internal TransitiveClosureAlgorithm(
             [NotNull] IEdgeListGraph<TVertex, TEdge> visitedGraph,
             [NotNull] Func<TVertex, TVertex, TEdge> edgeFactory)
             : base(visitedGraph)
@@ -28,9 +46,21 @@ namespace QuikGraph.Algorithms
             _createEdge = edgeFactory ?? throw new ArgumentNullException(nameof(edgeFactory));
         }
 
-        /// <summary>
-        /// Transitive closure graph.
-        /// </summary>
+        /// <summary> Computes the transitive closure of the <see cref="IAlgorithm{TGraph}.VisitedGraph"/>. </summary>
+        /// <remarks>
+        /// This is another directed graph with the same vertices
+        /// and every reachable vertices by a given one linked by a single edge.
+        /// 
+        /// The transitive closure adds all Edges
+        /// that can be constructed by transitively chaining other Edges.
+        /// It uses <see cref="_createEdge"/> to create these edges.
+        /// 
+        /// The result is a very dense graph, that directly connects all Vertices,
+        /// in the same connected Component.
+        ///
+        /// The inverse Operation is <see cref="TransitiveReductionAlgorithm{TVertex, TEdge}.TransitiveReduction"/>.
+        /// </remarks>
+        /// <returns>Transitive graph closure.</returns>
         public BidirectionalGraph<TVertex, TEdge> TransitiveClosure { get; }
 
         [NotNull]

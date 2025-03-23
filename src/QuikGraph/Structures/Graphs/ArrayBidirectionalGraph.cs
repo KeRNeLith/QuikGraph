@@ -45,8 +45,16 @@ namespace QuikGraph
             }
         }
 
+        /// <inheritdoc />
+        public Func<TVertex, TVertex, bool> AreVerticesEqual
+        {
+            get => areVerticesEqual ?? EqualityComparer<TVertex>.Default.Equals;
+            set => areVerticesEqual = value;
+        }
+        private Func<TVertex, TVertex, bool> areVerticesEqual;
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="ArrayBidirectionalGraph{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="ArrayBidirectionalGraph{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="baseGraph">Wrapped graph.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="baseGraph"/> is <see langword="null"/>.</exception>
@@ -147,7 +155,7 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(source, out InOutEdges inOutEdges))
             {
-                foreach (TEdge outEdge in inOutEdges.OutEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target)))
+                foreach (TEdge outEdge in inOutEdges.OutEdges.Where(outEdge => AreVerticesEqual(outEdge.Target, target)))
                 {
                     edge = outEdge;
                     return true;
@@ -158,8 +166,11 @@ namespace QuikGraph
             return false;
         }
 
+        /// <summary> Returns an empty Edge-Set </summary>
+        public IEnumerable<TEdge> Empty => Edge.Empty<TEdge>();
+
         /// <inheritdoc />
-        public bool TryGetEdges(TVertex source, TVertex target, out IEnumerable<TEdge> edges)
+        public IEnumerable<TEdge> GetEdges(TVertex source, TVertex target)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
@@ -168,12 +179,10 @@ namespace QuikGraph
 
             if (_vertexEdges.TryGetValue(source, out InOutEdges inOutEdges))
             {
-                edges = inOutEdges.OutEdges.Where(outEdge => EqualityComparer<TVertex>.Default.Equals(outEdge.Target, target));
-                return true;
+                return inOutEdges.OutEdges.Where(outEdge => AreVerticesEqual(outEdge.Target, target));
             }
 
-            edges = null;
-            return false;
+            return Empty;
         }
 
         #endregion
@@ -181,13 +190,7 @@ namespace QuikGraph
         #region IImplicitGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsOutEdgesEmpty(TVertex vertex)
-        {
-            return OutDegree(vertex) == 0;
-        }
-
-        /// <inheritdoc />
-        public int OutDegree(TVertex vertex)
+        public int? OutDegree(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
@@ -195,7 +198,7 @@ namespace QuikGraph
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
                 return inOutEdges.OutEdges.Length;
 
-            throw new VertexNotFoundException();
+            return null;
         }
 
         /// <inheritdoc />
@@ -204,23 +207,7 @@ namespace QuikGraph
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
                 return inOutEdges.OutEdges.AsEnumerable();
 
-            throw new VertexNotFoundException();
-        }
-
-        /// <inheritdoc />
-        public bool TryGetOutEdges(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
-            if (vertex == null)
-                throw new ArgumentNullException(nameof(vertex));
-
-            if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
-            {
-                edges = inOutEdges.OutEdges.AsEnumerable();
-                return true;
-            }
-
-            edges = null;
-            return false;
+            return null;
         }
 
         /// <inheritdoc />
@@ -232,7 +219,7 @@ namespace QuikGraph
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
                 return inOutEdges.OutEdges[index];
 
-            throw new VertexNotFoundException();
+            return default(TEdge);
         }
 
         #endregion
@@ -240,13 +227,7 @@ namespace QuikGraph
         #region IBidirectionalGraph<TVertex,TEdge>
 
         /// <inheritdoc />
-        public bool IsInEdgesEmpty(TVertex vertex)
-        {
-            return InDegree(vertex) == 0;
-        }
-
-        /// <inheritdoc />
-        public int InDegree(TVertex vertex)
+        public int? InDegree(TVertex vertex)
         {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
@@ -254,32 +235,19 @@ namespace QuikGraph
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
                 return inOutEdges.InEdges.Length;
 
-            throw new VertexNotFoundException();
+            return null;
         }
 
         /// <inheritdoc />
         public IEnumerable<TEdge> InEdges(TVertex vertex)
         {
-            if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
-                return inOutEdges.InEdges.AsEnumerable();
-
-            throw new VertexNotFoundException();
-        }
-
-        /// <inheritdoc />
-        public bool TryGetInEdges(TVertex vertex, out IEnumerable<TEdge> edges)
-        {
             if (vertex == null)
                 throw new ArgumentNullException(nameof(vertex));
 
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
-            {
-                edges = inOutEdges.InEdges.AsEnumerable();
-                return true;
-            }
+                return inOutEdges.InEdges.AsEnumerable();
 
-            edges = null;
-            return false;
+            return null;
         }
 
         /// <inheritdoc />
@@ -291,14 +259,11 @@ namespace QuikGraph
             if (_vertexEdges.TryGetValue(vertex, out InOutEdges inOutEdges))
                 return inOutEdges.InEdges[index];
 
-            throw new VertexNotFoundException();
+            return default(TEdge);
         }
 
         /// <inheritdoc />
-        public int Degree(TVertex vertex)
-        {
-            return InDegree(vertex) + OutDegree(vertex);
-        }
+        public int? Degree(TVertex vertex) => InDegree(vertex) + OutDegree(vertex);
 
         #endregion
 

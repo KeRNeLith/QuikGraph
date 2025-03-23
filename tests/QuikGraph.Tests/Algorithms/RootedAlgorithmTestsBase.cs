@@ -6,13 +6,10 @@ using static QuikGraph.Tests.AssertHelpers;
 
 namespace QuikGraph.Tests.Algorithms
 {
-    /// <summary>
-    /// Base class for rooted algorithm tests.
-    /// </summary>
+    /// <summary> Base class for rooted algorithm tests. </summary>
     internal abstract class RootedAlgorithmTestsBase
     {
-        #region Test helpers
-
+        /// <summary> Tests <see cref="RootedAlgorithmBase{TVertex,TGraph}.TryGetRootVertex"/> </summary>
         protected static void TryGetRootVertex_Test<TVertex, TGraph>(
             [NotNull] RootedAlgorithmBase<TVertex, TGraph> algorithm)
             where TVertex : new()
@@ -26,6 +23,8 @@ namespace QuikGraph.Tests.Algorithms
             AssertEqual(vertex, root);
         }
 
+        /// <summary> Checks if <see cref="RootedAlgorithmBase{TVertex,TGraph}.SetRootVertex"/> modifies and raises <see cref="RootedAlgorithmBase{TVertex,TGraph}.RootVertexChanged"/> </summary>
+        /// <inheritdoc cref="RootedAlgorithmBase{TVertex,TGraph}.SetRootVertex"/>
         protected static void SetRootVertex_Test<TGraph>(
             [NotNull] RootedAlgorithmBase<int, TGraph> algorithm)
             where TGraph : IImplicitVertexSet<int>
@@ -53,20 +52,22 @@ namespace QuikGraph.Tests.Algorithms
 
             algorithm.SetRootVertex(vertex1);
             Assert.AreEqual(3, rootVertexChangeCount);
+
             algorithm.TryGetRootVertex(out root);
             Assert.AreEqual(vertex1, root);
         }
 
-        protected static void SetRootVertex_Throws_Test<TVertex, TGraph>(
+        /// <summary> <see cref="RootedAlgorithmBase{TVertex,TGraph}.SetRootVertex"/> Throws <see cref="ArgumentNullException"/> when  </summary>
+        protected static void SetRootVertex_Null_Should_Throw_ArgumentNullException<TVertex, TGraph>(
             [NotNull] RootedAlgorithmBase<TVertex, TGraph> algorithm)
             where TVertex : class
             where TGraph : IImplicitVertexSet<TVertex>
         {
-            // ReSharper disable once AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(() => algorithm.SetRootVertex(null));
+            Assert.Throws<ArgumentNullException>(() => algorithm.SetRootVertex(null!));
         }
 
-        protected static void ClearRootVertex_Test<TVertex, TGraph>(
+        /// <summary> Checks that <see cref="RootedAlgorithmBase{TVertex,TGraph}.ClearRootVertex"/> is idempotent and raises <see cref="RootedAlgorithmBase{TVertex,TGraph}.RootVertexChanged"/> </summary>
+        protected static void ClearRootVertex_RaisesVertexChanged_Test<TVertex, TGraph>(
             [NotNull] RootedAlgorithmBase<TVertex, TGraph> algorithm)
             where TVertex : new()
             where TGraph : IImplicitVertexSet<TVertex>
@@ -79,25 +80,17 @@ namespace QuikGraph.Tests.Algorithms
             Assert.AreEqual(0, rootVertexChangeCount);
 
             var vertex = new TVertex();
-            SetRootVertex(vertex);
-            algorithm.ClearRootVertex();
-            Assert.AreEqual(1, rootVertexChangeCount);
+            algorithm.SetRootVertex(vertex);
+            rootVertexChangeCount = 0;
 
             algorithm.ClearRootVertex();
             Assert.AreEqual(1, rootVertexChangeCount);
 
-            #region Local function
-
-            void SetRootVertex(TVertex v)
-            {
-                algorithm.SetRootVertex(v);
-                rootVertexChangeCount = 0;
-            }
-
-            #endregion
+            algorithm.ClearRootVertex();
+            Assert.AreEqual(1, rootVertexChangeCount);
         }
 
-        protected static void ComputeWithoutRoot_NoThrows_Test<TGraph>(
+        protected static void ComputeWithoutRoot_ShouldNotThrow_Test<TGraph>(
             [NotNull] IMutableVertexSet<int> graph,
             [NotNull, InstantHandle] Func<RootedAlgorithmBase<int, TGraph>> createAlgorithm)
             where TGraph : IImplicitVertexSet<int>
@@ -105,7 +98,7 @@ namespace QuikGraph.Tests.Algorithms
             RootedAlgorithmBase<int, TGraph> algorithm = createAlgorithm();
             Assert.DoesNotThrow(algorithm.Compute);
 
-            graph.AddVertexRange(new[] { 1, 2 });
+            graph.AddVertexRange( 1, 2 );
             algorithm = createAlgorithm();
             Assert.DoesNotThrow(algorithm.Compute);
         }
@@ -121,7 +114,7 @@ namespace QuikGraph.Tests.Algorithms
             // Source vertex set but not to a vertex in the graph
             algorithm = createAlgorithm();
             algorithm.SetRootVertex(new TVertex());
-            Assert.Throws<VertexNotFoundException>(algorithm.Compute);
+            Assert.Throws<Exception>(algorithm.Compute);
         }
 
         protected static void ComputeWithRoot_Test<TVertex, TGraph>(
@@ -135,7 +128,7 @@ namespace QuikGraph.Tests.Algorithms
             AssertEqual(vertex, root);
         }
 
-        protected static void ComputeWithRoot_Throws_Test<TVertex, TGraph>(
+        protected static void ComputeWithUnknownRootOrNull_Throws_Test<TVertex, TGraph>(
             [NotNull, InstantHandle] Func<RootedAlgorithmBase<TVertex, TGraph>> createAlgorithm)
             where TVertex : class, new()
             where TGraph : IImplicitVertexSet<TVertex>
@@ -149,7 +142,5 @@ namespace QuikGraph.Tests.Algorithms
             algorithm = createAlgorithm();
             Assert.Throws<ArgumentException>(() => algorithm.Compute(new TVertex()));
         }
-
-        #endregion
     }
 }

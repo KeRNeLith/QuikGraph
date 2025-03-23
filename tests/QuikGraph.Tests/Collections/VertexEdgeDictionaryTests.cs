@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Collections;
 using static QuikGraph.Tests.SerializationTestHelpers;
@@ -15,8 +15,8 @@ namespace QuikGraph.Tests.Collections
         public void Constructors()
         {
             // ReSharper disable ObjectCreationAsStatement
-            Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, Edge<int>>());
-            Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, Edge<int>>(12));
+            Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, IEdge<int>>());
+            Assert.DoesNotThrow(() => new VertexEdgeDictionary<int, IEdge<int>>(12));
             // ReSharper restore ObjectCreationAsStatement
         }
 
@@ -29,8 +29,8 @@ namespace QuikGraph.Tests.Collections
             Assert.AreNotSame(dictionary, deserializedDictionary);
             CollectionAssert.IsEmpty(deserializedDictionary);
 
-            dictionary.Add(1, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(1, 2) });
-            dictionary.Add(2, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(2, 3) });
+            dictionary.Add(1, new EdgeList<EquatableEdge<int>> { new(1, 2) });
+            dictionary.Add(2, new EdgeList<EquatableEdge<int>> { new(2, 3) });
             deserializedDictionary = SerializeAndDeserialize(dictionary);
             Assert.AreNotSame(dictionary, deserializedDictionary);
             CollectionAssert.AreEqual(dictionary, deserializedDictionary);
@@ -50,9 +50,9 @@ namespace QuikGraph.Tests.Collections
             clonedDictionary = (VertexEdgeDictionary<int, EquatableEdge<int>>)((ICloneable)dictionary).Clone();
             CollectionAssert.IsEmpty(clonedDictionary);
 
-            dictionary.Add(1, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(1, 2) });
-            dictionary.Add(2, new EdgeList<int, EquatableEdge<int>> { new EquatableEdge<int>(2, 3) });
-            dictionary.Add(3, new EdgeList<int, EquatableEdge<int>>());
+            dictionary.Add(1, new EdgeList<EquatableEdge<int>> { new(1, 2) });
+            dictionary.Add(2, new EdgeList<EquatableEdge<int>> { new(2, 3) });
+            dictionary.Add(3, new EdgeList<EquatableEdge<int>>());
             clonedDictionary = dictionary.Clone();
             CollectionAssert.AreEqual(dictionary, clonedDictionary);
 

@@ -18,7 +18,7 @@ namespace QuikGraph.Graphviz.Dot
 #endif
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizColor"/> struct.
+        /// Initializes a new <see cref="GraphvizColor"/> struct.
         /// </summary>
         /// <param name="a">Alpha channel value.</param>
         /// <param name="r">Red channel value.</param>

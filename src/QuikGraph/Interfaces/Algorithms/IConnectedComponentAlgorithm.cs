@@ -1,27 +1,18 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms
 {
-    /// <summary>
-    /// Represents an algorithm dealing with graph connected components.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    /// <typeparam name="TGraph">Graph type.</typeparam>
+    /// <summary> An algorithm computing graph connected components (strongly or weakly). </summary>
     public interface IConnectedComponentAlgorithm<TVertex, TEdge, out TGraph> : IAlgorithm<TGraph>
         where TGraph : IGraph<TVertex, TEdge>
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Number of components.
-        /// </summary>
+        /// <summary> Number of components, i.e. distinct Values of <see cref="ComponentIndex"/>. </summary>
         int ComponentCount { get; }
 
-        /// <summary>
-        /// Graph components.
-        /// </summary>
+        /// <summary> 0-based Component-Index for each <typeparamref name="TVertex"/>. </summary>
         [NotNull]
-        IDictionary<TVertex, int> Components { get; }
+        IDictionary<TVertex, int> ComponentIndex { get; }
     }
 }

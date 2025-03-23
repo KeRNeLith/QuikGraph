@@ -139,22 +139,21 @@ namespace QuikGraph.Algorithms
 
         [Pure]
         [NotNull]
-        private static TryFunc<TVertex, IEnumerable<TEdge>> RunDirectedRootedAlgorithm<TVertex, TEdge, TAlgorithm>(
-            [NotNull] TVertex source,
-            [NotNull] TAlgorithm algorithm)
+        private static Func<TVertex, List<TEdge>> RunDirectedRootedAlgorithm<TVertex, TEdge, TAlgorithm>(
+            [NotNull] this TAlgorithm algorithm, [NotNull] TVertex source)
             where TEdge : IEdge<TVertex>
             where TAlgorithm : RootedAlgorithmBase<TVertex, IVertexListGraph<TVertex, TEdge>>, ITreeBuilderAlgorithm<TVertex, TEdge>
         {
             Debug.Assert(algorithm != null);
 
-            var predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
+            var predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>(algorithm.VisitedGraph.AreVerticesEqual);
             using (predecessorRecorder.Attach(algorithm))
             {
                 algorithm.Compute(source);
             }
 
             IDictionary<TVertex, TEdge> predecessors = predecessorRecorder.VerticesPredecessors;
-            return (TVertex vertex, out IEnumerable<TEdge> edges) => predecessors.TryGetPath(vertex, out edges);
+            return vertex => predecessors.GetPath(vertex, algorithm.VisitedGraph.AreVerticesEqual);
         }
 
         /// <summary>
@@ -172,15 +171,13 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> TreeBreadthFirstSearch<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> TreeBreadthFirstSearch<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
         {
             var algorithm = new BreadthFirstSearchAlgorithm<TVertex, TEdge>(graph);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, BreadthFirstSearchAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            return algorithm.RunDirectedRootedAlgorithm<TVertex, TEdge, BreadthFirstSearchAlgorithm<TVertex, TEdge>>(root);
         }
 
         /// <summary>
@@ -198,15 +195,13 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> TreeDepthFirstSearch<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> TreeDepthFirstSearch<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new DepthFirstSearchAlgorithm<TVertex, TEdge>(graph);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, DepthFirstSearchAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            DepthFirstSearchAlgorithm<TVertex, TEdge> algorithm = graph.CreateDepthFirstSearchAlgorithm();
+            return RunDirectedRootedAlgorithm<TVertex, TEdge, DepthFirstSearchAlgorithm<TVertex, TEdge>>(algorithm, root);
         }
 
         /// <summary>
@@ -225,7 +220,7 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> TreeCyclePoppingRandom<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> TreeCyclePoppingRandom<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
@@ -251,16 +246,14 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.InvalidOperationException">Something went wrong when running the algorithm.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> TreeCyclePoppingRandom<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> TreeCyclePoppingRandom<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] TVertex root,
             [NotNull] IMarkovEdgeChain<TVertex, TEdge> edgeChain)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new CyclePoppingRandomTreeAlgorithm<TVertex, TEdge>(graph, edgeChain);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, CyclePoppingRandomTreeAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            var algorithm = graph.CreateCyclePoppingRandomTreeAlgorithm(edgeChain);
+            return RunDirectedRootedAlgorithm<TVertex, TEdge, CyclePoppingRandomTreeAlgorithm<TVertex, TEdge>>(algorithm, root);
         }
 
         #region Shortest paths
@@ -282,16 +275,14 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
             [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> edgeWeights,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new DijkstraShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, DijkstraShortestPathAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            var algorithm = graph.CreateDijkstraShortestPathAlgorithm(edgeWeights);
+            return RunDirectedRootedAlgorithm<TVertex, TEdge, DijkstraShortestPathAlgorithm<TVertex, TEdge>>(algorithm, root);
         }
 
         /// <summary>
@@ -311,13 +302,13 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> ShortestPathsDijkstra<TVertex, TEdge>(
             [NotNull] this IUndirectedGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> edgeWeights,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new UndirectedDijkstraShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights);
+            var algorithm = graph.CreateUndirectedDijkstraShortestPathAlgorithm(edgeWeights);
             var predecessorRecorder = new UndirectedVertexPredecessorRecorderObserver<TVertex, TEdge>();
             using (predecessorRecorder.Attach(algorithm))
             {
@@ -325,7 +316,7 @@ namespace QuikGraph.Algorithms
             }
 
             IDictionary<TVertex, TEdge> predecessors = predecessorRecorder.VerticesPredecessors;
-            return (TVertex vertex, out IEnumerable<TEdge> edges) => predecessors.TryGetPath(vertex, out edges);
+            return vertex => predecessors.GetPath(vertex, graph.AreVerticesEqual);
         }
 
         /// <summary>
@@ -347,17 +338,15 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsAStar<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> ShortestPathsAStar<TVertex, TEdge>(
             [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> edgeWeights,
             [NotNull, InstantHandle] Func<TVertex, double> costHeuristic,
             [NotNull] TVertex root)
             where TEdge : IEdge<TVertex>
         {
-            var algorithm = new AStarShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights, costHeuristic);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, AStarShortestPathAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            var algorithm = graph.CreateAStarShortestPathAlgorithm(edgeWeights, costHeuristic);
+            return RunDirectedRootedAlgorithm<TVertex, TEdge, AStarShortestPathAlgorithm<TVertex, TEdge>>(algorithm, root);
         }
 
         /// <summary>
@@ -378,7 +367,7 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsBellmanFord<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> ShortestPathsBellmanFord<TVertex, TEdge>(
             [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> edgeWeights,
             [NotNull] TVertex root,
@@ -392,8 +381,8 @@ namespace QuikGraph.Algorithms
             if (root == null)
                 throw new ArgumentNullException(nameof(root));
 
-            var algorithm = new BellmanFordShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights);
-            var predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>();
+            var algorithm = graph.CreateBellmanFordShortestPathAlgorithm(edgeWeights);
+            var predecessorRecorder = new VertexPredecessorRecorderObserver<TVertex, TEdge>(graph.AreVerticesEqual);
             using (predecessorRecorder.Attach(algorithm))
             {
                 algorithm.Compute(root);
@@ -402,7 +391,7 @@ namespace QuikGraph.Algorithms
             hasNegativeCycle = algorithm.FoundNegativeCycle;
 
             IDictionary<TVertex, TEdge> predecessors = predecessorRecorder.VerticesPredecessors;
-            return (TVertex vertex, out IEnumerable<TEdge> edges) => predecessors.TryGetPath(vertex, out edges);
+            return vertex => predecessors.GetPath(vertex, graph.AreVerticesEqual);
         }
 
         /// <summary>
@@ -422,7 +411,7 @@ namespace QuikGraph.Algorithms
         /// <exception cref="T:System.ArgumentException"><paramref name="root"/> is not part of <paramref name="graph"/>.</exception>
         [Pure]
         [NotNull]
-        public static TryFunc<TVertex, IEnumerable<TEdge>> ShortestPathsDag<TVertex, TEdge>(
+        public static Func<TVertex, List<TEdge>> ShortestPathsDag<TVertex, TEdge>(
             [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> graph,
             [NotNull, InstantHandle] Func<TEdge, double> edgeWeights,
             [NotNull] TVertex root)
@@ -435,10 +424,8 @@ namespace QuikGraph.Algorithms
             if (root == null)
                 throw new ArgumentNullException(nameof(root));
 
-            var algorithm = new DagShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights);
-            return RunDirectedRootedAlgorithm<TVertex, TEdge, DagShortestPathAlgorithm<TVertex, TEdge>>(
-                root,
-                algorithm);
+            var algorithm = graph.CreateDagShortestPathAlgorithm(edgeWeights);
+            return RunDirectedRootedAlgorithm<TVertex, TEdge, DagShortestPathAlgorithm<TVertex, TEdge>>(algorithm, root);
         }
 
         #endregion
@@ -497,11 +484,11 @@ namespace QuikGraph.Algorithms
         public static IEnumerable<TVertex> Sinks<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
-        {
-            if (graph is null)
-                throw new ArgumentNullException(nameof(graph));
-            return graph.Vertices.Where(graph.IsOutEdgesEmpty);
-        }
+            => graph.Vertices.Where(FallBackTo<TVertex, bool>(graph.IsOutEdgesEmpty, true));
+
+        /// <summary> Fixes <see langword="null"/> to <paramref name="fallBack"/> </summary>
+        public static Func<TK, TV> FallBackTo<TK, TV>(this Func<TK, TV?> isOutEdgesEmpty, TV fallBack) where TV : struct
+            => v => isOutEdgesEmpty(v) ?? fallBack;
 
         /// <summary>
         /// Gets set of root vertices.
@@ -517,7 +504,7 @@ namespace QuikGraph.Algorithms
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph)
             where TEdge : IEdge<TVertex>
         {
-            var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(graph);
+            var dfs = graph.CreateDepthFirstSearchAlgorithm();
             var notRoots = new Dictionary<TVertex, bool>(graph.VertexCount);
             dfs.ExamineEdge += edge => notRoots[edge.Target] = false;
             dfs.Compute();
@@ -545,7 +532,7 @@ namespace QuikGraph.Algorithms
         {
             if (graph is null)
                 throw new ArgumentNullException(nameof(graph));
-            return graph.Vertices.Where(graph.IsInEdgesEmpty);
+            return graph.Vertices.Where(FallBackTo<TVertex, bool>(graph.IsInEdgesEmpty, true));
         }
 
         /// <summary>
@@ -577,20 +564,12 @@ namespace QuikGraph.Algorithms
         /// <param name="graph">Graph to visit.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TVertex> TopologicalSort<TVertex, TEdge>(
-            [NotNull] this IVertexListGraph<TVertex, TEdge> graph)
-            where TEdge : IEdge<TVertex>
-        {
-            if (graph is null)
-                throw new ArgumentNullException(nameof(graph));
-
-            var algorithm = new TopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
-            algorithm.Compute();
-            return algorithm.SortedVertices.AsEnumerable();
-        }
+            [NotNull] this IVertexListGraph<TVertex, TEdge> graph) where TEdge : IEdge<TVertex>
+            => graph.ComputeTopologicalSortAlgorithm().SortedVertices.AsEnumerable();
 
         /// <summary>
         /// Creates a topological sort of an undirected acyclic graph.
@@ -600,7 +579,7 @@ namespace QuikGraph.Algorithms
         /// <param name="graph">Graph to visit.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TVertex> TopologicalSort<TVertex, TEdge>(
@@ -610,7 +589,7 @@ namespace QuikGraph.Algorithms
             if (graph is null)
                 throw new ArgumentNullException(nameof(graph));
 
-            var algorithm = new UndirectedTopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
+            var algorithm = graph.CreateUndirectedTopologicalSortAlgorithm(graph.VertexCount);
             algorithm.Compute();
             return algorithm.SortedVertices.AsEnumerable();
         }
@@ -623,7 +602,7 @@ namespace QuikGraph.Algorithms
         /// <param name="graph">Graph to visit.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TVertex> SourceFirstTopologicalSort<TVertex, TEdge>(
@@ -646,7 +625,7 @@ namespace QuikGraph.Algorithms
         /// <param name="graph">Graph to visit.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TVertex> SourceFirstTopologicalSort<TVertex, TEdge>(
@@ -656,7 +635,7 @@ namespace QuikGraph.Algorithms
             if (graph is null)
                 throw new ArgumentNullException(nameof(graph));
 
-            var algorithm = new UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge>(graph, graph.VertexCount);
+            var algorithm = graph.CreateUndirectedFirstTopologicalSortAlgorithm(false, graph.VertexCount);
             algorithm.Compute();
             return algorithm.SortedVertices.AsEnumerable();
         }
@@ -670,7 +649,7 @@ namespace QuikGraph.Algorithms
         /// <param name="graph">Graph to visit.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         public static IEnumerable<TVertex> SourceFirstBidirectionalTopologicalSort<TVertex, TEdge>(
             [NotNull] this IBidirectionalGraph<TVertex, TEdge> graph)
@@ -688,7 +667,7 @@ namespace QuikGraph.Algorithms
         /// <param name="direction">Topological sort direction.</param>
         /// <returns>Sorted vertices (topological sort).</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="NonAcyclicGraphException">If the input graph has a cycle.</exception>
+        /// <exception cref="CyclicGraphException">If the input graph has a cycle.</exception>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TVertex> SourceFirstBidirectionalTopologicalSort<TVertex, TEdge>(
@@ -746,35 +725,26 @@ namespace QuikGraph.Algorithms
             [NotNull] out Func<KeyValuePair<int, IDictionary<TVertex, int>>> getComponents)
             where TEdge : IEdge<TVertex>
         {
-            var incrementalComponents = new IncrementalConnectedComponentsAlgorithm<TVertex, TEdge>(graph);
+            var incrementalComponents = graph.CreateIncrementalConnectedComponentsAlgorithm();
             incrementalComponents.Compute();
             getComponents = () => incrementalComponents.GetComponents();
             return incrementalComponents;
         }
 
-        /// <summary>
-        /// Computes the strongly connected components of a directed graph.
-        /// </summary>
+        /// <summary> Computes the Number of strongly connected components of a directed graph. </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">Graph to visit.</param>
         /// <param name="components">Found components.</param>
-        /// <returns>Number of component found.</returns>
+        /// <returns> component found.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
-        public static int StronglyConnectedComponents<TVertex, TEdge>(
+        public static int StronglyConnectedComponentsCount<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
-            [NotNull] IDictionary<TVertex, int> components)
-            where TEdge : IEdge<TVertex>
-        {
-            var algorithm = new StronglyConnectedComponentsAlgorithm<TVertex, TEdge>(graph, components);
-            algorithm.Compute();
-            return algorithm.ComponentCount;
-        }
+            [NotNull] IDictionary<TVertex, int> components) where TEdge : IEdge<TVertex>
+            => graph.ComputeStronglyConnectedComponents(components).ComponentCount;
 
-        /// <summary>
-        /// Computes the weakly connected components of a directed graph.
-        /// </summary>
+        /// <summary> Computes the weakly connected components of a directed graph. </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">Graph to visit.</param>
@@ -782,15 +752,10 @@ namespace QuikGraph.Algorithms
         /// <returns>Number of component found.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="components"/> is <see langword="null"/>.</exception>
-        public static int WeaklyConnectedComponents<TVertex, TEdge>(
+        public static int WeaklyConnectedComponentsCount<TVertex, TEdge>(
             [NotNull] this IVertexListGraph<TVertex, TEdge> graph,
             [NotNull] IDictionary<TVertex, int> components)
-            where TEdge : IEdge<TVertex>
-        {
-            var algorithm = new WeaklyConnectedComponentsAlgorithm<TVertex, TEdge>(graph, components);
-            algorithm.Compute();
-            return algorithm.ComponentCount;
-        }
+            where TEdge : IEdge<TVertex> => graph.ComputeWeaklyConnectedComponents(components).ComponentCount;
 
         /// <summary>
         /// Condensates the strongly connected components of a directed graph.
@@ -808,10 +773,7 @@ namespace QuikGraph.Algorithms
             where TEdge : IEdge<TVertex>
             where TGraph : IMutableVertexAndEdgeSet<TVertex, TEdge>, new()
         {
-            var algorithm = new CondensationGraphAlgorithm<TVertex, TEdge, TGraph>(graph)
-            {
-                StronglyConnected = true
-            };
+            var algorithm = new CondensationGraphAlgorithm<TVertex, TEdge, TGraph>(graph, true);
             algorithm.Compute();
             return algorithm.CondensedGraph;
         }
@@ -832,10 +794,7 @@ namespace QuikGraph.Algorithms
             where TEdge : IEdge<TVertex>
             where TGraph : IMutableVertexAndEdgeSet<TVertex, TEdge>, new()
         {
-            var algorithm = new CondensationGraphAlgorithm<TVertex, TEdge, TGraph>(graph)
-            {
-                StronglyConnected = false
-            };
+            var algorithm = new CondensationGraphAlgorithm<TVertex, TEdge, TGraph>(graph, false);
             algorithm.Compute();
             return algorithm.CondensedGraph;
         }
@@ -854,7 +813,7 @@ namespace QuikGraph.Algorithms
         [NotNull]
         public static IMutableBidirectionalGraph<TVertex, MergedEdge<TVertex, TEdge>> CondensateEdges<TVertex, TEdge>(
             [NotNull] this IBidirectionalGraph<TVertex, TEdge> graph,
-            [NotNull] VertexPredicate<TVertex> vertexPredicate)
+            [NotNull] Func<TVertex, bool> vertexPredicate)
             where TEdge : IEdge<TVertex>
         {
             var condensedGraph = new BidirectionalGraph<TVertex, MergedEdge<TVertex, TEdge>>();
@@ -868,39 +827,6 @@ namespace QuikGraph.Algorithms
 
         #endregion
 
-        /// <summary>
-        /// Gets odd vertices of the given <paramref name="graph"/>.
-        /// </summary>
-        /// <param name="graph">Graph to visit.</param>
-        /// <returns>Enumerable of odd vertices.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull, ItemNotNull]
-        public static IEnumerable<TVertex> OddVertices<TVertex, TEdge>(
-            [NotNull] this IVertexAndEdgeListGraph<TVertex, TEdge> graph)
-            where TEdge : IEdge<TVertex>
-        {
-            if (graph is null)
-                throw new ArgumentNullException(nameof(graph));
-
-            var counts = new Dictionary<TVertex, int>(graph.VertexCount);
-            foreach (TVertex vertex in graph.Vertices)
-            {
-                counts.Add(vertex, 0);
-            }
-
-            foreach (TEdge edge in graph.Edges)
-            {
-                ++counts[edge.Source];
-                --counts[edge.Target];
-            }
-
-            // Odds
-            return counts
-                .Where(pair => pair.Value % 2 != 0)
-                .Select(pair => pair.Key);
-        }
-
         private sealed class DirectedCycleTester<TVertex, TEdge>
             where TEdge : IEdge<TVertex>
         {
@@ -911,7 +837,7 @@ namespace QuikGraph.Algorithms
             {
                 Debug.Assert(graph != null);
 
-                var dfs = new DepthFirstSearchAlgorithm<TVertex, TEdge>(graph);
+                var dfs = graph.CreateDepthFirstSearchAlgorithm();
                 try
                 {
                     dfs.BackEdge += DfsBackEdge;
@@ -1137,17 +1063,16 @@ namespace QuikGraph.Algorithms
             return sets;
         }
 
-        /// <summary>
-        /// Computes the minimum spanning tree using Prim algorithm.
-        /// </summary>
-        /// <remarks>Prim algorithm is simply implemented by calling Dijkstra shortest path.</remarks>
+        /// <summary> Computes the minimum spanning tree using Prim algorithm. </summary>
         /// <typeparam name="TVertex">Vertex type.</typeparam>
         /// <typeparam name="TEdge">Edge type.</typeparam>
         /// <param name="graph">Graph to visit.</param>
         /// <param name="edgeWeights">Function that computes the weight for a given edge.</param>
         /// <returns>Edges part of the minimum spanning tree.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeWeights"/> is <see langword="null"/>.</exception>
+        /// <remarks>
+        /// Prim algorithm is simply implemented by calling <see cref="UndirectedDijkstraShortestPathAlgorithm{TVertex,TEdge}"/>
+        /// with <see cref="DistanceRelaxers.Prim"/>.
+        /// </remarks>
         [Pure]
         [NotNull, ItemNotNull]
         public static IEnumerable<TEdge> MinimumSpanningTreePrim<TVertex, TEdge>(
@@ -1164,7 +1089,7 @@ namespace QuikGraph.Algorithms
                 return Enumerable.Empty<TEdge>();
 
             IDistanceRelaxer distanceRelaxer = DistanceRelaxers.Prim;
-            var dijkstra = new UndirectedDijkstraShortestPathAlgorithm<TVertex, TEdge>(graph, edgeWeights, distanceRelaxer);
+            var dijkstra = graph.CreateUndirectedDijkstraShortestPathAlgorithm(edgeWeights, distanceRelaxer);
             var edgeRecorder = new UndirectedVertexPredecessorRecorderObserver<TVertex, TEdge>();
             using (edgeRecorder.Attach(dijkstra))
             {
@@ -1285,60 +1210,15 @@ namespace QuikGraph.Algorithms
             [NotNull] ReversedEdgeAugmentorAlgorithm<TVertex, TEdge> reversedEdgeAugmentorAlgorithm)
             where TEdge : IEdge<TVertex>
         {
-            if (EqualityComparer<TVertex>.Default.Equals(source, sink))
+            if (graph.AreVerticesEqual(source, sink))
                 throw new ArgumentException($"{nameof(source)} and {nameof(sink)} must be different.");
 
             // Compute maximum flow
-            var flow = new EdmondsKarpMaximumFlowAlgorithm<TVertex, TEdge>(
-                graph,
-                edgeCapacities,
-                edgeFactory,
-                reversedEdgeAugmentorAlgorithm);
+            var flow = graph.CreateEdmondsKarpMaximumFlowAlgorithm(edgeCapacities, edgeFactory, reversedEdgeAugmentorAlgorithm);
             flow.Compute(source, sink);
             flowPredecessors = flow.Predecessors.TryGetValue;
 
             return flow.MaxFlow;
-        }
-
-        /// <summary>
-        /// Computes the transitive reduction of the given <paramref name="graph"/>.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="graph">Graph to compute the reduction.</param>
-        /// <returns>Transitive graph reduction.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull]
-        public static BidirectionalGraph<TVertex, TEdge> ComputeTransitiveReduction<TVertex, TEdge>(
-            [NotNull] this IEdgeListGraph<TVertex, TEdge> graph)
-            where TEdge : IEdge<TVertex>
-        {
-            var algorithm = new TransitiveReductionAlgorithm<TVertex, TEdge>(graph);
-            algorithm.Compute();
-            return algorithm.TransitiveReduction;
-        }
-
-        /// <summary>
-        /// Computes the transitive close of the given <paramref name="graph"/>.
-        /// </summary>
-        /// <typeparam name="TVertex">Vertex type.</typeparam>
-        /// <typeparam name="TEdge">Edge type.</typeparam>
-        /// <param name="graph">Graph to compute the closure.</param>
-        /// <param name="edgeFactory">Function that create an edge between the 2 given vertices.</param>
-        /// <returns>Transitive graph closure.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="graph"/> is <see langword="null"/>.</exception>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="edgeFactory"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [NotNull]
-        public static BidirectionalGraph<TVertex, TEdge> ComputeTransitiveClosure<TVertex, TEdge>(
-            [NotNull] this IEdgeListGraph<TVertex, TEdge> graph,
-            [NotNull] Func<TVertex, TVertex, TEdge> edgeFactory)
-            where TEdge : IEdge<TVertex>
-        {
-            var algorithm = new TransitiveClosureAlgorithm<TVertex, TEdge>(graph, edgeFactory);
-            algorithm.Compute();
-            return algorithm.TransitiveClosure;
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30011.22
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{FAAD5B1C-1217-48D6-B1EF-7CAC0440D6A4}"
 	ProjectSection(SolutionItems) = preProject
@@ -44,14 +44,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuikGraph.Petri.Tests", "tests\QuikGraph.Petri.Tests\QuikGraph.Petri.Tests.csproj", "{CD993F58-A275-4E67-9F8E-BAF3BE6F21B6}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{69dfd21c-d3a3-4764-b3f0-2fdf612e1f65}*SharedItemsImports = 5
-		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{908fe868-7abe-4fe8-bfa6-c5e6572b780d}*SharedItemsImports = 5
-		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{7160ddab-12b0-491f-9a79-bf3b5e0cd872}*SharedItemsImports = 5
-		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{61df76e1-de2b-4df1-ad5f-89939ab06693}*SharedItemsImports = 5
-		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{8adddae1-fa2c-4637-c67f-8743beb126cd}*SharedItemsImports = 5
-		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{98e60a67-c326-4b83-8eff-b77e9c651945}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -128,5 +120,28 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C26EFBC1-5149-4422-AFD3-172667AA018F}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{1c978139-80bd-4081-94cc-14cbaeefeb24}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{20713f1d-74e0-44e0-a533-0d3dc30d3898}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{52f3ffcf-1638-48d8-b124-0347c723f2fc}*SharedItemsImports = 13
+		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{61df76e1-de2b-4df1-ad5f-89939ab06693}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{61df76e1-de2b-4df1-ad5f-89939ab06693}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{69dfd21c-d3a3-4764-b3f0-2fdf612e1f65}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{69dfd21c-d3a3-4764-b3f0-2fdf612e1f65}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{7160ddab-12b0-491f-9a79-bf3b5e0cd872}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{7160ddab-12b0-491f-9a79-bf3b5e0cd872}*SharedItemsImports = 5
+		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{8adddae1-fa2c-4637-c67f-8743beb126cd}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{8adddae1-fa2c-4637-c67f-8743beb126cd}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{908fe868-7abe-4fe8-bfa6-c5e6572b780d}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{908fe868-7abe-4fe8-bfa6-c5e6572b780d}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{90e1536b-6b95-4072-8c60-10e4dc30ae1a}*SharedItemsImports = 5
+		tests\QuikGraph.Serialization.Tests.CommonInternals\QuikGraph.Serialization.Tests.CommonInternals.projitems*{98e60a67-c326-4b83-8eff-b77e9c651945}*SharedItemsImports = 13
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{98e60a67-c326-4b83-8eff-b77e9c651945}*SharedItemsImports = 13
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{a9a5c115-0680-44b3-a87e-5ecf4c93814e}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{c8b5e125-4624-44d9-1234-5caf4c25876e}*SharedItemsImports = 5
+		tests\QuikGraph.Tests.CommonInternals\QuikGraph.Tests.CommonInternals.projitems*{cd993f58-a275-4e67-9f8e-baf3be6f21b6}*SharedItemsImports = 5
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{ce984360-54f0-406f-b8a9-e75897daed3b}*SharedItemsImports = 13
+		src\QuikGraph.CommonInternals\QuikGraph.CommonInternals.projitems*{f7008baf-1f3a-4406-80b1-4a2f2cdc0cdd}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

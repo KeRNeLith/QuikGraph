@@ -15,7 +15,7 @@ namespace QuikGraph.Predicates
         private readonly IDictionary<TVertex, TValue> _vertexMap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="InDictionaryVertexPredicate{TVertex,TValue}"/> class.
+        /// Initializes a new <see cref="InDictionaryVertexPredicate{TVertex,TValue}"/> class.
         /// </summary>
         /// <param name="vertexMap">Vertex map.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertexMap"/> is <see langword="null"/>.</exception>

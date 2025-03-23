@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Algorithms.VertexCover;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.VertexCover
 {
@@ -14,29 +14,24 @@ namespace QuikGraph.Tests.Algorithms.VertexCover
         [Test]
         public void Constructor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph);
-            AssertAlgorithmState(algorithm, graph);
+            UndirectedGraph<int, IEdge<int>> graph = new (), nullGraph = null;
+            var algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm();
+            algorithm.AssertAlgorithmState(graph);
             Assert.IsNull(algorithm.CoverSet);
 
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(123));
-            AssertAlgorithmState(algorithm, graph);
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(123).Next);
+            algorithm.AssertAlgorithmState(graph);
             Assert.IsNull(algorithm.CoverSet);
-        }
 
-        [Test]
-        public void Constructor_Throws()
-        {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(null));
+                () => nullGraph.CreateMinimumVertexCoverApproximationAlgorithm());
             Assert.Throws<ArgumentNullException>(
-                () => new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(null, new Random(123)));
+                () => nullGraph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(123).Next));
+            _ = graph.CreateMinimumVertexCoverApproximationAlgorithm(null);
             Assert.Throws<ArgumentNullException>(
-                () => new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(new UndirectedGraph<int, Edge<int>>(), null));
-            Assert.Throws<ArgumentNullException>(
-                () => new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(null, null));
+                () => nullGraph.CreateMinimumVertexCoverApproximationAlgorithm(null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -44,59 +39,56 @@ namespace QuikGraph.Tests.Algorithms.VertexCover
         [Test]
         public void Cover()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm();
             algorithm.Compute();
             CollectionAssert.IsEmpty(algorithm.CoverSet);
 
-            graph.AddVertexRange(new[] { 1, 2, 3 });
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph);
+            graph.AddVertexRange(1, 2, 3);
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm();
             algorithm.Compute();
             CollectionAssert.IsEmpty(algorithm.CoverSet);
 
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(1, 2),
-                new Edge<int>(2, 2),
-                new Edge<int>(3, 1)
-            });
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(123456));
-            algorithm.Compute();
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(1, 2),
+                Edge.Create(2, 2),
+                Edge.Create(3, 1)
+            );
+            var rng = new Random(123456);
+            algorithm = graph.ComputeMinimumVertexCoverApproximationAlgorithm(rng.Next);
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2 },
                 algorithm.CoverSet);
 
             graph.AddVertex(4);
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(123456));
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(123456).Next);
             algorithm.Compute();
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2 },
                 algorithm.CoverSet);
 
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(5, 2)
-            });
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(123456));
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(5, 2)
+            );
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(123456).Next);
             algorithm.Compute();
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2 },
                 algorithm.CoverSet);
 
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new Edge<int>(6, 7),
-                new Edge<int>(7, 8),
-                new Edge<int>(9, 8)
-            });
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(123456));
+            graph.AddVerticesAndEdgeRange(
+                Edge.Create(6, 7),
+                Edge.Create(7, 8),
+                Edge.Create(9, 8)
+            );
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(123456).Next);
             algorithm.Compute();
             CollectionAssert.AreEquivalent(
                 new[] { 2, 3, 7, 9 },
                 algorithm.CoverSet);
 
             // Other seed give other results
-            algorithm = new MinimumVertexCoverApproximationAlgorithm<int, Edge<int>>(graph, new Random(456789));
+            algorithm = graph.CreateMinimumVertexCoverApproximationAlgorithm(new Random(456789).Next);
             algorithm.Compute();
             CollectionAssert.AreEquivalent(
                 new[] { 1, 2, 7, 8 },

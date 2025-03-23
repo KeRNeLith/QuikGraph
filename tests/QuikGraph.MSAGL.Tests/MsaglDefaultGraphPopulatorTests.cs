@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using NUnit.Framework;
 using QuikGraph.Tests;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+using QuikGraph.Tests.Algorithms;
+
 
 namespace QuikGraph.MSAGL.Tests
 {
@@ -12,10 +13,10 @@ namespace QuikGraph.MSAGL.Tests
     {
         #region Test classes
 
-        private class TestMsaglDefaultGraphPopulator : MsaglDefaultGraphPopulator<TestVertex, Edge<TestVertex>>
+        private class TestMsaglDefaultGraphPopulator : MsaglDefaultGraphPopulator<TestVertex, IEdge<TestVertex>>
         {
             public TestMsaglDefaultGraphPopulator()
-                : base(new AdjacencyGraph<TestVertex, Edge<TestVertex>>())
+                : base(new AdjacencyGraph<TestVertex, IEdge<TestVertex>>())
             {
             }
 
@@ -37,12 +38,12 @@ namespace QuikGraph.MSAGL.Tests
         [Test]
         public void Constructor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var populator = new MsaglDefaultGraphPopulator<int, Edge<int>>(graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var populator = new MsaglDefaultGraphPopulator<int, IEdge<int>>(graph);
             AssertPopulatorProperties(populator, graph);
 
-            var undirectedGraph = new UndirectedGraph<int, Edge<int>>();
-            populator = new MsaglDefaultGraphPopulator<int, Edge<int>>(undirectedGraph);
+            var undirectedGraph = new UndirectedGraph<int, IEdge<int>>();
+            populator = new MsaglDefaultGraphPopulator<int, IEdge<int>>(undirectedGraph);
             AssertPopulatorProperties(populator, undirectedGraph);
 
             #region Local function
@@ -52,7 +53,7 @@ namespace QuikGraph.MSAGL.Tests
                 IEdgeListGraph<TVertex, TEdge> g)
                 where TEdge : IEdge<TVertex>
             {
-                AssertAlgorithmState(p, g);
+                p.AssertAlgorithmState(g);
                 Assert.IsNull(p.MsaglGraph);
             }
 
@@ -65,19 +66,19 @@ namespace QuikGraph.MSAGL.Tests
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new MsaglDefaultGraphPopulator<int, Edge<int>>(null));
+                () => new MsaglDefaultGraphPopulator<int, IEdge<int>>(null));
         }
 
         [Test]
         public void Compute()
         {
-            Compute_Test(graph => new MsaglDefaultGraphPopulator<int, Edge<int>>(graph));
+            Compute_Test(graph => new MsaglDefaultGraphPopulator<int, IEdge<int>>(graph));
         }
 
         [Test]
         public void Handlers()
         {
-            Handlers_Test(graph => new MsaglDefaultGraphPopulator<int, Edge<int>>(graph));
+            Handlers_Test(graph => new MsaglDefaultGraphPopulator<int, IEdge<int>>(graph));
         }
 
         [Test]

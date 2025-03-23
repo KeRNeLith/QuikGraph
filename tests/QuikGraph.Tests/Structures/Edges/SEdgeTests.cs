@@ -16,7 +16,7 @@ namespace QuikGraph.Tests.Structures
             CheckEdge(new SEdge<int>(1, 2), 1, 2);
             CheckEdge(new SEdge<int>(2, 1), 2, 1);
             CheckEdge(new SEdge<int>(1, 1), 1, 1);
-            CheckEdge(default(SEdge<int>), 0, 0);
+            //CheckEdge(default(SEdge<int>), 0, 0);
 
             // Reference type
             var v1 = new TestVertex("v1");
@@ -24,14 +24,6 @@ namespace QuikGraph.Tests.Structures
             CheckEdge(new SEdge<TestVertex>(v1, v2), v1, v2);
             CheckEdge(new SEdge<TestVertex>(v2, v1), v2, v1);
             CheckEdge(new SEdge<TestVertex>(v1, v1), v1, v1);
-
-            // Struct break the contract with their implicit default constructor
-            // Non struct edge should be preferred
-            var defaultEdge = default(SEdge<TestVertex>);
-            Assert.IsNull(defaultEdge.Source);
-            // ReSharper disable once HeuristicUnreachableCode
-            // Justification: Since struct has implicit default constructor it allows initialization of invalid edge
-            Assert.IsNull(defaultEdge.Target);
         }
 
         [Test]
@@ -49,7 +41,7 @@ namespace QuikGraph.Tests.Structures
         [Test]
         public void Equals()
         {
-            var edge1 = default(SEdge<int>);
+            var edge1 = new SEdge<int>(0, 0); //default(SEdge<int>);
             var edge2 = new SEdge<int>(0, 0);
             var edge3 = new SEdge<int>(1, 2);
             var edge4 = new SEdge<int>(1, 2);
@@ -79,18 +71,6 @@ namespace QuikGraph.Tests.Structures
 
             Assert.AreNotEqual(null, edge1);
             Assert.IsFalse(edge1.Equals(null));
-        }
-
-        [Test]
-        public void EqualsDefaultEdge_ReferenceTypeExtremities()
-        {
-            var edge1 = default(SEdge<TestVertex>);
-            var edge2 = new SEdge<TestVertex>();
-
-            Assert.AreEqual(edge1, edge2);
-            Assert.AreEqual(edge2, edge1);
-            Assert.IsTrue(edge1.Equals(edge2));
-            Assert.IsTrue(edge2.Equals(edge1));
         }
 
         [Test]

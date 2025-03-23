@@ -5,7 +5,7 @@ using QuikGraph.Graphviz.Dot;
 namespace QuikGraph.Graphviz
 {
     /// <summary>
-    /// Default dot engine implementation, writes dot code to disk.
+    /// Default dot engine implementation, writes 'dot'-formatted code to disk.
     /// </summary>
     public sealed class FileDotEngine : IDotEngine
     {

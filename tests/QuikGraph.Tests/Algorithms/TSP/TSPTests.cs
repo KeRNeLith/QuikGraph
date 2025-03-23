@@ -5,7 +5,7 @@ using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
 using QuikGraph.Algorithms.TSP;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.TSP
 {
@@ -69,8 +69,6 @@ namespace QuikGraph.Tests.Algorithms.TSP
             var algorithm = new TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph, Weights);
             AssertAlgorithmProperties(algorithm, graph, Weights);
 
-            #region Local function
-
             void AssertAlgorithmProperties<TVertex, TEdge, TGraph>(
                 TSP<TVertex, TEdge, TGraph> algo,
                 TGraph g,
@@ -78,7 +76,7 @@ namespace QuikGraph.Tests.Algorithms.TSP
                 where TEdge : EquatableEdge<TVertex>
                 where TGraph : BidirectionalGraph<TVertex, TEdge>
             {
-                AssertAlgorithmState(algo, g);
+                algo.AssertAlgorithmState(g);
                 Assert.IsNull(algo.VerticesColors);
                 if (eWeights is null)
                     Assert.IsNotNull(algo.Weights);
@@ -87,8 +85,6 @@ namespace QuikGraph.Tests.Algorithms.TSP
                 CollectionAssert.IsEmpty(algo.GetDistances());
                 Assert.AreSame(DistanceRelaxers.ShortestDistance, algo.DistanceRelaxer);
             }
-
-            #endregion
         }
 
         [Test]
@@ -133,7 +129,7 @@ namespace QuikGraph.Tests.Algorithms.TSP
         {
             var graph = new BidirectionalGraph<TestVertex, EquatableEdge<TestVertex>>();
             var algorithm = new TSP<TestVertex, EquatableEdge<TestVertex>, BidirectionalGraph<TestVertex, EquatableEdge<TestVertex>>>(graph, _ => 1.0);
-            SetRootVertex_Throws_Test(algorithm);
+            SetRootVertex_Null_Should_Throw_ArgumentNullException(algorithm);
         }
 
         [Test]
@@ -141,14 +137,14 @@ namespace QuikGraph.Tests.Algorithms.TSP
         {
             var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
             var algorithm = new TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph, _ => 1.0);
-            ClearRootVertex_Test(algorithm);
+            ClearRootVertex_RaisesVertexChanged_Test(algorithm);
         }
 
         [Test]
         public void ComputeWithoutRoot_Throws()
         {
             var graph = new BidirectionalGraph<int, EquatableEdge<int>>();
-            ComputeWithoutRoot_NoThrows_Test(
+            ComputeWithoutRoot_ShouldNotThrow_Test(
                 graph,
                 () => new TSP<int, EquatableEdge<int>, BidirectionalGraph<int, EquatableEdge<int>>>(graph, _ => 1.0));
         }
@@ -166,7 +162,7 @@ namespace QuikGraph.Tests.Algorithms.TSP
         public void ComputeWithRoot_Throws()
         {
             var graph = new BidirectionalGraph<TestVertex, EquatableEdge<TestVertex>>();
-            ComputeWithRoot_Throws_Test(
+            ComputeWithUnknownRootOrNull_Throws_Test(
                 () => new TSP<TestVertex, EquatableEdge<TestVertex>, BidirectionalGraph<TestVertex, EquatableEdge<TestVertex>>>(graph, _ => 1.0));
         }
 
@@ -205,7 +201,7 @@ namespace QuikGraph.Tests.Algorithms.TSP
             algorithm.Compute(1);
 
             // ReSharper disable once ReturnValueOfPureMethodIsNotUsed
-            Assert.Throws<VertexNotFoundException>(() => algorithm.GetVertexColor(1));
+            Assert.AreEqual(default, algorithm.GetVertexColor(1));
         }
 
         [Test]

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using QuikGraph.Utils;
 
@@ -19,9 +19,11 @@ namespace QuikGraph.Algorithms.RandomWalks
         public Random Rand { get; set; } = new CryptoRandom();
 
         /// <inheritdoc />
+        //[Obsolete("Not CoVariant!")]
         public abstract bool TryGetSuccessor(IImplicitGraph<TVertex, TEdge> graph, TVertex vertex, out TEdge successor);
 
         /// <inheritdoc />
+        //[Obsolete("Not CoVariant!")]
         public abstract bool TryGetSuccessor(IEnumerable<TEdge> edges, TVertex vertex, out TEdge successor);
     }
 }

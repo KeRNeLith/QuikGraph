@@ -54,20 +54,8 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
         /// <exception cref="VertexNotFoundException"><paramref name="vertex"/> is not part of the graph.</exception>
         [Pure]
-        [NotNull, ItemNotNull]
+        [ItemNotNull] [CanBeNull]
         IEnumerable<TEdge> OutEdgesAt([NotNull] TVertex vertex, int terminal);
-
-        /// <summary>
-        /// Tries to get the <paramref name="vertex"/> out-edges for the requested terminal.
-        /// </summary>
-        /// <param name="vertex">The vertex.</param>
-        /// <param name="terminal">Out terminal index.</param>
-        /// <param name="edges">Out-edges found, otherwise <see langword="null"/>.</param>
-        /// <returns>True if <paramref name="vertex"/> was found or/and out-edges were found, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [ContractAnnotation("=> true, edges:notnull;=> false, edges:null")]
-        bool TryGetOutEdgesAt([NotNull] TVertex vertex, int terminal, [ItemNotNull] out IEnumerable<TEdge> edges);
 
         /// <summary>
         /// Gets the number of in terminals on the given <paramref name="vertex"/>.
@@ -110,19 +98,8 @@ namespace QuikGraph
         /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
         /// <exception cref="VertexNotFoundException"><paramref name="vertex"/> is not part of the graph.</exception>
         [Pure]
-        [NotNull, ItemNotNull]
+        [ItemNotNull]
+        [CanBeNull]
         IEnumerable<TEdge> InEdgesAt([NotNull] TVertex vertex, int terminal);
-
-        /// <summary>
-        /// Tries to get the <paramref name="vertex"/> in-edges for the requested terminal.
-        /// </summary>
-        /// <param name="vertex">The vertex.</param>
-        /// <param name="terminal">Out terminal index.</param>
-        /// <param name="edges">In-edges found, otherwise <see langword="null"/>.</param>
-        /// <returns>True if <paramref name="vertex"/> was found or/and in-edges were found, false otherwise.</returns>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="vertex"/> is <see langword="null"/>.</exception>
-        [Pure]
-        [ContractAnnotation("=> true, edges:notnull;=> false, edges:null")]
-        bool TryGetInEdgesAt([NotNull] TVertex vertex, int terminal, [ItemNotNull] out IEnumerable<TEdge> edges);
     }
 }

@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using QuikGraph.Algorithms;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 using static QuikGraph.Tests.GraphTestHelpers;
 
 namespace QuikGraph.Tests.Algorithms
@@ -15,24 +16,21 @@ namespace QuikGraph.Tests.Algorithms
         [Test]
         public void Constructor()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
-            var algorithm = new TransitiveClosureAlgorithm<int, Edge<int>>(graph, (v1, v2) => new Edge<int>(v1, v2));
-            AssertAlgorithmState(algorithm, graph);
+            var graph = new AdjacencyGraph<int, IEdge<int>>();
+            var algorithm = graph.CreateTransitiveClosureAlgorithm(Edge.Create);
+            algorithm.AssertAlgorithmState(graph);
             Assert.IsNotNull(algorithm.TransitiveClosure);
         }
 
         [Test]
         public void Constructor_Throws()
         {
-            var graph = new AdjacencyGraph<int, Edge<int>>();
+            AdjacencyGraph<int, IEdge<int>> graph = new (), nullGraph = null;
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
-            Assert.Throws<ArgumentNullException>(
-                () => new TransitiveClosureAlgorithm<int, Edge<int>>(null, (v1, v2) => new Edge<int>(v1, v2)));
-            Assert.Throws<ArgumentNullException>(
-                () => new TransitiveClosureAlgorithm<int, Edge<int>>(graph, null));
-            Assert.Throws<ArgumentNullException>(
-                () => new TransitiveClosureAlgorithm<int, Edge<int>>(null, null));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateTransitiveClosureAlgorithm(Edge.Create));
+            Assert.Throws<ArgumentNullException>(() => nullGraph.CreateTransitiveClosureAlgorithm(null));
+            Assert.Throws<ArgumentNullException>(() => graph.CreateTransitiveClosureAlgorithm(null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }
@@ -42,99 +40,118 @@ namespace QuikGraph.Tests.Algorithms
         {
             // Test 1
             var graph = new AdjacencyGraph<int, SEquatableEdge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
+            graph.AddVerticesAndEdgeRange(
                 new SEquatableEdge<int>(1, 2),
                 new SEquatableEdge<int>(2, 3)
-            });
+            );
 
-            BidirectionalGraph<int, SEquatableEdge<int>> result = graph.ComputeTransitiveClosure((u, v) => new SEquatableEdge<int>(u, v));
-            AssertHasVertices(result, new[] { 1, 2, 3 });
-            AssertHasEdges(
-                result,
-                new[]
+            var result = graph.ComputeTransitiveClosure((u, v) => new SEquatableEdge<int>(u, v));
+            result.AssertHasVertices(1, 2, 3);
+            var expected = new SEquatableEdge<int>[]{
+                    new(1, 2),
+                    new(1, 3),
+                    new(2, 3)
+            };
+            result.AssertHasEdges(expected);
+
+            var result2 = result.ComputeTransitiveClosure((u, v) => new SEquatableEdge<int>(u, v));
+            result2.AssertHasEdges(expected);
+        }
+
+        [Test]
+        public void TransitiveClosure_ValueType2()
+        {
+            var graph = new AdjacencyGraph<int, SEquatableEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                new List<SEquatableEdge<int>>
                 {
-                    new SEquatableEdge<int>(1, 2),
-                    new SEquatableEdge<int>(1, 3),
-                    new SEquatableEdge<int>(2, 3)
-                });
+                    new(1, 2),
+                    new(2, 3),
+                    new(3, 4),
+                    new(3, 5)
+                }.AsReadOnly());
 
-            // Test 2
-            graph = new AdjacencyGraph<int, SEquatableEdge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
-                new SEquatableEdge<int>(1, 2),
-                new SEquatableEdge<int>(2, 3),
-                new SEquatableEdge<int>(3, 4),
-                new SEquatableEdge<int>(3, 5)
-            });
+            var result = graph.ComputeTransitiveClosure((u, v)
+                => new SEquatableEdge<int>(u, v));
+            result.AssertHasVertices(new List<int> { 1, 2, 3, 4, 5 }.AsReadOnly());
+            var expected = new SEquatableEdge<int>[] {
+                new(1, 2),
+                new(1, 3),
+                new(1, 4),
+                new(1, 5),
+                new(2, 3),
+                new(2, 4),
+                new(2, 5),
+                new(3, 4),
+                new(3, 5)
+            };
+            result.AssertHasEdges(expected);
 
-            result = graph.ComputeTransitiveClosure((u, v) => new SEquatableEdge<int>(u, v));
-            AssertHasVertices(result, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                result,
-                new[]
-                {
-                    new SEquatableEdge<int>(1, 2),
-                    new SEquatableEdge<int>(1, 3),
-                    new SEquatableEdge<int>(1, 4),
-                    new SEquatableEdge<int>(1, 5),
-                    new SEquatableEdge<int>(2, 3),
-                    new SEquatableEdge<int>(2, 4),
-                    new SEquatableEdge<int>(2, 5),
-                    new SEquatableEdge<int>(3, 4),
-                    new SEquatableEdge<int>(3, 5)
-                });
+            // Idempotency:
+            var result2 = result.ComputeTransitiveClosure((u, v)
+                => new SEquatableEdge<int>(u, v));
+            result2.AssertHasEdges(expected);
         }
 
         [Test]
         public void TransitiveClosure_ReferenceType()
         {
-            // Test 1
             var graph = new AdjacencyGraph<int, EquatableEdge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
-            {
+            graph.AddVerticesAndEdgeRange(
                 new EquatableEdge<int>(1, 2),
                 new EquatableEdge<int>(2, 3)
-            });
+            );
 
             BidirectionalGraph<int, EquatableEdge<int>> result = graph.ComputeTransitiveClosure((u, v) => new EquatableEdge<int>(u, v));
-            AssertHasVertices(result, new[] { 1, 2, 3 });
-            AssertHasEdges(
-                result,
-                new[]
-                {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 3),
-                    new EquatableEdge<int>(2, 3)
-                });
-
-            // Test 2
-            graph = new AdjacencyGraph<int, EquatableEdge<int>>();
-            graph.AddVerticesAndEdgeRange(new[]
+            result.AssertHasVertices(1, 2, 3 );
+            var expected = new List<EquatableEdge<int>>
             {
-                new EquatableEdge<int>(1, 2),
-                new EquatableEdge<int>(2, 3),
-                new EquatableEdge<int>(3, 4),
-                new EquatableEdge<int>(3, 5)
-            });
+                new(1, 2),
+                new(1, 3),
+                new(2, 3)
+            }.AsReadOnly();
+            result.AssertHasEdges(expected);
 
-            result = graph.ComputeTransitiveClosure((u, v) => new EquatableEdge<int>(u, v));
-            AssertHasVertices(result, new[] { 1, 2, 3, 4, 5 });
-            AssertHasEdges(
-                result,
-                new[]
+            // Idempotency:
+            var result2 = result.ComputeTransitiveClosure((u, v)
+                => new EquatableEdge<int>(u, v));
+            result2.AssertHasEdges(expected);
+        }
+
+        [Test]
+        public void TransitiveClosure_ReferenceType2()
+        {
+            var graph = new AdjacencyGraph<int, EquatableEdge<int>>();
+            graph.AddVerticesAndEdgeRange(
+                new List<EquatableEdge<int>>
                 {
-                    new EquatableEdge<int>(1, 2),
-                    new EquatableEdge<int>(1, 3),
-                    new EquatableEdge<int>(1, 4),
-                    new EquatableEdge<int>(1, 5),
-                    new EquatableEdge<int>(2, 3),
-                    new EquatableEdge<int>(2, 4),
-                    new EquatableEdge<int>(2, 5),
-                    new EquatableEdge<int>(3, 4),
-                    new EquatableEdge<int>(3, 5)
-                });
+                    new(1, 2),
+                    new(2, 3),
+                    new(3, 4),
+                    new(3, 5)
+                }.AsReadOnly());
+
+            var result = graph.ComputeTransitiveClosure((u, v) => new EquatableEdge<int>(u, v));
+            result.AssertHasVertices(1, 2, 3, 4, 5 );
+            var expected = new List<EquatableEdge<int>>
+            {
+                new(1, 2),
+                new(1, 3),
+                new(1, 4),
+                new(1, 5),
+                new(2, 3),
+                new(2, 4),
+                new(2, 5),
+                new(3, 4),
+                new(3, 5)
+            };
+
+            result.AssertHasEdges(expected);
+
+            // Idempotency:
+            var result2 = result.ComputeTransitiveClosure((u, v)
+                => new EquatableEdge<int>(u, v));
+            result2.AssertHasEdges(expected);
         }
 
         [Test]
@@ -148,19 +165,12 @@ namespace QuikGraph.Tests.Algorithms
             var edge23 = new EquatableEdge<string>(vertex2, vertex3);
 
             var graph = new AdjacencyGraph<string, EquatableEdge<string>>();
-            graph.AddVertexRange(new[] { vertex1, vertex2, vertex3, vertex4 });
-            graph.AddEdgeRange(new[] { edge12, edge23 });
+            graph.AddVertexRange( vertex1, vertex2, vertex3, vertex4 );
+            graph.AddEdgeRange( edge12, edge23 );
 
             BidirectionalGraph<string, EquatableEdge<string>> result = graph.ComputeTransitiveClosure((u, v) => new EquatableEdge<string>(u, v));
-            AssertHasVertices(result, new[] { vertex1, vertex2, vertex3, vertex4 });
-            AssertHasEdges(
-                result,
-                new[]
-                {
-                    edge12,
-                    new EquatableEdge<string>(vertex1, vertex3),
-                    edge23
-                });
+            result.AssertHasVertices(vertex1, vertex2, vertex3, vertex4 );
+            result.AssertHasEdges(edge12, new EquatableEdge<string>(vertex1, vertex3), edge23);
         }
     }
 }

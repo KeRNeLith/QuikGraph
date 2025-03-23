@@ -18,10 +18,10 @@ namespace QuikGraph.Tests.Algorithms
     {
         #region Test classes
 
-        private class TestAlgorithm : AlgorithmBase<AdjacencyGraph<int, Edge<int>>>
+        private class TestAlgorithm : AlgorithmBase<AdjacencyGraph<int, IEdge<int>>>
         {
             public TestAlgorithm()
-                : base(new AdjacencyGraph<int, Edge<int>>())
+                : base(new AdjacencyGraph<int, IEdge<int>>())
             {
             }
 
@@ -50,7 +50,7 @@ namespace QuikGraph.Tests.Algorithms
 #if SUPPORTS_TASKS
         private static readonly TimeSpan TimeoutDelay = TimeSpan.FromSeconds(5);
 
-        private class ManageableTestAlgorithm : AlgorithmBase<AdjacencyGraph<int, Edge<int>>>
+        private class ManageableTestAlgorithm : AlgorithmBase<AdjacencyGraph<int, IEdge<int>>>
         {
             [NotNull]
             public ManualResetEvent InitializeEvent { get; }
@@ -71,7 +71,7 @@ namespace QuikGraph.Tests.Algorithms
                 [NotNull] ManualResetEvent initialize,
                 [NotNull] ManualResetEvent compute,
                 [NotNull] ManualResetEvent clean)
-                : base(new AdjacencyGraph<int, Edge<int>>())
+                : base(new AdjacencyGraph<int, IEdge<int>>())
             {
                 InitializeEvent = initialize;
                 ComputeEvent = compute;

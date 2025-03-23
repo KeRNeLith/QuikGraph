@@ -11,8 +11,8 @@ namespace QuikGraph.Tests.Events
         [Test]
         public void Constructor()
         {
-            var edge = new Edge<int>(1, 2);
-            var args = new EdgeEventArgs<int, Edge<int>>(edge);
+            var edge = Edge.Create(1, 2);
+            var args = new EdgeEventArgs<int, IEdge<int>>(edge);
 
             Assert.AreSame(edge, args.Edge);
         }
@@ -23,7 +23,7 @@ namespace QuikGraph.Tests.Events
             // ReSharper disable once ObjectCreationAsStatement
             // ReSharper disable once AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new EdgeEventArgs<int, Edge<int>>(null));
+                () => new EdgeEventArgs<int, IEdge<int>>(null));
         }
     }
 }

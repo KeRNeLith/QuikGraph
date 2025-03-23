@@ -5,16 +5,29 @@ using JetBrains.Annotations;
 
 namespace QuikGraph.Algorithms.VertexColoring
 {
-    /// <summary>
-    /// Algorithm that walk through a graph and color vertices with the minimum number of colors possible.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <summary> Extension Method to create and Compute VertexColoring </summary>
+    public static class VertexColoringAlgorithm
+    {
+        /// <inheritdoc cref="VertexColoringAlgorithm{TVertex, TEdge}"/>
+        public static VertexColoringAlgorithm<TVertex, TEdge> ComputeVertexColoring<TVertex, TEdge>
+            (this UndirectedGraph<TVertex, TEdge> graph) where TEdge : IEdge<TVertex>
+        {
+            var ret = new VertexColoringAlgorithm<TVertex, TEdge>(graph);
+            ret.Compute();
+            return ret;
+        }
+    }
+
+    /// <summary> Walks through a graph and 'colors' every <typeparamref name="TVertex"/> with the minimum number of colors possible. </summary>
+    /// <remarks>
+    /// Assigns integer <see cref="Colors"/> to vertices so that no two adjacent vertices share the same color.
+    /// Subscribe to <see cref="VertexColored"/> if you are interested in the coloring progress.
+    /// </remarks>
     public sealed class VertexColoringAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="VertexColoringAlgorithm{TVertex,TEdge}"/> class.
+        /// Initializes a new <see cref="VertexColoringAlgorithm{TVertex,TEdge}"/> class.
         /// </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
@@ -23,21 +36,16 @@ namespace QuikGraph.Algorithms.VertexColoring
         {
         }
 
-        /// <summary>
-        /// Vertices colors.
-        /// </summary>
+        /// <summary> 'Color' by Vertex </summary>
         [NotNull]
         public IDictionary<TVertex, int?> Colors { get; } = new Dictionary<TVertex, int?>();
 
-        /// <summary>
-        /// Fired when a vertex is colored.
-        /// </summary>
+        /// <summary> Fired when a vertex is colored. </summary>
         public event VertexAction<TVertex> VertexColored;
 
         private void OnVertexColored([NotNull] TVertex vertex)
         {
             Debug.Assert(vertex != null);
-
             VertexColored?.Invoke(vertex);
         }
 
@@ -69,12 +77,13 @@ namespace QuikGraph.Algorithms.VertexColoring
             Colors[firstVertex] = 0;
             OnVertexColored(firstVertex);
 
-            // A temporary array to store the available colors. True
-            // value of available[usedColor] would mean that the color usedColor is
-            // assigned to one of its adjacent vertices
+            // A temporary array to store the available colors.
+            // True = available[usedColor] means
+            // that the color usedColor is assigned to one of its adjacent vertices
             bool[] available = new bool[vertexCount];
             for (int usingColor = 0; usingColor < vertexCount; ++usingColor)
             {
+                if (available[usingColor]) throw new System.Exception();
                 available[usingColor] = false;
             }
 
@@ -100,7 +109,7 @@ namespace QuikGraph.Algorithms.VertexColoring
         {
             foreach (TEdge adjacentEdges in VisitedGraph.AdjacentEdges(vertex))
             {
-                TVertex adjacentVertex = adjacentEdges.GetOtherVertex(vertex);
+                TVertex adjacentVertex = adjacentEdges.GetOtherVertex(vertex, VisitedGraph.AreVerticesEqual);
                 if (Colors[adjacentVertex].HasValue)
                 {
                     available[Colors[adjacentVertex].Value] = true;
@@ -124,10 +133,10 @@ namespace QuikGraph.Algorithms.VertexColoring
         {
             foreach (TEdge adjacentEdges in VisitedGraph.AdjacentEdges(vertex))
             {
-                if (Colors[adjacentEdges.GetOtherVertex(vertex)].HasValue)
+                if (Colors[adjacentEdges.GetOtherVertex(vertex, VisitedGraph.AreVerticesEqual)].HasValue)
                 {
                     // ReSharper disable once PossibleInvalidOperationException, Justification: Was assigned a color just before
-                    int usedColor = Colors[adjacentEdges.GetOtherVertex(vertex)].Value;
+                    int usedColor = Colors[adjacentEdges.GetOtherVertex(vertex, VisitedGraph.AreVerticesEqual)].Value;
                     available[usedColor] = false;
                 }
             }

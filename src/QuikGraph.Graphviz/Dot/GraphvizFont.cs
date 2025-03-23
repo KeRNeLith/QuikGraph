@@ -24,7 +24,7 @@ namespace QuikGraph.Graphviz.Dot
         public float SizeInPoints { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GraphvizFont"/> class.
+        /// Initializes a new <see cref="GraphvizFont"/> class.
         /// </summary>
         /// <param name="name">Font name.</param>
         /// <param name="sizeInPoints">Font size.</param>

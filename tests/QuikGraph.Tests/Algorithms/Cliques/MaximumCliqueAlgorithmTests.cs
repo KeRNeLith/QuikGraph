@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using JetBrains.Annotations;
 using NUnit.Framework;
 using QuikGraph.Algorithms.Cliques;
 using QuikGraph.Algorithms.Services;
-using static QuikGraph.Tests.Algorithms.AlgorithmTestHelpers;
+
 
 namespace QuikGraph.Tests.Algorithms.Cliques
 {
@@ -13,18 +13,13 @@ namespace QuikGraph.Tests.Algorithms.Cliques
     [TestFixture]
     internal sealed class MaximumCliqueAlgorithmTests
     {
-        #region Test classes
-
         private class TestMaximumCliqueAlgorithm<TVertex, TEdge> : MaximumCliqueAlgorithmBase<TVertex, TEdge>
             where TEdge : IEdge<TVertex>
         {
-            public TestMaximumCliqueAlgorithm([NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph)
-                : base(visitedGraph)
-            {
-            }
-
-            public TestMaximumCliqueAlgorithm([CanBeNull] IAlgorithmComponent host, [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph)
-                : base(host, visitedGraph)
+            public TestMaximumCliqueAlgorithm(
+                [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
+                [CanBeNull] IAlgorithmComponent host = null)
+                : base(visitedGraph, host)
             {
             }
 
@@ -35,17 +30,15 @@ namespace QuikGraph.Tests.Algorithms.Cliques
             }
         }
 
-        #endregion
-
         [Test]
         public void Constructor()
         {
-            var graph = new UndirectedGraph<int, Edge<int>>();
-            var algorithm = new TestMaximumCliqueAlgorithm<int, Edge<int>>(graph);
-            AssertAlgorithmState(algorithm, graph);
+            var graph = new UndirectedGraph<int, IEdge<int>>();
+            var algorithm = new TestMaximumCliqueAlgorithm<int, IEdge<int>>(graph);
+            algorithm.AssertAlgorithmState(graph);
 
-            algorithm = new TestMaximumCliqueAlgorithm<int, Edge<int>>(null, graph);
-            AssertAlgorithmState(algorithm, graph);
+            algorithm = new TestMaximumCliqueAlgorithm<int, IEdge<int>>(graph, null);
+            algorithm.AssertAlgorithmState(graph);
         }
 
         [Test]
@@ -54,10 +47,10 @@ namespace QuikGraph.Tests.Algorithms.Cliques
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable AssignNullToNotNullAttribute
             Assert.Throws<ArgumentNullException>(
-                () => new TestMaximumCliqueAlgorithm<int, Edge<int>>(null));
+                () => new TestMaximumCliqueAlgorithm<int, IEdge<int>>(null));
 
             Assert.Throws<ArgumentNullException>(
-                () => new TestMaximumCliqueAlgorithm<int, Edge<int>>(null, null));
+                () => new TestMaximumCliqueAlgorithm<int, IEdge<int>>(null, null));
             // ReSharper restore AssignNullToNotNullAttribute
             // ReSharper restore ObjectCreationAsStatement
         }

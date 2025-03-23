@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using QuikGraph.Tests.Algorithms;
 
 namespace QuikGraph.Tests
 {
@@ -22,10 +21,10 @@ namespace QuikGraph.Tests
         /// <returns>List of edges.</returns>
         [Pure]
         [NotNull, ItemNotNull]
-        public static IEnumerable<Edge<TVertex>> CreateAllPairwiseEdges<TVertex>(
+        public static IEnumerable<IEdge<TVertex>> CreateAllPairwiseEdges<TVertex>(
             [NotNull, ItemNotNull] IEnumerable<TVertex> leftVertices,
             [NotNull, ItemNotNull] IEnumerable<TVertex> rightVertices,
-            [NotNull] EdgeFactory<TVertex, Edge<TVertex>> edgeFactory)
+            [NotNull] EdgeFactory<TVertex, IEdge<TVertex>> edgeFactory)
         {
             TVertex[] rightVerticesArray = rightVertices.ToArray();
 
@@ -40,14 +39,11 @@ namespace QuikGraph.Tests
 
         [Pure]
         [NotNull]
-        public static UndirectedGraph<int, UndirectedEdge<int>> CreateUndirectedGraph(
-            [NotNull] IEnumerable<Vertices> vertices)
+        public static UndirectedGraph<int, IUndirectedEdge<int>> CreateUndirectedGraph(
+            [NotNull] params IUndirectedEdge<int>[] vertices)
         {
-            var graph = new UndirectedGraph<int, UndirectedEdge<int>>();
-            foreach (Vertices pair in vertices)
-            {
-                graph.AddVerticesAndEdge(new UndirectedEdge<int>(pair.Source, pair.Target));
-            }
+            var graph = new UndirectedGraph<int, IUndirectedEdge<int>>();
+            graph.AddVerticesAndEdgeRange(vertices);
 
             return graph;
         }

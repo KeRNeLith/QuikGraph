@@ -28,7 +28,7 @@ Supports Source Link</Description>
 
     <IsPackable>true</IsPackable>
     <PackageId>QuikGraph.Serialization</PackageId>
-    <PackageReleaseNotes>➟ Release 2.5.0
+    <PackageReleaseNotes>➟ Release 3.0.0
 Fixes:
 - Fix fields being written several times during GraphML serialization for types with multiple inheritance layers.
 - Fix user data that may be skipped during GraphML deserialization.

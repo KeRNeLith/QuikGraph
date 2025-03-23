@@ -7,12 +7,19 @@ using QuikGraph.Collections;
 
 namespace QuikGraph.Algorithms.TopologicalSort
 {
-    /// <summary>
-    /// Undirected topological sort algorithm.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
-    public sealed class UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge> : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
+    /// <inheritdoc cref="CreateUndirectedFirstTopologicalSortAlgorithm"/>
+    public static class UndirectedFirstTopologicalSortAlgorithm
+    {
+        /// <summary> Creates a new <see cref="UndirectedFirstTopologicalSortAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge>
+            CreateUndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge> (
+            [NotNull] this IUndirectedGraph<TVertex, TEdge> visitedGraph, bool allowCyclicGraph = false,
+            int capacity = -1) where TEdge : IEdge<TVertex>
+            => new UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge>(visitedGraph, allowCyclicGraph, capacity);
+    }
+    /// <summary> Undirected topological sort algorithm. </summary>
+    public sealed class UndirectedFirstTopologicalSortAlgorithm<TVertex, TEdge>
+        : AlgorithmBase<IUndirectedGraph<TVertex, TEdge>>
         where TEdge : IEdge<TVertex>
     {
         [NotNull]
@@ -21,19 +28,18 @@ namespace QuikGraph.Algorithms.TopologicalSort
         [NotNull, ItemNotNull]
         private readonly IList<TVertex> _sortedVertices;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UndirectedFirstTopologicalSortAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
+        /// <summary> Creates a new <see cref="UndirectedFirstTopologicalSortAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
+        /// <param name="allowCyclicGraph"></param>
         /// <param name="capacity">Sorted vertices capacity.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public UndirectedFirstTopologicalSortAlgorithm(
-            [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph,
-            int capacity = -1)
+        internal UndirectedFirstTopologicalSortAlgorithm(
+            [NotNull] IUndirectedGraph<TVertex, TEdge> visitedGraph, bool allowCyclicGraph = false, int capacity = -1)
             : base(visitedGraph)
         {
             _heap = new BinaryQueue<TVertex, int>(vertex => Degrees[vertex]);
             _sortedVertices = capacity > 0 ? new List<TVertex>(capacity) : new List<TVertex>();
+            AllowCyclicGraph = allowCyclicGraph;
         }
 
         /// <summary>
@@ -51,7 +57,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
         /// <summary>
         /// Gets or sets the flag that indicates if cyclic graph are supported or not.
         /// </summary>
-        public bool AllowCyclicGraph { get; set; }
+        public bool AllowCyclicGraph { get; }
 
         /// <summary>
         /// Fired when a vertex is added to the set of sorted vertices.
@@ -67,12 +73,12 @@ namespace QuikGraph.Algorithms.TopologicalSort
 
         private void InitializeInDegrees()
         {
-            if (!AllowCyclicGraph && VisitedGraph.Edges.Any(edge => edge.IsSelfEdge()))
-                throw new NonAcyclicGraphException();
+            if (!AllowCyclicGraph && VisitedGraph.Edges.Any(edge => edge.IsSelfEdge(VisitedGraph.AreVerticesEqual)))
+                throw new CyclicGraphException();
 
             foreach (TVertex vertex in VisitedGraph.Vertices)
             {
-                Degrees.Add(vertex, VisitedGraph.AdjacentDegree(vertex));
+                Degrees.Add(vertex, VisitedGraph.AdjacentDegree(vertex) ?? 0);
                 _heap.Enqueue(vertex);
             }
         }
@@ -103,7 +109,7 @@ namespace QuikGraph.Algorithms.TopologicalSort
                 // 0 => isolated vertex
                 // 1 => single adjacent edge
                 if (degree != 0 && degree != 1 && !AllowCyclicGraph)
-                    throw new NonAcyclicGraphException();
+                    throw new CyclicGraphException();
 
                 _sortedVertices.Add(vertex);
                 OnVertexAdded(vertex);
@@ -118,9 +124,9 @@ namespace QuikGraph.Algorithms.TopologicalSort
 
             void UpdateAdjacentDegree(TVertex vertex)
             {
-                foreach (TEdge edge in VisitedGraph.AdjacentEdges(vertex).Where(e => !e.IsSelfEdge()))
+                foreach (TEdge edge in VisitedGraph.AdjacentEdges(vertex).Where(e => !e.IsSelfEdge(VisitedGraph.AreVerticesEqual)))
                 {
-                    TVertex other = edge.GetOtherVertex(vertex);
+                    TVertex other = edge.GetOtherVertex(vertex, VisitedGraph.AreVerticesEqual);
                     --Degrees[other];
 
                     if (Degrees[other] < 0 && !AllowCyclicGraph)

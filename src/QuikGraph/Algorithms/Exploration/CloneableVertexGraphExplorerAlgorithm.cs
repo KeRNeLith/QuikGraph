@@ -8,38 +8,37 @@ using QuikGraph.Algorithms.Services;
 
 namespace QuikGraph.Algorithms.Exploration
 {
-    /// <summary>
-    /// Algorithm that explores a graph starting from a given vertex.
-    /// </summary>
-    /// <typeparam name="TVertex">Vertex type.</typeparam>
-    /// <typeparam name="TEdge">Edge type.</typeparam>
+    /// <inheritdoc cref="CreateCloneableVertexGraphExplorerAlgorithm"/>
+    public static class CloneableVertexGraphExplorerAlgorithm
+    {
+        /// <summary> Creates a new <see cref="CloneableVertexGraphExplorerAlgorithm{TVertex,TEdge}"/> class. </summary>
+        public static CloneableVertexGraphExplorerAlgorithm<TVertex, TEdge>
+            CreateCloneableVertexGraphExplorerAlgorithm<TVertex, TEdge>(
+            [NotNull] this IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null)
+                where TVertex : ICloneable
+                where TEdge : IEdge<TVertex>
+            => new CloneableVertexGraphExplorerAlgorithm<TVertex, TEdge>(visitedGraph, host);
+
+    }
+    /// <summary> Explores a graph starting from a given vertex.</summary>
     public sealed class CloneableVertexGraphExplorerAlgorithm<TVertex, TEdge>
         : RootedAlgorithmBase<TVertex, IMutableVertexAndEdgeSet<TVertex, TEdge>>
         , ITreeBuilderAlgorithm<TVertex, TEdge>
         where TVertex : ICloneable
         where TEdge : IEdge<TVertex>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloneableVertexGraphExplorerAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="visitedGraph">Graph to visit.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public CloneableVertexGraphExplorerAlgorithm(
-            [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph)
-            : this(null, visitedGraph)
-        {
-        }
+        /// <summary> The processed Graph </summary>
+        public IGraph<TVertex, TEdge> VisitededGraph => (IGraph<TVertex, TEdge>)base.VisitedGraph;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CloneableVertexGraphExplorerAlgorithm{TVertex,TEdge}"/> class.
-        /// </summary>
-        /// <param name="host">Host to use if set, otherwise use this reference.</param>
+        /// <summary> Creates a new <see cref="CloneableVertexGraphExplorerAlgorithm{TVertex,TEdge}"/> class. </summary>
         /// <param name="visitedGraph">Graph to visit.</param>
+        /// <param name="host">Host to use if set, otherwise use this reference.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="visitedGraph"/> is <see langword="null"/>.</exception>
-        public CloneableVertexGraphExplorerAlgorithm(
-            [CanBeNull] IAlgorithmComponent host,
-            [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph)
-            : base(host, visitedGraph)
+        internal CloneableVertexGraphExplorerAlgorithm(
+            [NotNull] IMutableVertexAndEdgeSet<TVertex, TEdge> visitedGraph,
+            [CanBeNull] IAlgorithmComponent host = null)
+            : base(visitedGraph, host)
         {
         }
 
@@ -51,42 +50,42 @@ namespace QuikGraph.Algorithms.Exploration
             new List<ITransitionFactory<TVertex, TEdge>>();
 
         [NotNull]
-        private VertexPredicate<TVertex> _addVertexPredicate = vertex => true;
+        private Func<TVertex, bool> _addVertexPredicate = vertex => true;
 
         /// <summary>
         /// Predicate that a vertex must match to be added in the graph.
         /// </summary>
         /// <exception cref="T:System.ArgumentNullException">Set value is <see langword="null"/>.</exception>
         [NotNull]
-        public VertexPredicate<TVertex> AddVertexPredicate
+        public Func<TVertex, bool> AddVertexPredicate
         {
             get => _addVertexPredicate;
             set => _addVertexPredicate = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         [NotNull]
-        private VertexPredicate<TVertex> _exploreVertexPredicate = vertex => true;
+        private Func<TVertex, bool> _exploreVertexPredicate = vertex => true;
 
         /// <summary>
         /// Predicate that checks if a given vertex should be explored or ignored.
         /// </summary>
         /// <exception cref="T:System.ArgumentNullException">Set value is <see langword="null"/>.</exception>
         [NotNull]
-        public VertexPredicate<TVertex> ExploreVertexPredicate
+        public Func<TVertex, bool> ExploreVertexPredicate
         {
             get => _exploreVertexPredicate;
             set => _exploreVertexPredicate = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         [NotNull]
-        private EdgePredicate<TVertex, TEdge> _addEdgePredicate = edge => true;
+        private Func<TEdge, bool> _addEdgePredicate = edge => true;
 
         /// <summary>
         /// Predicate that an edge must match to be added in the graph.
         /// </summary>
         /// <exception cref="T:System.ArgumentNullException">Set value is <see langword="null"/>.</exception>
         [NotNull]
-        public EdgePredicate<TVertex, TEdge> AddEdgePredicate
+        public Func<TEdge, bool> AddEdgePredicate
         {
             get => _addEdgePredicate;
             set => _addEdgePredicate = value ?? throw new ArgumentNullException(nameof(value));
@@ -189,11 +188,14 @@ namespace QuikGraph.Algorithms.Exploration
             _transitionFactories.Add(transitionFactory);
         }
 
-        /// <summary>
-        /// Adds new <see cref="ITransitionFactory{TVertex,TEdge}"/>s to this algorithm.
-        /// </summary>
-        /// <param name="transitionFactories">Transition factories to add.</param>
-        /// <exception cref="T:System.ArgumentNullException"><paramref name="transitionFactories"/> is <see langword="null"/>.</exception>
+        /// <summary>Adds new <see cref="ITransitionFactory{TVertex,TEdge}"/>s to this algorithm. </summary>
+        public void AddTransitionFactories(
+            [NotNull, ItemNotNull] params ITransitionFactory<TVertex, TEdge>[] transitionFactories)
+        {
+            AddTransitionFactories(transitionFactories.AsEnumerable());
+        }
+
+        /// <summary>Adds new <see cref="ITransitionFactory{TVertex,TEdge}"/>s to this algorithm. </summary>
         public void AddTransitionFactories(
             [NotNull, ItemNotNull] IEnumerable<ITransitionFactory<TVertex, TEdge>> transitionFactories)
         {
@@ -317,14 +319,14 @@ namespace QuikGraph.Algorithms.Exploration
         public sealed class DefaultFinishedPredicate
         {
             /// <summary>
-            /// Initializes a new instance of the <see cref="DefaultFinishedPredicate"/> class.
+            /// Initializes a new <see cref="DefaultFinishedPredicate"/> class.
             /// </summary>
             public DefaultFinishedPredicate()
             {
             }
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="DefaultFinishedPredicate"/> class.
+            /// Initializes a new <see cref="DefaultFinishedPredicate"/> class.
             /// </summary>
             /// <param name="maxVertexCount">Maximum number of vertices.</param>
             /// <param name="maxEdgeCount">Maximum number of edges.</param>
